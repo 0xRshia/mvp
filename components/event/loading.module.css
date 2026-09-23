@@ -1,0 +1,55 @@
+.loading { min-width: 0; width: 100%; }
+.content { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+.content :global([data-slot="skeleton"]),
+.catalogHeading :global([data-slot="skeleton"]) {
+  animation: loading-pulse 1.8s ease-in-out infinite;
+  background: var(--border);
+}
+/* Keep the placeholder geometry steady instead of staggering its entrance. */
+.content *, .content *::before, .content *::after {
+  --motion-enter: 0ms;
+  --motion-panel: 0ms;
+  --motion-stagger: 0ms;
+}
+.lines { display: flex; flex-direction: column; gap: 16px; width: 100%; min-width: 0; }
+.line { height: 16px; width: 85%; }
+.shortLine { height: 14px; width: 45%; }
+.title { height: 28px; width: 72%; }
+.field { height: 48px; width: 100%; }
+.action { height: 42px; width: 132px; max-width: 100%; }
+.tabs { height: 44px; width: 360px; max-width: 100%; margin-bottom: 20px; }
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  justify-content: center;
+  gap: 18px;
+  padding-block: 4px 20px;
+}
+.categoryTile { height: 112px; border-radius: 16px; }
+.backLink { height: 20px; width: 155px; margin-bottom: 24px; }
+.card { overflow: hidden; width: 100%; border: 1px solid var(--border); border-radius: 16px; background: var(--card); }
+.cover { width: 100%; border-radius: 0; }
+.cardBody { display: grid; gap: 22px; padding: 22px; }
+.cardFooter { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+.reservationImage { width: 170px; height: 190px; border-radius: 12px; flex-shrink: 0; }
+.table { overflow: hidden; border: 1px solid var(--border); border-radius: 12px; }
+.tableRow { display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 20px; padding: 23px 16px; border-bottom: 1px solid var(--border); }
+.tableRow:first-child { background: var(--secondary); padding-block: 16px; }
+.tableRow:last-child { border-bottom: 0; }
+.symbol { height: 64px; width: 64px; border-radius: 50%; }
+.catalogHeading { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; margin-bottom: 28px; }
+.search { height: 64px; width: 100%; margin-top: 12px; }
+@keyframes loading-pulse { 50% { opacity: .65; } }
+@media (max-width: 800px) {
+  .reservationImage { width: 140px; height: 155px; }
+}
+@media (max-width: 600px) {
+  .reservationImage { width: 85px; height: 100px; border-radius: 8px; }
+  .cardBody { padding: 18px; }
+  .tableRow { gap: 12px; padding-inline: 12px; }
+  .categoryGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .categoryTile { height: 98px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading :global([data-slot="skeleton"]), .catalogHeading :global([data-slot="skeleton"]) { animation: none; }
+}

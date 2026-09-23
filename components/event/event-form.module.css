@@ -1,0 +1,325 @@
+.form {
+  display: grid;
+  gap: 26px;
+  min-width: 0;
+}
+
+.section {
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.section legend {
+  margin-bottom: 14px;
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.section + .section {
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 17px;
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.form label,
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.form input,
+.form textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 49px;
+  border: 1px solid var(--input);
+  border-radius: 9px;
+  padding: 10px 13px;
+  outline: none;
+  font-size: 16px;
+  background: var(--card);
+}
+
+.form input:focus,
+.form textarea:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px var(--focus-shadow);
+}
+
+.form input::placeholder,
+.form textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.form input[type="file"] {
+  font-size: 13px;
+  border-style: dashed;
+  padding: 10px;
+}
+
+.form input::file-selector-button {
+  margin-inline-end: 10px;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--secondary);
+  color: var(--foreground);
+  font: inherit;
+  cursor: pointer;
+}
+
+.iconLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.help {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.9;
+}
+
+.help a {
+  color: var(--primary-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.inlineError {
+  color: var(--destructive);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.schedule {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  margin-top: 12px;
+}
+
+.calendarPanel {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  padding: 12px 2px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.calendar.calendar {
+  --rdp-accent-color: var(--primary-text);
+  --rdp-accent-background-color: var(--accent);
+  --rdp-day-width: 40px;
+  --rdp-day-height: 40px;
+  --rdp-day_button-width: 38px;
+  --rdp-day_button-height: 38px;
+  --rdp-nav_button-width: 30px;
+  --rdp-nav-height: 44px;
+  --rdp-weekday-padding: 0.5rem 0;
+  font-size: 13px;
+}
+
+.calendar select {
+  color: var(--foreground);
+  background: var(--card);
+}
+
+.calendar thead th {
+  font-size: 12px;
+}
+
+.selectedDate {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.times {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+
+.timeHeading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+}
+
+.timeHeading output {
+  color: var(--primary-text);
+  background: var(--accent);
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeSlider {
+  min-height: 44px;
+  margin-top: 9px;
+}
+
+.timeSlider [data-slot="slider-thumb"] {
+  width: 23px;
+  height: 23px;
+}
+
+.timeScale {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.uploads {
+  display: grid;
+  gap: 18px;
+  margin-top: 12px;
+}
+
+.coverPreview {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.coverPreview > img {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  background: var(--secondary);
+}
+
+.imageCaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+}
+
+.imageCaption bdi,
+.galleryDetails bdi {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.gallery {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+}
+
+.galleryItem {
+  display: grid;
+  grid-template-columns: 105px minmax(0, 1fr);
+  gap: 14px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.galleryItem > img {
+  width: 105px;
+  height: 105px;
+  object-fit: cover;
+  border-radius: 7px;
+}
+
+.galleryDetails {
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.imageActions {
+  display: flex;
+  gap: 8px;
+}
+
+.imageButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 5px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 4px 8px;
+  color: var(--text-secondary);
+  background: var(--secondary);
+  border-radius: 7px;
+  font-size: 12px;
+}
+
+.imageButton:disabled {
+  opacity: 0.35;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 3px;
+}
+
+@media (max-width: 620px) {
+  .fields,
+  .schedule {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .schedule {
+    gap: 18px;
+  }
+
+  .calendar.calendar {
+    --rdp-day-width: clamp(30px, 9vw, 40px);
+    --rdp-day_button-width: clamp(28px, 8.5vw, 38px);
+  }
+
+  .galleryItem {
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .galleryItem > img {
+    width: 78px;
+    height: 105px;
+  }
+}

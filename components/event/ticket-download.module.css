@@ -1,0 +1,107 @@
+.download {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  max-width: 100%;
+}
+
+.hint,
+.ready {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.9;
+  margin: 0;
+}
+
+.ready a {
+  color: var(--primary-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.error {
+  max-width: 320px;
+  color: var(--destructive);
+  font-size: 13px;
+  margin: 0;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.purchase {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px;
+  background: var(--success-background);
+  border: 1px solid var(--success-border);
+  border-radius: 16px;
+  margin-bottom: 26px;
+}
+
+.purchase > svg {
+  flex-shrink: 0;
+  color: var(--success);
+  margin-top: 5px;
+}
+
+.purchase h2 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.purchase p {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.nameField {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.nameField label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.nameField input {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 13px;
+  border: 1px solid var(--input);
+  border-radius: 9px;
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.nameField input:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.nameField small {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+}
+
+@media (max-width: 600px) {
+  .purchase { padding: 18px; gap: 10px; }
+  .purchase > svg { width: 20px; }
+  .download { width: 100%; }
+}

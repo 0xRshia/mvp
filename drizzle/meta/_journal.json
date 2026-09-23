@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1789462617007,
+      "tag": "0000_puzzling_thunderbolts",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1789546381360,
+      "tag": "0001_curly_jetstream",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789548814802,
+      "tag": "0002_ticketing_checkin",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1789561630663,
+      "tag": "0003_event_maps_media",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1789773863375,
+      "tag": "0004_event_registration_deadline",
+      "breakpoints": true
+    }
+  ]
+}
