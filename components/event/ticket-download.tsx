@@ -12,10 +12,12 @@ export function TicketDownload({
   reservationId,
   quantity,
   prominent = false,
+  fullWidth = false,
 }: {
   reservationId: string;
   quantity: number;
   prominent?: boolean;
+  fullWidth?: boolean;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -55,7 +57,7 @@ export function TicketDownload({
   }
 
   return (
-    <div className={styles.download}>
+    <div className={`${styles.download}${fullWidth ? ` ${styles.fullWidth}` : ""}`}>
       <button
         type="button"
         className={`button${prominent ? "" : " outline"}`}

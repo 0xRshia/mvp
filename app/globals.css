@@ -92,14 +92,15 @@
   --warning-background: #fff3d9;
   --warning-border: #d8b77e;
   --border: color-mix(in srgb, var(--palette-ink) 14%, #fff);
+  --button-border: #cbcbcb;
   --input: color-mix(in srgb, var(--palette-ink) 40%, #fff);
   --ring: var(--primary);
   --focus-shadow: color-mix(in srgb, var(--primary) 25%, transparent);
   --surface-overlay: color-mix(in srgb, var(--card) 96%, transparent);
   --badge-neutral: var(--palette-ink);
   --badge-neutral-foreground: var(--palette-cream);
-  --capacity-background: #0f766e;
-  --capacity-foreground: #fff;
+  --capacity-background: var(--accent);
+  --capacity-foreground: var(--primary-text);
   --shadow-color: color-mix(in srgb, var(--palette-ink) 4%, transparent);
   --shadow-hover: color-mix(in srgb, var(--palette-ink) 10%, transparent);
   --radius: 1rem;
@@ -310,6 +311,10 @@ a:focus-visible {
   color: var(--foreground);
   border-color: var(--border);
 }
+/* The outline variant name also matches Tailwind's outline utility. */
+.button.outline:not(:focus-visible) {
+  outline: none;
+}
 .button.outline:hover {
   background: var(--secondary);
 }
@@ -331,6 +336,23 @@ a:focus-visible {
   justify-content: space-between;
   margin-bottom: 30px;
   gap: 24px;
+}
+.intro.intro-home {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.intro-home > div {
+  width: 100%;
+}
+.intro-home .eyebrow {
+  justify-content: center;
+}
+.intro.intro-home h1 {
+  max-width: 100%;
+}
+.intro-home h1 .hero-typing {
+  margin-inline: auto;
 }
 .eyebrow {
   font-size: 14px;
@@ -472,28 +494,31 @@ h1 span {
 }
 .category-icon {
   display: grid;
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
   place-items: center;
-  color: var(--primary);
 }
-.category-icon svg {
-  width: 30px;
-  height: 30px;
-  stroke-width: 1.8;
+.category-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.location-art {
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 .category-label {
   line-height: 1.6;
-}
-.category.selected .category-icon {
-  color: inherit;
 }
 .category.selected {
   background: var(--accent);
   color: var(--accent-foreground);
   border-color: var(--accent-border);
   font-weight: 500;
-  box-shadow: inset 0 0 0 1px var(--accent-border);
+  box-shadow: inset 0 0 0 1px var(--button-border);
 }
 .section-heading {
   display: flex;
@@ -663,28 +688,12 @@ h1 span {
   line-height: 1.6;
   background: var(--capacity-background);
   color: var(--capacity-foreground);
+  border: 1px solid var(--primary);
+  font-weight: 600;
 }
 .event-capacity svg {
   flex-shrink: 0;
 }
-.event-registration {
-  display: inline-flex;
-  align-self: flex-start;
-  align-items: center;
-  gap: 8px;
-  max-width: 100%;
-  margin: 0 0 18px;
-  padding: 8px 10px;
-  border: 2px solid var(--primary);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.8;
-  color: var(--card-foreground);
-  font-variant-numeric: tabular-nums;
-}
-.event-registration span { min-width: 0; overflow-wrap: anywhere; }
-.event-registration svg { flex-shrink: 0; color: var(--primary-text); }
 .card-bottom {
   display: flex;
   align-items: center;
@@ -924,12 +933,8 @@ h1 span {
     gap: 6px;
   }
   .category-icon {
-    width: 38px;
-    height: 38px;
-  }
-  .category-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 48px;
+    height: 48px;
   }
   .section-heading h2 {
     font-size: 20px;
@@ -1401,6 +1406,24 @@ h1 span {
   color: var(--text-muted);
   flex-shrink: 0;
 }
+.booking-facts .booking-capacity {
+  align-self: flex-start;
+  padding: 8px 12px;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  background: var(--capacity-background);
+  color: var(--capacity-foreground);
+  font-weight: 600;
+}
+.booking-facts .booking-capacity svg {
+  color: currentColor;
+}
+.event-capacity.sold-out,
+.booking-facts .booking-capacity.sold-out {
+  background: var(--badge-neutral);
+  color: var(--badge-neutral-foreground);
+  border-color: var(--border);
+}
 .quantity-row {
   display: flex;
   align-items: center;
@@ -1490,6 +1513,7 @@ h1 span {
 }
 .reservation-card {
   display: flex;
+  flex-wrap: wrap;
   gap: 24px;
   padding: 23px;
   border: 1px solid var(--border);
@@ -1553,8 +1577,25 @@ h1 span {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-basis: 100%;
+  min-width: 0;
+  align-items: stretch;
+}
+.reservation-actions .button {
+  width: 100%;
+  min-height: 46px;
+}
+.reservation-actions .button.outline.reservation-location {
+  background: var(--card);
+  color: var(--primary-text);
+  border-color: var(--primary);
+}
+.reservation-actions .button.outline.reservation-location:hover {
+  background: var(--accent);
+  color: var(--primary-text);
+}
+.reservation-actions .text-button {
+  align-self: center;
 }
 .host-heading {
   display: flex;
@@ -1822,12 +1863,9 @@ h1 span {
   }
   .reservation-actions {
     width: 100%;
-    flex-direction: row;
-    justify-content: flex-end;
   }
   .reservation-actions .button {
     font-size: 14px;
-    min-height: 39px;
   }
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1982,9 +2020,6 @@ h1 span {
   }
   .reservation-info > p svg {
     display: none;
-  }
-  .reservation-actions {
-    justify-content: flex-start;
   }
   .ticket-code {
     font-size: 13px !important;
@@ -2202,8 +2237,8 @@ h1 span {
   padding: 3px 9px;
   border-radius: 6px;
   font-size: 14px;
-  color: var(--accent-foreground);
-  background: var(--accent);
+  color: var(--palette-ink);
+  background: var(--palette-orange);
 }
 
 /* Shared motion changes paint and composition, never control dimensions. */
@@ -2289,7 +2324,6 @@ button[aria-busy="true"] { cursor: progress; }
   transition: background-color 180ms var(--motion-ease), color 180ms var(--motion-ease),
     border-color 180ms var(--motion-ease), box-shadow 180ms var(--motion-ease);
 }
-.category-icon { transition: color 180ms var(--motion-ease); }
 .category:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
 :root:not(.dark) .category-row .category {
   color: var(--secondary-foreground);
@@ -2345,3 +2379,8 @@ button[aria-busy="true"] { cursor: progress; }
 }
 
 .motion-number { display: inline-block; min-inline-size: 1ch; animation: hg-enter var(--motion-fast) var(--motion-ease); }
+
+/* Keep every button outline consistent across component variants and interaction states. */
+:is(button, [role="button"], [data-slot="button"], a.button, a.text-button, a.icon-button) {
+  border: 1px solid var(--button-border) !important;
+}

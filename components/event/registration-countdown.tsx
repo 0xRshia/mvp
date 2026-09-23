@@ -5,7 +5,7 @@ import { Clock3 } from "lucide-react";
 import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import { REGISTRATION_CLOSED, registrationCountdownSeconds } from "@/lib/registration";
 import { fa } from "@/lib/types";
-import styles from "./detail-countdown.module.css";
+import styles from "./registration-countdown.module.css";
 
 function RollingDigit({ digit }: { digit: string }) {
   const [frame, setFrame] = useState({ current: digit, previous: digit });
@@ -21,13 +21,14 @@ function RollingDigit({ digit }: { digit: string }) {
   );
 }
 
-export function DetailCountdown({ deadline }: { deadline: number }) {
+export function RegistrationCountdown({ deadline, compact = false }: { deadline: number; compact?: boolean }) {
   const now = useDeadlineClock(deadline, 1000);
   const remaining = now === null ? null : registrationCountdownSeconds(deadline, now);
+  const className = `${styles.countdown}${compact ? ` ${styles.compact}` : ""}`;
   if (remaining === null) return null;
   if (remaining === 0) {
     return (
-      <div className={styles.countdown}>
+      <div className={className}>
         <span className={styles.label}><Clock3 size={18} aria-hidden="true" />{REGISTRATION_CLOSED}</span>
       </div>
     );
@@ -39,7 +40,7 @@ export function DetailCountdown({ deadline }: { deadline: number }) {
   ];
   const description = units.map(({ value, label }) => `${fa(value)} ${label}`).join(" و ");
   return (
-    <div className={styles.countdown} role="timer" aria-live="off" aria-label={`زمان باقی‌مانده تا پایان ثبت‌نام: ${description}`}>
+    <div className={className} role="timer" aria-live="off" aria-label={`زمان باقی‌مانده تا پایان ثبت‌نام: ${description}`}>
       <span className={styles.label} aria-hidden="true"><Clock3 size={18} />زمان باقی‌مانده تا پایان ثبت‌نام</span>
       <div className={styles.units} dir="ltr" aria-hidden="true">
         {units.map(({ value, label }) => (

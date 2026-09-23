@@ -1,5 +1,3 @@
-import { fa } from "./types";
-
 export const REGISTRATION_DAY = 24 * 60 * 60 * 1000;
 export const REGISTRATION_WINDOW = 2 * REGISTRATION_DAY;
 export const REGISTRATION_CLOSED = "مهلت ثبت‌نام پایان یافته";
@@ -12,20 +10,6 @@ export function defaultRegistrationDeadline(start: number, now: number) {
 export function validRegistrationDeadline(deadline: number, start: number, now: number) {
   return Number.isFinite(deadline) && deadline > now && deadline <= start &&
     deadline % (5 * 60 * 1000) === 0;
-}
-
-export function registrationCountdown(deadline: number, now: number): string | null {
-  const remaining = deadline - now;
-  if (remaining <= 0) return REGISTRATION_CLOSED;
-  if (remaining >= REGISTRATION_WINDOW) return null;
-  if (remaining < 60000) return "کمتر از یک دقیقه تا پایان ثبت‌نام";
-  const minutes = Math.floor(remaining / 60000);
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
-  const duration = hours
-    ? `${fa(hours)} ساعت${rest ? ` و ${fa(rest)} دقیقه` : ""}`
-    : `${fa(minutes)} دقیقه`;
-  return `مهلت ثبت‌نام: ${duration}`;
 }
 
 export function registrationCountdownSeconds(deadline: number, now: number): number | null {

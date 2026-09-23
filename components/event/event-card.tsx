@@ -1,7 +1,6 @@
 import { AppLink } from "@/components/event/app-navigation";
-import { ArrowUpLeft, Clock3, MapPin, Users } from "lucide-react";
-import { useDeadlineClock } from "@/hooks/use-deadline-clock";
-import { registrationCountdown } from "@/lib/registration";
+import { ArrowUpLeft, MapPin, Users } from "lucide-react";
+import { RegistrationCountdown } from "./registration-countdown";
 import {
   categories,
   fa,
@@ -9,17 +8,6 @@ import {
   type EventItem,
 } from "@/lib/types";
 import mediaStyles from "./event-media.module.css";
-
-function PaidRegistrationCountdown({ deadline }: { deadline: number }) {
-  const now = useDeadlineClock(deadline);
-  const countdown = now === null ? null : registrationCountdown(deadline, now);
-  return countdown ? (
-    <p className="event-registration">
-      <Clock3 size={15} aria-hidden="true" />
-      <span>{countdown}</span>
-    </p>
-  ) : null;
-}
 
 export function EventCard({
   event,
@@ -53,7 +41,7 @@ export function EventCard({
               ? "ظرفیت نامحدود"
               : event.remaining === 0
                 ? "تکمیل ظرفیت"
-                : `${fa(event.remaining)} نفر باقی‌مانده`}
+                : `${fa(event.remaining)} نفر باقی مانده`}
           </span>
           <time className="date-stamp" dateTime={new Date(event.starts_at).toISOString()}
             aria-label={date(event.starts_at, true)}>
@@ -86,7 +74,7 @@ export function EventCard({
         </div>
         <p className="event-category">{categories.find((category) => category.id === event.category)?.label}</p>
         <h3>{event.title}</h3>
-        {event.price > 0 && <PaidRegistrationCountdown deadline={event.registration_ends_at} />}
+        <RegistrationCountdown deadline={event.registration_ends_at} compact />
         <div className="card-bottom">
           <strong className={event.price === 0 ? "free" : ""}>
             {event.price ? fa(event.price) : "رایگان"}

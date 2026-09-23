@@ -6,15 +6,8 @@ import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import { useEffect, useMemo, useState } from "react";
 import {
-  MapPin,
   Search,
   Ticket,
-  Compass,
-  Music2,
-  Palette,
-  BookOpen,
-  Dices,
-  Coffee,
   ChevronDown,
   LocateFixed,
   ArrowLeft,
@@ -42,7 +35,14 @@ import {
 } from "@/lib/types";
 const emptyEvents: EventItem[] = [];
 const emptySuggestions: EventSuggestion[] = [];
-const icons = [Compass, Music2, Palette, BookOpen, Dices, Coffee];
+const categoryIcons: Record<string, string> = {
+  all: "/icons/calander-time-date.png",
+  music: "/icons/music.png",
+  art: "/icons/painting.png",
+  books: "/icons/books-talks.png",
+  games: "/icons/games.png",
+  coffee: "/icons/coffe.png",
+};
 const neighborhoods = [
   { value: "all", label: "همهٔ تهران" },
   { value: "vanak", label: "ونک", lat: 35.757, lng: 51.409 },
@@ -173,7 +173,7 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
   return (
     <main className="discover container">
       {view !== "home" && <AppLink href="/" className="back-link">بازگشت به کشف ایونت‌ها</AppLink>}
-      <div className="intro">
+      <div className={`intro${view === "home" ? " intro-home" : ""}`}>
         <div>
           {view === "home" ? <>
           <div className="eyebrow">
@@ -193,7 +193,7 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
           className="location-button"
           onClick={() => setLocationOpen(true)}
         >
-          <MapPin size={19} />
+          <img className="location-art" src="/icons/map.png" alt="" width={28} height={28} draggable={false} />
           <span>{city === "nearby" ? "اطراف شما" : city}</span>
           <ChevronDown size={15} />
         </button>
@@ -226,30 +226,28 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
         )}
         <span className="search-divider" />
         <span className="search-city">
-          <MapPin size={18} /> {point?.label ?? `کافه‌های ${city}`}
+          <img className="location-art" src="/icons/map.png" alt="" width={24} height={24} draggable={false} />
+          {point?.label ?? `کافه‌های ${city}`}
         </span>
         <button className="button">
           جستجو <ArrowLeft size={17} />
         </button>
       </form>
       <div className="category-row">
-        {categories.map((c, i) => {
-          const Icon = icons[i];
-          return (
-            <button
-              key={c.id}
-              type="button"
-              aria-pressed={category === c.id}
-              className={`category ${category === c.id ? "selected" : ""}`}
-              onClick={() => updateFilters({ category: c.id })}
-            >
-              <span className="category-icon" aria-hidden="true">
-                <Icon />
-              </span>
-              <span className="category-label">{c.label}</span>
-            </button>
-          );
-        })}
+        {categories.map((option) => (
+          <button
+            key={option.id}
+            type="button"
+            aria-pressed={category === option.id}
+            className={`category ${category === option.id ? "selected" : ""}`}
+            onClick={() => updateFilters({ category: option.id })}
+          >
+            <span className="category-icon" aria-hidden="true">
+              <img src={categoryIcons[option.id]} alt="" width={64} height={64} draggable={false} />
+            </span>
+            <span className="category-label">{option.label}</span>
+          </button>
+        ))}
       </div>
       <div className="section-heading" id="results">
         <div>
@@ -362,7 +360,7 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
       >
         <DialogContent className="app-dialog" dir="rtl" showCloseButton={false}>
           <div className="dialog-symbol">
-            <MapPin size={29} />
+            <img className="location-art" src="/icons/map.png" alt="" width={64} height={64} draggable={false} />
           </div>
           <DialogTitle>قرارهای نزدیکت را پیدا کنیم؟</DialogTitle>
           <DialogDescription>

@@ -24,12 +24,11 @@ import {
 import { useAuth } from "./app-shell";
 import { MAX_ORDER_TOMAN } from "@/lib/payment-limits";
 import { api } from "@/lib/client";
-import { googleMapsUrl } from "@/lib/google-maps";
-import { parseLocationUrl } from "@/lib/location-url";
+import { eventLocationUrl } from "@/lib/location-url";
 import { Blank, ErrorBox, Loading } from "./shared";
 import { LoadingPage } from "./loading";
 import { EventGallery } from "./event-gallery";
-import { DetailCountdown } from "./detail-countdown";
+import { RegistrationCountdown } from "./registration-countdown";
 import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import { registrationState, REGISTRATION_CLOSED } from "@/lib/registration";
 import { fa, date, clock, categories, type EventDetailData } from "@/lib/types";
@@ -130,13 +129,7 @@ function EventDetailContent({ id }: { id: string }) {
       </main>
     );
   if (!event) return <Blank title="ایونت پیدا نشد" />;
-  const mapUrl = parseLocationUrl(event.maps_url)?.url || (
-    event.lat !== null && event.lng !== null &&
-    Number.isFinite(event.lat) && Number.isFinite(event.lng) &&
-    Math.abs(event.lat) <= 90 && Math.abs(event.lng) <= 180
-      ? googleMapsUrl(event.lat, event.lng)
-      : null
-  );
+  const mapUrl = eventLocationUrl(event);
   const category = categories.find((item) => item.id === event.category)?.label;
   return (
     <main className="container subpage">
@@ -159,7 +152,7 @@ function EventDetailContent({ id }: { id: string }) {
               {event.venue} · {event.city}
             </div>
             <h1>{event.title}</h1>
-            {event.price > 0 && <DetailCountdown key={`countdown-${event.id}`} deadline={event.registration_ends_at} />}
+            <RegistrationCountdown key={`countdown-${event.id}`} deadline={event.registration_ends_at} />
             <div className="detail-facts">
               <span>
                 <CalendarDays />
@@ -215,11 +208,13 @@ function EventDetailContent({ id }: { id: string }) {
               <Clock3 size={18} />
               ساعت {clock(event.starts_at)}
             </p>
-            <p>
+            <p className={`booking-capacity${event.remaining === 0 ? " sold-out" : ""}`}>
               <Users size={18} />
               {event.remaining === null
                 ? "بدون محدودیت ظرفیت"
-                : `${fa(event.remaining)} یاقی مانده`}
+                : event.remaining === 0
+                  ? "تکمیل ظرفیت"
+                  : `${fa(event.remaining)} نفر باقی مانده`}
             </p>
           </div>
           {closed ? (

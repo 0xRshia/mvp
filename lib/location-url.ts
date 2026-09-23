@@ -1,4 +1,4 @@
-import { parseGoogleMapsUrl } from "./google-maps";
+import { googleMapsUrl, parseGoogleMapsUrl } from "./google-maps";
 
 export const LOCATION_URL_ERROR = "پیوند کامل و معتبر محل برگزاری را با http:// یا https:// وارد کنید.";
 
@@ -7,6 +7,14 @@ export type LocationLink = {
   lat: number | null;
   lng: number | null;
 };
+
+export function eventLocationUrl(event: { maps_url: string | null; lat: number | null; lng: number | null }): string | null {
+  const stored = parseLocationUrl(event.maps_url);
+  if (stored) return stored.url;
+  const { lat, lng } = event;
+  return lat !== null && lng !== null && Number.isFinite(lat) && Number.isFinite(lng) &&
+    Math.abs(lat) <= 90 && Math.abs(lng) <= 180 ? googleMapsUrl(lat, lng) : null;
+}
 
 /** Validate a destination without fetching it or inferring unknown coordinates. */
 export function parseLocationUrl(value: unknown): LocationLink | null {

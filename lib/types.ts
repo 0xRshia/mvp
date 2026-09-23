@@ -52,6 +52,9 @@ export type Reservation = {
   payment_state: string;
   title: string;
   venue: string;
+  maps_url: string | null;
+  lat: number | null;
+  lng: number | null;
   image: string | null;
   starts_at: number;
   ends_at: number;

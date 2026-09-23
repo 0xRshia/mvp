@@ -133,14 +133,14 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
                   />
                 </label>
                 <label>
-                  نام شما <span className="muted">(اختیاری)</span>
+                  نام شما <span className="muted"></span>
                   <input
                     aria-label="نام شما"
                     autoComplete="given-name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     maxLength={80}
-                    placeholder="اختیاری"
+                    placeholder=""
                   />
                 </label>
               </>

@@ -583,6 +583,13 @@ try {
   const guestRows = (await call("/api/reservations", undefined, guest.token))
     .data.reservations;
   check(
+    guestRows.length > 0 && guestRows.every((reservation) => {
+      const location = db.prepare("SELECT maps_url,lat,lng FROM events WHERE id=?").get(reservation.event_id);
+      return ["maps_url", "lat", "lng"].every(key => reservation[key] === location[key]);
+    }),
+    "Reservation history returns the event's stored venue link and nullable coordinates",
+  );
+  check(
     guestRows.every(
       (r) =>
         db.prepare("SELECT user_id FROM reservations WHERE id=?").get(r.id)

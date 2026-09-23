@@ -30,6 +30,9 @@ import { Blank, ErrorBox, Loading } from "@/components/event/shared";
 import { api } from "@/lib/client";
 import { date, clock, fa, type Reservation } from "@/lib/types";
 import { TicketDownload } from "@/components/event/ticket-download";
+import { eventLocationUrl } from "@/lib/location-url";
+import { groupReservations } from "@/lib/reservation-history";
+import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import styles from "@/components/event/ticket-download.module.css";
 import mediaStyles from "@/components/event/event-media.module.css";
 export default function Reservations() {
@@ -49,6 +52,7 @@ function ReservationsContent() {
     [cancel, setCancel] = useState<string | null>(null),
     [busy, setBusy] = useState("");
   const [busyAction, setBusyAction] = useState("");
+  const currentTime = useDeadlineClock(undefined);
   async function load() {
     setLoading(true);
     setError("");
@@ -93,14 +97,9 @@ function ReservationsContent() {
       setCancel(null);
     }
   }
-  const now = Date.now();
-  const active = rows.filter(
-    (r) =>
-      (r.status === "confirmed" && r.ends_at > now) ||
-      (r.status === "hold" && (r.expires_at ?? 0) > now) ||
-      r.status === "paid_unfulfilled",
-  );
-  const history = rows.filter((r) => !active.includes(r));
+  if (currentTime === null) return <main className="container subpage"><Loading variant="reservations" /></main>;
+  const now = currentTime;
+  const { past, upcoming, cancelled } = groupReservations(rows, now);
   const purchased = rows.find((r) => r.id === purchasedId && r.status === "confirmed");
   function status(r: Reservation) {
     if (r.status === "confirmed")
@@ -116,7 +115,9 @@ function ReservationsContent() {
   function list(items: Reservation[]) {
     return items.length ? (
       <div className="reservation-list">
-        {items.map((r) => (
+        {items.map((r) => {
+          const locationUrl = eventLocationUrl(r);
+          return (
           <article className={`reservation-card${r.image ? "" : ` ${mediaStyles.reservationWithoutImage}`}`} key={r.id}>
             {r.image && <img src={r.image} alt={`تصویر ${r.title}`} />}
             <div className="reservation-info">
@@ -162,7 +163,13 @@ function ReservationsContent() {
             </div>
             <div className="reservation-actions">
               {r.status === "confirmed" && (
-                <TicketDownload reservationId={r.id} quantity={r.quantity} />
+                <TicketDownload reservationId={r.id} quantity={r.quantity} fullWidth />
+              )}
+              {locationUrl && (
+                <a className="button outline reservation-location" href={locationUrl} target="_blank" rel="noopener noreferrer">
+                  <MapPin size={17} aria-hidden="true" />
+                  مشاهده آدرس
+                </a>
               )}
               {r.total === 0 &&
                 r.status === "confirmed" &&
@@ -206,7 +213,8 @@ function ReservationsContent() {
               )}
             </div>
           </article>
-        ))}
+          );
+        })}
       </div>
     ) : (
       <Blank
@@ -276,18 +284,22 @@ function ReservationsContent() {
       ) : error ? (
         <ErrorBox message={error} retry={load} />
       ) : (
-        <Tabs defaultValue={purchased && history.includes(purchased) ? "history" : "active"} dir="rtl">
+        <Tabs defaultValue={purchased && past.includes(purchased) ? "past" : "upcoming"} dir="rtl">
           <TabsList className="page-tabs">
-            <TabsTrigger value="active">
-              پیش رو و در حال پیگیری ({fa(active.length)})
+            <TabsTrigger value="past">
+              رفته ({fa(past.length)})
             </TabsTrigger>
-            <TabsTrigger value="history">
-              گذشته و لغوشده ({fa(history.length)})
+            <TabsTrigger value="upcoming">
+              پیش رو ({fa(upcoming.length)})
+            </TabsTrigger>
+            <TabsTrigger value="cancelled">
+              لغو شده ({fa(cancelled.length)})
             </TabsTrigger>
           </TabsList>
           <TabsPanels>
-          <TabsContent value="active">{list(active)}</TabsContent>
-          <TabsContent value="history">{list(history)}</TabsContent>
+          <TabsContent value="past">{list(past)}</TabsContent>
+          <TabsContent value="upcoming">{list(upcoming)}</TabsContent>
+          <TabsContent value="cancelled">{list(cancelled)}</TabsContent>
         </TabsPanels>
         </Tabs>
       )}

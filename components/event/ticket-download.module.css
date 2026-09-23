@@ -6,6 +6,16 @@
   max-width: 100%;
 }
 
+.fullWidth {
+  width: 100%;
+  align-items: stretch;
+}
+
+.fullWidth > button {
+  width: 100%;
+  background: var(--accent);
+}
+
 .hint,
 .ready {
   color: var(--text-secondary);

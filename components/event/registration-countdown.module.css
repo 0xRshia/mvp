@@ -1,4 +1,7 @@
 .countdown {
+  --digit-size: 28px;
+  --box-padding: 6px;
+  --unit-gap: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -6,11 +9,30 @@
   max-width: 100%;
   margin-top: 16px;
   padding: 12px 14px;
-  border: 2px solid var(--primary);
+  border: 1px solid var(--primary);
   border-radius: 8px;
-  background: var(--card);
+  background: var(--accent);
   color: var(--card-foreground);
   font-weight: 500;
+}
+
+.compact {
+  --digit-size: 20px;
+  --box-padding: 4px;
+  --unit-gap: 14px;
+  align-self: flex-start;
+  margin: 0 0 18px;
+  padding: 8px;
+}
+
+.compact .label {
+  font-size: 12px;
+  gap: 5px;
+}
+
+.compact .label svg {
+  width: 15px;
+  height: 15px;
 }
 
 .label {
@@ -30,7 +52,7 @@
 .units {
   display: flex;
   justify-content: center;
-  gap: 24px;
+  gap: var(--unit-gap);
   isolation: isolate;
   font-variant-numeric: tabular-nums;
 }
@@ -46,17 +68,24 @@
 .unit:not(:last-child)::after {
   content: ":";
   position: absolute;
-  left: calc(100% + 8px);
+  left: calc(100% + (var(--unit-gap) - 8px) / 2);
   top: 0;
   width: 8px;
   text-align: center;
-  font-size: 28px;
+  display: grid;
+  place-items: center;
+  height: calc(var(--digit-size) * 1.4 + var(--box-padding) * 2 + 2px);
+  font-size: var(--digit-size);
   line-height: 1.4;
 }
 
 .digits {
   display: flex;
-  font-size: 28px;
+  padding: var(--box-padding);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  font-size: var(--digit-size);
   font-weight: 700;
   line-height: 1.4;
 }

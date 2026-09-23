@@ -12,7 +12,7 @@ function compiledUrl(file, replacements = []) {
   return `data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`;
 }
 const { parseGoogleMapsUrl, googleMapsUrl } = await import(compiledUrl("lib/google-maps.ts"));
-const { parseLocationUrl } = await import(compiledUrl("lib/location-url.ts", [
+const { parseLocationUrl, eventLocationUrl } = await import(compiledUrl("lib/location-url.ts", [
   ['"./google-maps"', JSON.stringify(compiledUrl("lib/google-maps.ts"))],
 ]));
 const { parsePersianDate, persianInput } = await import(compiledUrl("lib/persian-date.ts", [
@@ -76,6 +76,15 @@ for (const value of [
   "https://example.com/venue\u0085", "https://example.com/venue\u009f", " " + longestUrl,
   longestUrl + "a", "https://example.com/" + "م".repeat(500),
 ]) assert.equal(parseLocationUrl(value), null, `Reject unsafe, incomplete, or oversized location link: ${String(value)}`);
+
+assert.equal(eventLocationUrl({ maps_url: "https://neshan.org/maps/places/venue", lat: 35, lng: 51 }),
+  "https://neshan.org/maps/places/venue", "Stored venue link takes precedence over coordinates");
+assert.equal(eventLocationUrl({ maps_url: null, lat: 35.75, lng: 51.4 }), googleMapsUrl(35.75, 51.4));
+assert.equal(eventLocationUrl({ maps_url: "javascript:alert(1)", lat: 0, lng: 0 }), googleMapsUrl(0, 0));
+for (const [lat, lng] of [[null, null], [35, null], [null, 51], [NaN, 51], [35, Infinity], [91, 51], [35, -181]]) {
+  assert.equal(eventLocationUrl({ maps_url: null, lat, lng }), null, "Missing or invalid coordinates do not invent a destination");
+}
+assert.equal(eventLocationUrl({ maps_url: "javascript:alert(1)", lat: null, lng: null }), null);
 
 for (const input of ["1405/01/01", "1405/06/31", "1405/07/30", "1405/12/29", "1403/12/30"]) {
   const instant = parsePersianDate(input, "00:05");
