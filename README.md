@@ -155,6 +155,65 @@ Photo credits are available at `/credits`. Iran Sans X webfonts supplied by the 
 
 The logical database binding and reserved Site identity are in `.openai/hosting.json`; no provider secrets belong there. Sites publication requires a source push, saved version, and deployment. The repository owner's instructions require explicit approval before any remote push. On another Workers host, use the generated build and D1 migrations with the equivalent `DB` binding and environment variables. The separate VPS deployment below transfers the local source over SSH and requires no Git push.
 
+## Docker (port 8082)
+
+With Docker Engine and the Compose plugin available, run:
+
+```sh
+docker compose up --build --wait
+```
+
+Open `http://localhost:8082`. The image builds the existing Node standalone target,
+runs as the unprivileged `node` user, and applies pending SQLite migrations before
+starting the server on `0.0.0.0:8082`. A migration failure prevents startup.
+`--wait` waits for the container to become healthy. `GET /api/health` checks that
+the server can read the events table without authentication or sample-data
+initialization. It returns uncached HTTP 200 when ready and HTTP 503 on database
+failure, without exposing database details. Docker checks it every 30 seconds,
+allows five seconds per check and a 30-second startup period, and marks the
+container unhealthy after three consecutive failures. An unhealthy status does
+not itself restart the container; the restart policy applies when the process exits.
+
+Compose reads provider credentials and feature flags from your shell or a local
+`.env` file (see `.env.example` for the available settings). Environment files are
+excluded from the image. Set a random `OTP_SECRET` of at least 32 characters and
+the real provider credentials to enable phone login and paid checkout. Without
+configuration, the app starts with an empty catalog; sample events, temporary
+login, and the payment bypass are disabled. An existing `.env` can explicitly
+enable these flags. `APP_ORIGIN` defaults to `http://localhost:8082`; for a public
+deployment, set it to the application's HTTPS origin. Behind a trusted reverse
+proxy, set `VINEXT_TRUSTED_HOSTS` to the public host and configure the proxy to
+overwrite forwarded headers, as in the existing Nginx deployment template.
+
+The `mvp-data` named volume stores both `/data/mvp.sqlite` and `/data/uploads`.
+Compose fixes these paths independently of any VPS paths in `.env`. Data survives
+container rebuilds and `docker compose down`; `docker compose down --volumes`
+deletes it. Back up the database and uploaded photos together before upgrades.
+Use one app container with this SQLite volume. Existing untracked databases need
+their migration history established before using the startup migrator.
+
+```sh
+docker compose ps
+docker compose logs -f app
+docker compose up --build --wait
+docker compose down
+```
+
+To run the typecheck, SQLite, media, and Node integration suites inside the same
+pinned Node image before deployment:
+
+```sh
+docker build --target verify --progress=plain .
+```
+
+The verification stage uses isolated test data, sends no external SMS or payment,
+and is excluded from the final runtime image. Docker may reuse a successful test
+layer when its inputs have not changed. The final image still needs a Compose
+startup check: confirm healthy status, inspect `http://localhost:8082`, and verify
+that database records and uploaded photos survive container recreation. Docker
+Engine must be running and accessible; on WSL, enable Docker Desktop integration
+for the distribution before running these commands.
+
 ## Node.js VPS deployment
 
 The VPS target uses the existing Vinext standalone server and Node's SQLite driver. `npm run build:node` selects `db/node.ts` through `vite.config.ts`, while `npm run build` retains the Workers target. Both targets use the same application handlers and SQL migrations. Build outputs share `dist`, so rebuild for the intended target before starting it.

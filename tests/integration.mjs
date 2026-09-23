@@ -241,6 +241,22 @@ try {
     guest = user(1),
     other = user(2);
   await startPreview();
+  const health = await call("/api/health");
+  check(health.status === 200 && health.data.status === "ok", "Anonymous health check reads the migrated database");
+  check(health.headers.get("cache-control") === "no-store", "Health responses cannot be cached");
+  if (nodeRuntime) {
+    check(db.prepare("SELECT COUNT(*) n FROM events").get().n === 0, "Health checks do not seed sample events");
+    db.exec("ALTER TABLE events RENAME TO health_check_events");
+    try {
+      const unavailable = await call("/api/health");
+      check(unavailable.status === 503, "Health check fails when the application table is unavailable");
+      check(JSON.stringify(unavailable.data) === JSON.stringify({ status: "unavailable" }), "Unhealthy response exposes no database details");
+      check(unavailable.headers.get("cache-control") === "no-store", "Unhealthy responses cannot be cached");
+    } finally {
+      db.exec("ALTER TABLE health_check_events RENAME TO events");
+    }
+    check((await call("/api/health")).status === 200, "Health check recovers when database access returns");
+  }
   if (process.argv.includes("--recommendations")) {
     await call("/api/events");
     await testRecommendations({ db, call, event, user, check, now, root });

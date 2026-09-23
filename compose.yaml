@@ -1,0 +1,26 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8082:8082"
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8082"
+      DATABASE_PATH: /data/mvp.sqlite
+      MEDIA_PATH: /data/uploads
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:8082}
+      OTP_SECRET: ${OTP_SECRET:-}
+      KAVENEGAR_API_KEY: ${KAVENEGAR_API_KEY:-}
+      KAVENEGAR_TEMPLATE: ${KAVENEGAR_TEMPLATE:-}
+      ZARINPAL_MERCHANT_ID: ${ZARINPAL_MERCHANT_ID:-}
+      HOST_PHONES: ${HOST_PHONES:-}
+      SEED_SAMPLE_EVENTS: ${SEED_SAMPLE_EVENTS:-false}
+      TEMP_LOGIN_ENABLED: ${TEMP_LOGIN_ENABLED:-false}
+      SKIP_PAY_DEV: ${SKIP_PAY_DEV:-false}
+      VINEXT_TRUSTED_HOSTS: ${VINEXT_TRUSTED_HOSTS:-}
+    volumes:
+      - mvp-data:/data
+    restart: unless-stopped
+
+volumes:
+  mvp-data:
