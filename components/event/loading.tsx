@@ -180,8 +180,8 @@ function LoadingContent({ variant }: { variant: LoadingVariant }) {
 export function Loading({ variant = "catalog" }: { variant?: LoadingVariant }) {
   return (
     <>
-      <span className="sr-only" role="status">در حال دریافت اطلاعات…</span>
-      <div className={styles.loading} data-loading={variant} aria-busy="true">
+      <span data-motion-skip className="sr-only" role="status">در حال دریافت اطلاعات…</span>
+      <div data-motion-skip className={styles.loading} data-loading={variant} aria-busy="true">
         <div className={styles.content} aria-hidden="true">
           <LoadingContent variant={variant} />
         </div>
@@ -194,7 +194,7 @@ export function Loading({ variant = "catalog" }: { variant?: LoadingVariant }) {
 export function LoadingPage({ variant }: { variant: LoadingVariant }) {
   const catalog = variant === "catalog" || variant === "discovery";
   return (
-    <main className={variant === "scanner" ? "scanner-page" : `container ${catalog ? "discover" : "subpage"}`}>
+    <main data-motion-skip className={variant === "scanner" ? "scanner-page" : `container ${catalog ? "discover" : "subpage"}`}>
       {variant === "scanner" ? (
         <ScannerHeader />
       ) : variant !== "event" && variant !== "host-event" ? (

@@ -174,13 +174,13 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
     return () => controller.abort();
   }, [updateFilters]);
   return (
-    <main className="discover container">
+    <main data-motion-group className="discover container">
       {view !== "home" && <AppLink href="/" className="back-link">بازگشت به کشف ایونت‌ها</AppLink>}
       {view === "home" ? (
         <section className={styles.hero} aria-labelledby="home-title">
           <ConicSpin className={styles.glow} />
           <div className={styles.grid} aria-hidden="true" />
-          <div className={styles.heroContent}>
+          <div data-motion-group className={styles.heroContent}>
             <div className={`eyebrow ${styles.eyebrow}`}><span />بیرون از روزمرگی</div>
             <h1 id="home-title">یک قرار خوب، <span className={styles.typing}>همین نزدیکی.</span></h1>
             <p>موسیقی، تجربه‌های تازه و آدم‌هایی که هنوز نمی‌شناسی.<br />قرار بعدی‌ات را در هم‌قدم پیدا کن.</p>
@@ -230,7 +230,7 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
           جستجو <ArrowLeft size={17} />
         </button>
       </form>
-      <div className={`category-row ${styles.categories}`} aria-label="دسته‌بندی ایونت‌ها">
+      <div data-motion-group className={`category-row ${styles.categories}`} aria-label="دسته‌بندی ایونت‌ها">
         {categories.map((option) => (
           <button
             key={option.id}
@@ -322,7 +322,7 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
           </button>
         </Blank>
       ) : view === "home" ? (
-        <div className="event-groups">
+        <div data-motion-group className="event-groups">
           {groupDefinitions.filter((group) => groups[group.view].length > 0).map((group, index) => (
             <EventGroup key={group.view} heading={group.heading} items={groups[group.view]}
               href={group.href} variant={group.view === "suggested" ? "primary" : "neutral"}
@@ -330,7 +330,7 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
           ))}
         </div>
       ) : (
-        <div className="event-grid">
+        <div data-motion-group className="event-grid">
           {listing.map(({ event }, i) => (
             <EventCard
               key={event.id}

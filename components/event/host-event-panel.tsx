@@ -229,7 +229,7 @@ export default function HostEventPanel({ id }: { id: string }) {
 
   if (authLoading)
     return (
-      <main className={`container subpage ${layouts.page} ${layouts.workspace}`}>
+      <main data-motion-group className={`container subpage ${layouts.page} ${layouts.workspace}`}>
         {backLink}
         <Loading variant="host-event" />
       </main>
@@ -237,7 +237,7 @@ export default function HostEventPanel({ id }: { id: string }) {
 
   if (!user?.isHost)
     return (
-      <main className={`container subpage ${layouts.page} ${layouts.workspace}`}>
+      <main data-motion-group className={`container subpage ${layouts.page} ${layouts.workspace}`}>
         {backLink}
         <Blank
           title={
@@ -254,14 +254,14 @@ export default function HostEventPanel({ id }: { id: string }) {
 
   if (!data)
     return (
-      <main className={`container subpage ${layouts.page} ${layouts.workspace}`}>
+      <main data-motion-group className={`container subpage ${layouts.page} ${layouts.workspace}`}>
         {backLink}
         {error ? <ErrorBox message={error} retry={reload} /> : <Loading variant="host-event" />}
       </main>
     );
 
   return (
-    <main className={`container subpage host-event-panel ${layouts.page} ${layouts.workspace}`}>
+    <main data-motion-group className={`container subpage host-event-panel ${layouts.page} ${layouts.workspace}`}>
       {backLink}
       <div className={`page-heading host-heading ${layouts.pageHeading}`}>
         <div>
@@ -283,7 +283,7 @@ export default function HostEventPanel({ id }: { id: string }) {
         </AppLink>
       </div>
 
-      <div className="stats-grid">
+      <div data-motion-group className="stats-grid">
         {[
           {
             label: "بلیت‌های تأییدشده",
@@ -388,6 +388,7 @@ export default function HostEventPanel({ id }: { id: string }) {
       </section>
 
       <section
+        data-motion-group
         className="host-attendees-panel"
         aria-labelledby="host-attendees-heading"
       >

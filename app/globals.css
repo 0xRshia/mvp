@@ -58,11 +58,11 @@
   --palette-orange: #f49851;
   --palette-cream: #fef3ea;
   --control-height: 48px;
-  --motion-press: 150ms;
-  --motion-fast: 200ms;
-  --motion-panel: 240ms;
-  --motion-enter: 250ms;
-  --motion-stagger: 50ms;
+  --motion-press: 600ms;
+  --motion-fast: 600ms;
+  --motion-panel: 800ms;
+  --motion-enter: 800ms;
+  --motion-stagger: 550ms;
   --motion-ease: cubic-bezier(.2, .8, .2, 1);
   --text-secondary: color-mix(in srgb, var(--palette-ink) 65%, var(--palette-gray));
   --text-muted: color-mix(in srgb, var(--palette-ink) 40%, var(--palette-gray));
@@ -216,8 +216,8 @@ a {
 }
 button {
   transition:
-    background 0.2s,
-    transform 0.2s;
+    background var(--motion-fast),
+    transform var(--motion-fast);
 }
 button:disabled {
   cursor: not-allowed;
@@ -449,7 +449,7 @@ h1 span {
   background: var(--card);
   border-radius: 18px;
   box-shadow: 0 12px 32px var(--shadow-color);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
   height: 72px;
 }
 .search-bar:focus-within {
@@ -579,8 +579,8 @@ h1 span {
   border-radius: 16px;
   overflow: hidden;
   transition:
-    transform 0.25s,
-    box-shadow 0.25s;
+    transform var(--motion-fast),
+    box-shadow var(--motion-fast);
   background: var(--card);
   min-width: 0;
   display: flex;
@@ -602,7 +602,7 @@ h1 span {
   height: 100%;
   width: 100%;
   object-fit: cover;
-  transition: transform 0.4s;
+  transition: transform var(--motion-fast);
 }
 .event-card:hover .event-image > img {
   transform: scale(1.04);
@@ -2259,14 +2259,14 @@ h1 span {
 }
 
 /* Shared motion changes paint and composition, never control dimensions. */
-:is(button, a.button, .event-card, .back-link, .text-button, .site-header nav a, .mobile-nav a,
+:is(button, a[href], .event-card, .back-link, .text-button, .site-header nav a, .mobile-nav a,
   [role="button"], [role="menuitem"], [role="menuitemradio"], [role="option"]) {
   transition: background-color var(--motion-fast), border-color var(--motion-fast),
     color var(--motion-fast), box-shadow var(--motion-fast),
     opacity var(--motion-fast), transform var(--motion-fast) var(--motion-ease),
     scale var(--motion-press) var(--motion-ease);
 }
-:is(button, a.button, .event-card, .back-link, .text-button, .site-header nav a, .mobile-nav a,
+:is(button, a[href], .event-card, .back-link, .text-button, .site-header nav a, .mobile-nav a,
   [role="button"], [role="menuitem"], [role="menuitemradio"], [role="option"]):not(.category):not(:disabled):not([aria-disabled="true"]):active {
   scale: .98;
 }
@@ -2289,22 +2289,11 @@ button[aria-busy="true"] { cursor: progress; }
 .animated-region { min-width: 0; }
 .animated-region[data-resizing] { overflow: clip; }
 .animated-region-content { display: flow-root; }
-.catalog-results-content { display: flow-root; }
-/* The result snapshot owns its fade; child entrances would restart after filtering. */
-.catalog-results :is(.event-grid > *, .motion-stagger > *, .blank, .error-box) {
-  animation: none;
-}
 .auth-fields { display: grid; gap: 20px; }
 .dialog-region { gap: inherit; }
 .dialog-body { display: grid; gap: inherit; }
 [hidden] { display: none !important; }
-.route-content { view-transition-name: route-content; min-height: 45vh; }
-/* Keep persistent navigation live while the route snapshot crossfades. */
-:root { view-transition-name: none; }
-.footer { view-transition-name: app-footer; }
-::view-transition-group(*) { animation-duration: var(--motion-panel); animation-timing-function: var(--motion-ease); }
-::view-transition-old(route-content) { animation: hg-route-out 160ms ease-out both; }
-::view-transition-new(route-content) { animation: hg-enter 220ms var(--motion-ease) both; }
+.route-content { min-height: 45vh; }
 
 .selection-track { isolation: isolate; }
 .selection-track:not(.mobile-nav) { position: relative; }
@@ -2322,8 +2311,8 @@ button[aria-busy="true"] { cursor: progress; }
   box-shadow: 0 1px 4px var(--shadow-hover);
   pointer-events: none;
   z-index: 0;
-  transition: transform var(--motion-panel) var(--motion-ease),
-    width var(--motion-panel) var(--motion-ease), height var(--motion-panel) var(--motion-ease),
+  transition: transform var(--motion-fast) var(--motion-ease),
+    width var(--motion-fast) var(--motion-ease), height var(--motion-fast) var(--motion-ease),
     opacity var(--motion-fast), background-color var(--motion-fast);
 }
 .site-header nav > .selection-indicator {
@@ -2338,8 +2327,8 @@ button[aria-busy="true"] { cursor: progress; }
 .mobile-nav > .selection-indicator { background: var(--accent); border-radius: 0; box-shadow: none; }
 .mobile-nav a.active { background: transparent; }
 .category-row .category {
-  transition: background-color 180ms var(--motion-ease), color 180ms var(--motion-ease),
-    border-color 180ms var(--motion-ease), box-shadow 180ms var(--motion-ease);
+  transition: background-color var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease);
 }
 .category:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
 [data-slot="tabs-list"][data-variant="line"] > .selection-indicator {
@@ -2354,24 +2343,24 @@ button[aria-busy="true"] { cursor: progress; }
   from { opacity: 0; translate: 0 8px; }
   to { opacity: 1; translate: 0 0; }
 }
-@keyframes hg-route-out { to { opacity: 0; translate: 0 -4px; } }
-:where(.event-grid, .reservation-list, .stats-grid, .charts-grid, .motion-stagger) > :not(.selection-indicator) {
-  --motion-index: 0;
-  animation: hg-enter var(--motion-enter) var(--motion-ease) both;
-  animation-delay: min(calc(var(--motion-index) * var(--motion-stagger)), 200ms);
+/* Shared primitive timing also covers controls rendered through portals. */
+:is(input, textarea, select, [data-slot="slider-thumb"], [data-slot="input-otp-slot"]) {
+  transition: border-color var(--motion-fast) var(--motion-ease),
+    background-color var(--motion-fast) var(--motion-ease),
+    color var(--motion-fast) var(--motion-ease),
+    box-shadow var(--motion-fast) var(--motion-ease);
 }
-:where(.event-grid, .reservation-list, .stats-grid, .charts-grid, .motion-stagger) > :nth-child(2) { --motion-index: 1; }
-:where(.event-grid, .reservation-list, .stats-grid, .charts-grid, .motion-stagger) > :nth-child(3) { --motion-index: 2; }
-:where(.event-grid, .reservation-list, .stats-grid, .charts-grid, .motion-stagger) > :nth-child(4) { --motion-index: 3; }
-:where(.event-grid, .reservation-list, .stats-grid, .charts-grid, .motion-stagger) > :nth-child(5) { --motion-index: 4; }
-:where(.event-grid, .reservation-list, .stats-grid, .charts-grid, .motion-stagger) > :nth-child(6) { --motion-index: 5; }
-:where(.event-grid, .reservation-list, .stats-grid, .charts-grid, .motion-stagger) > :nth-child(n+7) { --motion-index: 6; }
-:where(.auth-card, .page-heading, .intro, .search-bar, .category-row, .detail-copy,
-  .booking-panel, .scanner-heading, .scanner-console, .success-box, .notice, .error-box, .blank) {
-  animation: hg-enter var(--motion-enter) var(--motion-ease) both;
+[data-slot="switch-thumb"] {
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--motion-ease);
 }
-.search-bar { animation-delay: var(--motion-stagger); }
-.category-row { animation-delay: calc(2 * var(--motion-stagger)); }
+:is([data-slot="dialog-content"], [data-slot="dialog-overlay"],
+  [data-slot="alert-dialog-content"], [data-slot="alert-dialog-overlay"],
+  [data-slot="select-content"]) {
+  --tw-animation-duration: var(--motion-panel);
+  animation-duration: var(--motion-panel);
+  animation-timing-function: var(--motion-ease);
+}
 :where(.reservation-actions, .form-actions, .scanner-controls, .pagination-controls) .button { min-inline-size: 105px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -2379,7 +2368,6 @@ button[aria-busy="true"] { cursor: progress; }
     transition: none !important;
     scroll-behavior: auto !important;
   }
-  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
 @media print {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -2417,5 +2405,5 @@ button[aria-busy="true"] { cursor: progress; }
 }
 @media (prefers-reduced-motion: reduce) {
   .category:hover .category-icon img, .category:active .category-icon img { transform: none; }
-  :is(button, a.button, .event-card, [role="button"]):active { scale: 1; }
+  :is(button, a[href], .event-card, [role="button"], [role="menuitem"], [role="menuitemradio"], [role="option"]):active { scale: 1; }
 }

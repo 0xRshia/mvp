@@ -257,7 +257,7 @@ export default function ScannerPage() {
   }
 
   return (
-    <main className="scanner-page">
+    <main data-motion-group className="scanner-page">
       <ScannerHeader />
       {loading ? (
         <Loading variant="scanner" />
@@ -273,7 +273,7 @@ export default function ScannerPage() {
             <h1>{event.title}</h1>
             <div><span><CalendarDays size={16} />{date(event.starts_at)} · {clock(event.starts_at)}</span><span><MapPin size={16} />{event.venue}</span></div>
           </section>
-          <div className="scanner-layout">
+          <div data-motion-group className="scanner-layout">
             <section className="scanner-console" aria-label="اسکن بلیت">
               <div className={`scanner-camera ${camera === "on" ? "is-active" : ""}`}>
                 <video ref={videoRef} muted playsInline aria-label="تصویر دوربین اسکنر" />

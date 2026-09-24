@@ -15,7 +15,7 @@ function Tabs({ className, orientation = "horizontal", value, defaultValue,
   const active = value ?? uncontrolledValue;
   return (
     <ActiveTabContext.Provider value={active}>
-      <TabsPrimitive.Root data-slot="tabs" data-orientation={orientation}
+      <TabsPrimitive.Root data-motion-group data-slot="tabs" data-orientation={orientation}
         orientation={orientation} value={active}
         onValueChange={(next) => {
           if (value === undefined) setUncontrolledValue(next);
@@ -63,7 +63,7 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
 function TabsContent({ className, value, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) {
   const active = React.useContext(ActiveTabContext) === value;
   return (
-    <TabsPrimitive.Content forceMount value={value} hidden={!active} inert={!active}
+    <TabsPrimitive.Content data-motion-group forceMount value={value} hidden={!active} inert={!active}
       tabIndex={active ? 0 : -1} data-slot="tabs-content"
       className={cn("flex-1 outline-none", className)} {...props} />
   );

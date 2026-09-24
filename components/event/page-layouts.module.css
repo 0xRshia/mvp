@@ -73,7 +73,7 @@
   block-size: 240px;
   background: url("/icons/calander-time-date.png") center / contain no-repeat;
   transform: rotate(-8deg);
-  transition: transform 240ms var(--motion-ease);
+  transition: transform var(--motion-fast) var(--motion-ease);
 }
 
 .welcomeArt span:last-child {
@@ -84,7 +84,7 @@
   block-size: 108px;
   background: url("/icons/coffe.png") center / contain no-repeat;
   transform: rotate(12deg);
-  transition: transform 240ms var(--motion-ease);
+  transition: transform var(--motion-fast) var(--motion-ease);
 }
 
 .welcomeNote { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--muted-foreground); }

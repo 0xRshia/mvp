@@ -28,6 +28,18 @@
   color: var(--image-foreground);
 }
 
+:global(.dark) .countdown:not(.compact) {
+  background: var(--card);
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+:global(.dark) .countdown:not(.compact) .digits {
+  background: var(--background);
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
 .compact:not(.closed) .label {
   position: absolute;
   inline-size: 1px;

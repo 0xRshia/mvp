@@ -4,7 +4,7 @@ import layouts from "@/components/event/page-layouts.module.css";
 
 export default function Credits() {
   return (
-    <main className={`container subpage ${layouts.page} ${layouts.credits}`}>
+    <main data-motion-group className={`container subpage ${layouts.page} ${layouts.credits}`}>
       <AppLink className="back-link" href="/"><ArrowRight size={17} />بازگشت به ایونت‌ها</AppLink>
       <header className={layouts.creditsIntro}>
         <span className="eyebrow">شفاف و روشن، قدم به قدم</span>

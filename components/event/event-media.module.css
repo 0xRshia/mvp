@@ -144,6 +144,7 @@
   height: 8px;
   border-radius: 50%;
   background: var(--text-muted);
+  transition: width var(--motion-fast) var(--motion-ease), background-color var(--motion-fast) var(--motion-ease);
 }
 
 .indicator[aria-current="true"] span {

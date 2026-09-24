@@ -22,7 +22,7 @@ export function EventCard({
   const startsAt = new Date(event.starts_at).toISOString();
 
   return (
-    <AppLink className={`event-card ${styles.card}`} href={`/events/${event.id}`}
+    <AppLink data-motion-item className={`event-card ${styles.card}`} href={`/events/${event.id}`}
       aria-label={`مشاهدهٔ ایونت ${event.title}`}>
       <div className={`${styles.surface}${image ? "" : ` ${styles.withoutImage}`}`}>
         {image && (

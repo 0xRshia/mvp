@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef, type ComponentProps } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "@/lib/utils";
+import { motionSettings } from "@/lib/motion";
 
 export function AnimatedRegion({
   children,
@@ -19,9 +20,7 @@ export function AnimatedRegion({
   const outerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const previousHeight = useRef<number | null>(null);
-  const previousKey = useRef(transitionKey);
   const heightAnimation = useRef<Animation | null>(null);
-  const entranceAnimation = useRef<Animation | null>(null);
   const reducedMotion = useReducedMotion();
 
   useLayoutEffect(() => {
@@ -40,9 +39,10 @@ export function AnimatedRegion({
         : lastHeight;
       heightAnimation.current?.cancel();
       if (reducedMotion) return;
+      const settings = motionSettings(outer);
       const animation = outer.animate(
         [{ height: `${startHeight}px` }, { height: `${nextHeight}px` }],
-        { duration: 220, easing: "cubic-bezier(.2,.8,.2,1)" },
+        { duration: settings.panel, easing: settings.easing },
       );
       heightAnimation.current = animation;
       outer.dataset.resizing = "true";
@@ -60,31 +60,17 @@ export function AnimatedRegion({
   }, [reducedMotion, animateHeight]);
 
   useLayoutEffect(() => {
-    if (previousKey.current === transitionKey) return;
-    previousKey.current = transitionKey;
-    entranceAnimation.current?.cancel();
-    if (!reducedMotion) {
-      entranceAnimation.current = innerRef.current?.animate(
-        [{ opacity: 0.35, translate: "0 6px" }, { opacity: 1, translate: "0 0" }],
-        { duration: 200, easing: "cubic-bezier(.2,.8,.2,1)" },
-      ) ?? null;
-    }
-  }, [transitionKey, reducedMotion]);
-
-  useLayoutEffect(() => {
     if (reducedMotion) {
       heightAnimation.current?.cancel();
-      entranceAnimation.current?.cancel();
     }
     return () => {
       heightAnimation.current?.cancel();
-      entranceAnimation.current?.cancel();
     };
   }, [reducedMotion]);
 
   return (
-    <div ref={outerRef} className={cn("animated-region", className)} {...props}>
-      <div ref={innerRef} className={cn("animated-region-content", contentClassName)}>
+    <div ref={outerRef} data-motion-key={transitionKey} className={cn("animated-region", className)} {...props}>
+      <div ref={innerRef} data-motion-group className={cn("animated-region-content", contentClassName)}>
         {children}
       </div>
     </div>

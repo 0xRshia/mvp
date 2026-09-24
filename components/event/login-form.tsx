@@ -80,12 +80,12 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
     }
   }
   return (
-    <main className={`auth-page container ${layouts.authPage}`}>
+    <main data-motion-group className={`auth-page container ${layouts.authPage}`}>
       <AppLink className="back-link" href="/">
         <ArrowRight size={17} />
         بازگشت به ایونت‌ها
       </AppLink>
-      <div className={layouts.authLayout}>
+      <div data-motion-group className={layouts.authLayout}>
         <aside className={layouts.authWelcome}>
           <span className="eyebrow">هم‌قدم، همراه تجربه‌های تازه</span>
           <h2>{host ? "قرارهای ماندگار، از شما شروع می‌شوند." : "برای یک قرار خوب، هم‌قدم پیدا کن."}</h2>
@@ -96,7 +96,7 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
           </div>
           <span className={layouts.welcomeNote}><ShieldCheck size={17} />یک حساب برای همهٔ قرارهایت</span>
         </aside>
-      <div className={`auth-card ${layouts.authCard}`}>
+      <div data-motion-group className={`auth-card ${layouts.authCard}`}>
         <div className="dialog-symbol">
           {host ? <ShieldCheck size={30} /> : <Smartphone size={30} />}
         </div>
@@ -112,7 +112,7 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
         </p>
         <AnimatedRegion transitionKey={user ? "signed-in" : challenge ? "code" : "phone"}>
         {user ? (
-          <div className="auth-form">
+          <div data-motion-group className="auth-form">
             <p>شما وارد حساب خود شده‌اید.</p>
             <AppLink href={host ? "/host" : "/reservations"} className="button full">
               {host ? "رفتن به پنل میزبان" : "دیدن بلیت‌های من"}
@@ -120,13 +120,14 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
           </div>
         ) : (
           <form
+            data-motion-group
             className="auth-form"
             onSubmit={(e) => {
               e.preventDefault();
               void (challenge ? verify() : request());
             }}
           >
-            <div className="auth-fields">
+            <div data-motion-group className="auth-fields">
             {!challenge ? (
               <>
                 <label>

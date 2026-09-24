@@ -39,7 +39,7 @@ export function EventGroup({
   return (
     <section className={`${styles.group} ${variant === "primary" ? styles.primary : ""}`}
       aria-labelledby={headingId} aria-roledescription="نمایش افقی ایونت‌ها" dir="rtl">
-      <div className={styles.heading}>
+      <div data-motion-item className={styles.heading}>
         <h2 id={headingId}>{heading}</h2>
         <div className={styles.controls}>
           <button type="button" className={styles.arrow} aria-label={`قبلی: ${heading}`}
@@ -73,7 +73,7 @@ export function EventGroup({
             </div>
           ))}
           <div className={styles.slide}>
-            <AppLink href={href} className={styles.showAll}>
+            <AppLink data-motion-item href={href} className={styles.showAll}>
               <ArrowLeft size={28} aria-hidden="true" />
               <strong>مشاهدهٔ همه</strong>
               <span>{heading}</span>

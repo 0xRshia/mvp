@@ -28,20 +28,11 @@
 .actions > * { min-inline-size: 168px; }
 .actions .explore { background: var(--primary); color: var(--primary-foreground); border-color: transparent; }
 .actions .explore:hover { background: var(--primary-hover); }
-.heroContent > :not(h1) { animation: enter var(--motion-enter) var(--motion-ease) both; }
-.heroContent > p { animation-delay: 100ms; }
-.heroContent > .actions { animation-delay: 150ms; }
 .search { max-inline-size: 880px; margin-inline: auto; margin-block-end: 28px; }
 .categories { margin-block-end: 44px; }
 .resultsHeading { scroll-margin-block-start: 24px; flex-wrap: wrap; gap: 20px; padding-block: 24px; }
 .resultsHeading:focus-visible { outline: 2px solid var(--ring); outline-offset: 6px; border-radius: 16px; }
-.categories > * { animation: enter var(--motion-enter) var(--motion-ease) both; }
-.categories > :nth-child(2) { animation-delay: 50ms; }
-.categories > :nth-child(3) { animation-delay: 100ms; }
-.categories > :nth-child(4) { animation-delay: 150ms; }
-.categories > :nth-child(n+5) { animation-delay: 200ms; }
 @keyframes reveal { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0); } }
-@keyframes enter { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
 @media (max-width: 600px) {
   .hero { padding-block: 48px 38px; }
   .hero h1 { font-size: clamp(29px, 8vw, 40px); }
@@ -54,5 +45,5 @@
   .resultsHeading { align-items: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .typing, .heroContent > :not(h1), .categories > * { animation: none; }
+  .typing { animation: none; }
 }

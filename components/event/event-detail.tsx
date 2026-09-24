@@ -119,13 +119,13 @@ function EventDetailContent({ id }: { id: string }) {
   }
   if (loading)
     return (
-      <main className={`container subpage ${layouts.page}`}>
+      <main data-motion-group className={`container subpage ${layouts.page}`}>
         <Loading variant="event" />
       </main>
     );
   if (error)
     return (
-      <main className={`container subpage ${layouts.page}`}>
+      <main data-motion-group className={`container subpage ${layouts.page}`}>
         <ErrorBox message={error} retry={load} />
       </main>
     );
@@ -133,13 +133,13 @@ function EventDetailContent({ id }: { id: string }) {
   const mapUrl = eventLocationUrl(event);
   const category = categories.find((item) => item.id === event.category)?.label;
   return (
-    <main className={`container subpage ${layouts.page} ${layouts.detailPage}`}>
+    <main data-motion-group className={`container subpage ${layouts.page} ${layouts.detailPage}`}>
       <AppLink className="back-link" href="/">
         <ArrowRight size={17} />
         همهٔ ایونت‌ها
       </AppLink>
       <header className={`${layouts.detailHero}${event.image ? "" : ` ${layouts.heroWithoutImage}`}`}>
-        <div className={layouts.detailHeroCopy}>
+        <div data-motion-group className={layouts.detailHeroCopy}>
           <span className={mediaStyles.category}>{category}</span>
           <div className={`eyebrow ${layouts.heroVenue}`}><MapPin size={18} aria-hidden="true" /><span>{event.venue} · {event.city}</span></div>
           <h1>{event.title}</h1>
@@ -149,11 +149,11 @@ function EventDetailContent({ id }: { id: string }) {
           </div>
           <RegistrationCountdown key={`countdown-${event.id}`} deadline={event.registration_ends_at} />
         </div>
-        {event.image && <div className={layouts.detailHeroImage}><img src={event.image} alt={`تصویر ${event.title}`} /></div>}
+        {event.image && <div data-motion-item className={layouts.detailHeroImage}><img src={event.image} alt={`تصویر ${event.title}`} /></div>}
       </header>
       <div className={`detail-grid ${layouts.detailGrid}`}>
         <article className={layouts.detailArticle}>
-          <div className="detail-copy">
+          <div data-motion-group className="detail-copy">
             <EventGallery key={event.id} images={event.gallery} title={event.title} />
             <h2>دربارهٔ این قرار</h2>
             <p className="description">{event.description}</p>
@@ -181,7 +181,7 @@ function EventDetailContent({ id }: { id: string }) {
             )}
           </div>
         </article>
-        <aside className={`booking-panel ${layouts.bookingPanel}`} aria-label="انتخاب و رزرو بلیت">
+        <aside data-motion-group className={`booking-panel ${layouts.bookingPanel}`} aria-label="انتخاب و رزرو بلیت">
           <div className="eyebrow">
             <Ticket size={17} />
             جای تو اینجاست

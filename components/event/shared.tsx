@@ -49,7 +49,7 @@ export function Blank({
   children?: React.ReactNode;
 }) {
   return (
-    <Empty className="blank">
+    <Empty data-motion-item className="blank">
       <EmptyHeader>
         <EmptyTitle>{title}</EmptyTitle>
         {description && <EmptyDescription>{description}</EmptyDescription>}
@@ -66,7 +66,7 @@ export function ErrorBox({
   retry?: () => void;
 }) {
   return (
-    <div className="error-box" role="alert">
+    <div data-motion-item className="error-box" role="alert">
       <p>{message}</p>
       {retry && (
         <button className="button outline" onClick={retry}>

@@ -98,7 +98,7 @@ function ReservationsContent() {
       setCancel(null);
     }
   }
-  if (currentTime === null) return <main className={`container subpage ${layouts.page} ${layouts.reservationsPage}`}><Loading variant="reservations" /></main>;
+  if (currentTime === null) return <main data-motion-group className={`container subpage ${layouts.page} ${layouts.reservationsPage}`}><Loading variant="reservations" /></main>;
   const now = currentTime;
   const { past, upcoming, cancelled } = groupReservations(rows, now);
   const purchased = rows.find((r) => r.id === purchasedId && r.status === "confirmed");
@@ -115,7 +115,7 @@ function ReservationsContent() {
   }
   function list(items: Reservation[]) {
     return items.length ? (
-      <div className="reservation-list">
+      <div data-motion-group className="reservation-list">
         {items.map((r) => {
           const locationUrl = eventLocationUrl(r);
           return (
@@ -230,7 +230,7 @@ function ReservationsContent() {
     );
   }
   return (
-    <main className={`container subpage ${layouts.page} ${layouts.reservationsPage}`}>
+    <main data-motion-group className={`container subpage ${layouts.page} ${layouts.reservationsPage}`}>
       <div className={`page-heading ${layouts.pageHeading}`}>
         <div className="eyebrow">
           <Ticket size={17} />

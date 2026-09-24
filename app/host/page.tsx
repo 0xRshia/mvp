@@ -182,7 +182,7 @@ export default function Host() {
     URL.revokeObjectURL(url);
   }
   return (
-    <main className={`container subpage ${layouts.page} ${layouts.workspace}`}>
+    <main data-motion-group className={`container subpage ${layouts.page} ${layouts.workspace}`}>
       <div className={`page-heading host-heading ${layouts.pageHeading}`}>
         <div>
           <div className="eyebrow">خانهٔ ایونت‌های شما</div>
@@ -230,7 +230,7 @@ export default function Host() {
         <ErrorBox message={error} retry={load} />
       ) : (
         <>
-          <div className="stats-grid">
+          <div data-motion-group className="stats-grid">
             {[
               {
                 label: "فروش کل",
@@ -276,7 +276,7 @@ export default function Host() {
               بازگردانید.
             </div>
           )}
-          <div className="charts-grid">
+          <div data-motion-group className="charts-grid">
             <section className="chart-panel">
               <h2>
                 <BarChart3 size={19} /> فروش ۷ روز گذشته <small>تومان</small>
