@@ -18,6 +18,8 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
       <head>
+        {/* The app provides its own accessible light and dark themes. */}
+        <meta name="darkreader-lock" />
         {["Regular", "ExtraBold", "Black"].map((weight) => (
           <link key={weight} rel="preload" as="font" type="font/woff2"
             href={`/fonts/iransansx/IRANSansX-${weight}.woff2`} crossOrigin="anonymous" />
