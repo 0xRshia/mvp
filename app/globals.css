@@ -11,42 +11,42 @@
   font-family: "IRANSansX";
   font-style: normal;
   font-weight: 400;
-  font-display: optional;
+  font-display: swap;
   src: url("/fonts/iransansx/IRANSansX-Regular.woff2") format("woff2");
 }
 @font-face {
   font-family: "IRANSansX";
   font-style: normal;
   font-weight: 500;
-  font-display: optional;
+  font-display: swap;
   src: url("/fonts/iransansx/IRANSansX-Medium.woff2") format("woff2");
 }
 @font-face {
   font-family: "IRANSansX";
   font-style: normal;
   font-weight: 600;
-  font-display: optional;
+  font-display: swap;
   src: url("/fonts/iransansx/IRANSansX-DemiBold.woff2") format("woff2");
 }
 @font-face {
   font-family: "IRANSansX";
   font-style: normal;
   font-weight: 700;
-  font-display: optional;
+  font-display: swap;
   src: url("/fonts/iransansx/IRANSansX-Bold.woff2") format("woff2");
 }
 @font-face {
   font-family: "IRANSansX";
   font-style: normal;
   font-weight: 800;
-  font-display: optional;
+  font-display: swap;
   src: url("/fonts/iransansx/IRANSansX-ExtraBold.woff2") format("woff2");
 }
 @font-face {
   font-family: "IRANSansX";
   font-style: normal;
   font-weight: 900;
-  font-display: optional;
+  font-display: swap;
   src: url("/fonts/iransansx/IRANSansX-Black.woff2") format("woff2");
 }
 
@@ -66,25 +66,24 @@
   --motion-ease: cubic-bezier(.2, .8, .2, 1);
   --text-secondary: color-mix(in srgb, var(--palette-ink) 65%, var(--palette-gray));
   --text-muted: color-mix(in srgb, var(--palette-ink) 40%, var(--palette-gray));
-  --background: color-mix(in srgb, var(--palette-cream) 25%, #fff);
+  --background: #fff;
   --foreground: var(--palette-ink);
   --card: #fff;
   --card-foreground: var(--foreground);
   --popover: var(--card);
   --popover-foreground: var(--foreground);
   --brand: var(--palette-orange);
-  /* Orange action surfaces are darker so their white labels retain contrast. */
-  --primary: color-mix(in srgb, var(--palette-orange) 60%, var(--palette-ink));
-  --primary-hover: color-mix(in srgb, var(--palette-orange) 52%, var(--palette-ink));
+  --primary: var(--palette-orange);
+  --primary-hover: var(--palette-orange);
   --primary-foreground: #fff;
-  --primary-text: color-mix(in srgb, var(--palette-orange) 50%, var(--palette-ink));
-  --secondary: color-mix(in srgb, var(--palette-cream) 45%, #fff);
-  --secondary-foreground: var(--foreground);
+  --primary-text: var(--palette-orange);
+  --secondary: var(--palette-cream);
+  --secondary-foreground: var(--palette-ink);
   --muted: var(--secondary);
   --muted-foreground: var(--text-muted);
-  --accent: color-mix(in srgb, var(--brand) 9%, var(--card));
-  --accent-foreground: var(--primary-text);
-  --accent-border: color-mix(in srgb, var(--brand) 35%, var(--border));
+  --accent: var(--secondary);
+  --accent-foreground: var(--secondary-foreground);
+  --accent-border: var(--primary);
   --destructive: #b63838;
   --error-background: #fceeee;
   --error-border: #dbaaaa;
@@ -97,24 +96,28 @@
   --border: color-mix(in srgb, var(--palette-ink) 11%, #fff);
   --button-border: var(--border);
   --input: color-mix(in srgb, var(--palette-ink) 24%, #fff);
-  --ring: var(--primary);
+  --ring: var(--foreground);
   --focus-shadow: color-mix(in srgb, var(--primary) 25%, transparent);
   --surface-overlay: color-mix(in srgb, var(--card) 96%, transparent);
   --badge-neutral: var(--palette-ink);
   --badge-neutral-foreground: var(--palette-cream);
   --capacity-background: var(--accent);
-  --capacity-foreground: var(--primary-text);
+  --capacity-foreground: var(--secondary-foreground);
   --shadow-color: color-mix(in srgb, var(--palette-ink) 4%, transparent);
   --shadow-hover: color-mix(in srgb, var(--palette-ink) 10%, transparent);
   --image-overlay: var(--palette-ink);
   --image-foreground: #fff;
-  --glass-surface: color-mix(in srgb, var(--palette-ink) 55%, transparent);
-  --glass-border: color-mix(in srgb, var(--palette-gray) 35%, transparent);
+  --glass-surface: color-mix(in srgb, var(--palette-gray) 22%, transparent);
+  --glass-border: color-mix(in srgb, var(--palette-gray) 38%, transparent);
+  --surface-glass: color-mix(in srgb, var(--card) 78%, transparent);
+  --surface-glass-strong: color-mix(in srgb, var(--card) 90%, transparent);
+  --surface-glass-border: color-mix(in srgb, var(--foreground) 12%, transparent);
+  --surface-glass-sheen: color-mix(in srgb, var(--card) 65%, transparent);
   --radius: 1rem;
   --chart-1: var(--primary-text);
   --chart-2: var(--palette-ink);
   --chart-3: var(--text-muted);
-  --chart-4: color-mix(in srgb, var(--palette-orange) 35%, var(--palette-ink));
+  --chart-4: var(--primary);
   --chart-5: var(--text-secondary);
 }
 .dark {
@@ -126,10 +129,7 @@
   --card: color-mix(in srgb, var(--palette-ink) 94%, var(--palette-cream));
   --primary-foreground: #fff;
   --primary-text: var(--palette-orange);
-  --secondary: color-mix(in srgb, var(--palette-ink) 88%, var(--palette-cream));
-  --accent: color-mix(in srgb, var(--palette-orange) 16%, var(--palette-ink));
-  --accent-foreground: var(--palette-orange);
-  --accent-border: color-mix(in srgb, var(--brand) 35%, var(--border));
+  --muted: var(--card);
   --destructive: #f39b98;
   --error-background: #3b2323;
   --error-border: #814d4c;
@@ -141,12 +141,12 @@
   --warning-border: #80673f;
   --border: #444242;
   --input: color-mix(in srgb, var(--palette-gray) 70%, var(--palette-ink));
-  --badge-neutral: var(--secondary);
+  --badge-neutral: var(--card);
   --shadow-color: color-mix(in srgb, var(--palette-ink) 35%, transparent);
   --shadow-hover: color-mix(in srgb, var(--palette-ink) 60%, transparent);
   --chart-2: var(--palette-cream);
   --chart-3: var(--palette-gray);
-  --chart-4: color-mix(in srgb, var(--palette-orange) 65%, var(--palette-cream));
+  --chart-4: var(--primary);
   --chart-5: var(--text-secondary);
 }
 @theme inline {
@@ -178,6 +178,9 @@
 }
 * {
   box-sizing: border-box;
+}
+html {
+  font-family: var(--font-app);
 }
 body {
   margin: 0;
@@ -328,8 +331,8 @@ a:focus-visible {
   background: var(--primary-hover);
 }
 .button.outline {
-  background: var(--card);
-  color: var(--foreground);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
   border-color: var(--border);
 }
 /* The outline variant name also matches Tailwind's outline utility. */
@@ -337,16 +340,9 @@ a:focus-visible {
   outline: none;
 }
 .button.outline:hover {
-  background: var(--secondary);
-}
-:root:not(.dark) .button.outline {
-  background: var(--card);
-  color: var(--secondary-foreground);
-}
-:root:not(.dark) .button.outline:hover {
-  background: var(--secondary);
-  color: var(--foreground);
-  border-color: var(--input);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
 }
 .discover {
   padding-top: 16px;
@@ -383,7 +379,7 @@ a:focus-visible {
   align-items: center;
   margin-bottom: 6px;
 }
-.eyebrow span {
+.eyebrow > span:empty {
   width: 6px;
   height: 6px;
   background: var(--brand);
@@ -416,7 +412,7 @@ h1 span {
   max-inline-size: 100%;
   vertical-align: bottom;
   white-space: nowrap;
-  animation: hg-type 300ms steps(12, end) 150ms both;
+  animation: hg-type 1000ms steps(12, end) 150ms both;
 }
 @keyframes hg-type {
   from { clip-path: inset(0 0 0 100%); }
@@ -427,20 +423,21 @@ h1 span {
   align-items: center;
   gap: 9px;
   background: var(--secondary);
+  color: var(--secondary-foreground);
   border: 1px solid var(--border);
   padding: 10px 16px;
   border-radius: 12px;
   font-size: 15px;
 }
 .location-button svg:first-child {
-  color: var(--primary-text);
+  color: currentColor;
 }
-:root:not(.dark) .location-button:hover {
+.location-button:hover {
   color: var(--primary-foreground);
   background: var(--primary);
   border-color: var(--primary);
 }
-:root:not(.dark) .location-button:hover svg:first-child {
+.location-button:hover svg:first-child {
   color: inherit;
 }
 .search-bar {
@@ -753,6 +750,7 @@ h1 span {
   align-items: center;
   gap: 20px;
   background: var(--accent);
+  color: var(--accent-foreground);
   border: 1px solid var(--accent-border);
   border-radius: 16px;
   padding: 28px 32px;
@@ -774,7 +772,7 @@ h1 span {
 }
 .host-invite p {
   font-size: 15px;
-  color: var(--text-muted);
+  color: var(--secondary-foreground);
   margin-top: 3px;
 }
 .host-invite .button {
@@ -1196,6 +1194,7 @@ h1 span {
 }
 .blank {
   background: var(--secondary);
+  color: var(--secondary-foreground);
   border: 1px dashed var(--accent-border) !important;
   padding: 60px 24px !important;
   border-radius: 16px;
@@ -1205,6 +1204,7 @@ h1 span {
   font-size: 21px;
 }
 .blank [data-slot="empty-description"] {
+  color: var(--secondary-foreground);
   font-size: 15px;
   line-height: 2;
 }
@@ -1466,8 +1466,9 @@ h1 span {
   border-radius: 7px;
   display: grid;
   place-items: center;
-  color: var(--primary-text);
+  color: var(--secondary-foreground);
 }
+.quantity-control button:not(:disabled):hover { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
 .quantity-control button:disabled {
   cursor: default;
   opacity: 0.35;
@@ -1506,6 +1507,7 @@ h1 span {
 .page-tabs {
   height: 49px !important;
   background: var(--secondary) !important;
+  color: var(--secondary-foreground);
   padding: 5px !important;
   margin-bottom: 25px !important;
 }
@@ -1514,7 +1516,7 @@ h1 span {
   font-size: 15px !important;
 }
 .page-tabs [data-slot="tabs-trigger"][data-state="inactive"] {
-  color: var(--text-secondary);
+  color: var(--secondary-foreground);
 }
 .success-box {
   display: flex;
@@ -1608,13 +1610,13 @@ h1 span {
   min-height: 46px;
 }
 .reservation-actions .button.outline.reservation-location {
-  background: var(--card);
-  color: var(--primary-text);
-  border-color: var(--primary);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  border-color: var(--border);
 }
 .reservation-actions .button.outline.reservation-location:hover {
-  background: var(--accent);
-  color: var(--primary-text);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 .reservation-actions .text-button {
   align-self: center;
@@ -1742,7 +1744,7 @@ h1 span {
 }
 [data-slot="table-head"] {
   text-align: start !important;
-  color: var(--text-muted) !important;
+  color: var(--secondary-foreground) !important;
   background: var(--secondary);
   font-weight: 600;
   height: 47px !important;
@@ -2182,17 +2184,10 @@ h1 span {
   flex-shrink: 0;
   border: 1px solid var(--border);
   border-radius: 10px;
-  color: var(--foreground);
-  background: var(--card);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
 }
 .theme-trigger:hover {
-  background: var(--accent);
-}
-:root:not(.dark) .theme-trigger {
-  background: var(--secondary);
-  color: var(--secondary-foreground);
-}
-:root:not(.dark) .theme-trigger:hover {
   background: var(--primary);
   color: var(--primary-foreground);
   border-color: var(--primary);
@@ -2347,16 +2342,6 @@ button[aria-busy="true"] { cursor: progress; }
     border-color 180ms var(--motion-ease), box-shadow 180ms var(--motion-ease);
 }
 .category:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
-:root:not(.dark) .category-row .category {
-  color: var(--secondary-foreground);
-  background: var(--card);
-}
-:root:not(.dark) .category-row .category.selected {
-  color: var(--primary-text);
-  background: var(--accent);
-  border-color: var(--accent-border);
-  box-shadow: none;
-}
 [data-slot="tabs-list"][data-variant="line"] > .selection-indicator {
   border-radius: 0;
   background: transparent;
@@ -2409,6 +2394,7 @@ button[aria-busy="true"] { cursor: progress; }
 }
 :is(.icon-button, .theme-trigger, .quantity-control button) { inline-size: var(--control-height); flex-shrink: 0; }
 .icon-button { border: 1px solid var(--border); border-radius: 12px; }
+:is(.button, .icon-button, .theme-trigger, .location-button, .text-button, .back-link, .quantity-control button) svg { display: block; flex-shrink: 0; }
 .search-bar .button, .login-link, .reservation-actions .button { min-block-size: var(--control-height); }
 .search-bar { min-block-size: 68px; }
 .search-bar .icon-button { border: 0; background: transparent; }
@@ -2422,7 +2408,7 @@ button[aria-busy="true"] { cursor: progress; }
 }
 .category { perspective: 600px; }
 @media (hover: hover) and (pointer: fine) {
-  .category:hover { background: var(--accent); border-color: var(--accent-border); }
+  .category:hover { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
   .category:hover .category-icon img { transform: translateY(-3px) rotateY(-8deg) rotateX(5deg); }
   .category:active .category-icon img { transform: scale(.96); }
 }

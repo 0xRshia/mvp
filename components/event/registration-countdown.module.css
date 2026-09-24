@@ -12,7 +12,7 @@
   border: 1px solid var(--primary);
   border-radius: 8px;
   background: var(--accent);
-  color: var(--card-foreground);
+  color: var(--secondary-foreground);
   font-weight: 500;
 }
 
@@ -45,8 +45,8 @@
   border: 1px solid var(--glass-border);
   border-radius: 999px;
   background: var(--glass-surface);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .compact .label svg {
@@ -56,19 +56,20 @@
 }
 
 .compact .unit {
-  inline-size: 46px;
-  block-size: 46px;
+  inline-size: 40px;
+  block-size: 44px;
   justify-content: center;
   gap: 0;
   border: 1px solid var(--glass-border);
-  border-radius: 50%;
+  border-radius: 10px;
   background: var(--glass-surface);
-  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 var(--glass-border);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .compact .unit:not(:last-child)::after { content: none; }
-.compact .digits { padding: 0; border: 0; background: transparent; font-weight: 500; }
+.compact .digits { padding: 0; border: 0; background: transparent; color: inherit; font-weight: 500; }
 .compact .unitLabel { color: inherit; font-size: 9px; line-height: 1.25; }
 
 .label {
@@ -82,7 +83,7 @@
 
 .label svg {
   flex-shrink: 0;
-  color: var(--primary-text);
+  color: inherit;
 }
 
 .units {
@@ -121,6 +122,7 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--card);
+  color: var(--card-foreground);
   font-size: var(--digit-size);
   font-weight: 700;
   line-height: 1.4;
@@ -156,7 +158,7 @@
 }
 
 .unitLabel {
-  color: var(--text-secondary);
+  color: inherit;
   font-size: 12px;
   line-height: 1.8;
 }

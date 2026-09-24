@@ -22,12 +22,12 @@
 .heroContent { position: relative; max-inline-size: 900px; margin-inline: auto; }
 .hero .eyebrow { justify-content: center; margin-block-end: 20px; color: var(--primary-text); }
 .hero h1 { font-size: clamp(32px, 4.1vw, 56px); font-weight: 800; line-height: 1.65; margin: 0; }
-.typing { display: inline-block; color: var(--primary-text); animation: reveal 300ms steps(14, end) 150ms both; }
+.typing { display: inline-block; color: var(--primary-text); animation: reveal 1000ms steps(14, end) 150ms both; }
 .hero p { margin-block: 18px 28px; color: var(--text-secondary); font-size: 16px; line-height: 2; }
 .actions { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px; }
 .actions > * { min-inline-size: 168px; }
-.actions .explore { background: var(--foreground); color: var(--background); border-color: transparent; }
-.actions .explore:hover { background: color-mix(in srgb, var(--foreground) 85%, var(--background)); }
+.actions .explore { background: var(--primary); color: var(--primary-foreground); border-color: transparent; }
+.actions .explore:hover { background: var(--primary-hover); }
 .heroContent > :not(h1) { animation: enter var(--motion-enter) var(--motion-ease) both; }
 .heroContent > p { animation-delay: 100ms; }
 .heroContent > .actions { animation-delay: 150ms; }

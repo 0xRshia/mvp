@@ -25,7 +25,7 @@
   margin-inline-end: 10px;
   border-radius: 11px;
   background: var(--secondary);
-  color: var(--primary-text);
+  color: var(--secondary-foreground);
   font-size: 13px;
 }
 
@@ -91,9 +91,14 @@
   border: 0;
   border-radius: 6px;
   background: var(--secondary);
-  color: var(--foreground);
+  color: var(--secondary-foreground);
   font: inherit;
   cursor: pointer;
+}
+
+.form input::file-selector-button:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .iconLabel {
@@ -185,7 +190,7 @@
 }
 
 .timeHeading output {
-  color: var(--primary-text);
+  color: var(--secondary-foreground);
   background: var(--accent);
   padding: 4px 9px;
   border-radius: 7px;
@@ -294,7 +299,7 @@
   min-width: var(--control-height, 48px);
   min-height: var(--control-height, 48px);
   padding: 4px 8px;
-  color: var(--text-secondary);
+  color: var(--secondary-foreground);
   background: var(--secondary);
   border-radius: 7px;
   font-size: 12px;
@@ -303,6 +308,7 @@
 .imageButton:disabled {
   opacity: 0.35;
 }
+.imageButton:not(:disabled):hover { background: var(--primary); color: var(--primary-foreground); }
 
 .actions {
   position: sticky;
@@ -331,7 +337,8 @@
 
 .uploadField:focus-within { outline: 2px solid var(--ring); outline-offset: 3px; }
 .uploadField:has(input:disabled) { opacity: 0.55; cursor: default; }
-.uploadAction { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-block-size: var(--control-height, 48px); margin-block-start: 8px; border-radius: 12px; background: var(--secondary); color: var(--primary-text); font-size: 14px; }
+.uploadAction { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-block-size: var(--control-height, 48px); margin-block-start: 8px; border-radius: 12px; background: var(--secondary); color: var(--secondary-foreground); font-size: 14px; transition: background-color var(--motion-fast), color var(--motion-fast); }
+.uploadField:hover .uploadAction { background: var(--primary); color: var(--primary-foreground); }
 .form .uploadField input[type="file"] { position: absolute; inline-size: 1px; block-size: 1px; min-block-size: 1px; min-height: 1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); }
 
 @supports (-webkit-touch-callout: none) {

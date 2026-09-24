@@ -14,7 +14,9 @@
 .fullWidth > button {
   width: 100%;
   background: var(--accent);
+  color: var(--accent-foreground);
 }
+.fullWidth > button:hover { background: var(--primary); color: var(--primary-foreground); }
 
 .hint,
 .ready {

@@ -1,5 +1,5 @@
 import { AppLink } from "@/components/event/app-navigation";
-import { ArrowLeft, CalendarDays, Clock3, MapPin, Sparkles, Users } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock3, MapPin, Users } from "lucide-react";
 import { RegistrationCountdown } from "./registration-countdown";
 import {
   categories,
@@ -13,11 +13,9 @@ import styles from "./event-card.module.css";
 export function EventCard({
   event,
   priority = false,
-  highlight = false,
 }: {
   event: EventItem;
   priority?: boolean;
-  highlight?: boolean;
 }) {
   const image = event.image || event.thumbnail;
   const category = categories.find((item) => item.id === event.category)?.label;
@@ -50,14 +48,7 @@ export function EventCard({
         <div className={styles.spacer} />
         <div className={styles.content}>
           <div className={styles.categoryRow}>
-            <div className={styles.tags}>
-              {category && <span className={styles.category}>{category}</span>}
-              {highlight && event.remaining !== 0 && (
-                <span className={styles.editorPick}>
-                  <Sparkles size={13} aria-hidden="true" />وقت یک تجربهٔ تازه
-                </span>
-              )}
-            </div>
+            {category && <span className={styles.category}>{category}</span>}
             <time className={styles.dateStamp} dateTime={startsAt} aria-label={date(event.starts_at, true)}>
               <strong>{new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
                 day: "numeric", timeZone: "Asia/Tehran",

@@ -10,7 +10,8 @@
 }
 
 .primary {
-  background: color-mix(in srgb, var(--brand) 5%, var(--card));
+  background: var(--secondary);
+  color: var(--secondary-foreground);
 }
 
 .heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-block-end: 20px; }
@@ -25,10 +26,10 @@
   padding: 0;
   border: 1px solid var(--border);
   border-radius: 50%;
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
 }
-.arrow:not(:disabled):hover { background: var(--secondary); border-color: var(--primary); }
+.arrow:not(:disabled):hover { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
 .arrow:disabled { opacity: .4; }
 .viewport { min-inline-size: 0; overflow: hidden; padding: 6px; margin: -6px; border-radius: 26px; }
 .track { display: flex; align-items: stretch; margin-inline-start: calc(-1 * var(--group-gap)); touch-action: pan-y pinch-zoom; }
@@ -40,7 +41,7 @@
 .slide:nth-child(n+5) .entrance { animation-delay: 200ms; }
 .showAll {
   inline-size: 100%;
-  min-block-size: 500px;
+  min-block-size: 540px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -72,7 +73,7 @@
   .heading h2 { font-size: 19px; gap: 8px; }
   .controls { gap: 6px; }
   .slide { flex-basis: 100%; }
-  .showAll { min-block-size: 490px; border-radius: 26px; }
+  .showAll { min-block-size: 520px; border-radius: 30px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .entrance { animation: none; }

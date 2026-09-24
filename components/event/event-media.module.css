@@ -70,8 +70,8 @@
 .arrow {
   border: 1px solid var(--border);
   border-radius: 10px;
-  background: var(--card);
-  color: var(--foreground);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
 }
 
 .rotation {
@@ -87,7 +87,9 @@
 
 .rotation:hover,
 .arrow:hover {
-  background: var(--accent);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
 }
 
 .viewport {
@@ -152,7 +154,7 @@
 
 .gallery button:focus-visible,
 .viewport:focus-visible {
-  outline: 3px solid var(--primary);
+  outline: 3px solid var(--ring);
   outline-offset: 3px;
 }
 

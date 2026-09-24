@@ -133,7 +133,7 @@ function EventDetailContent({ id }: { id: string }) {
   const mapUrl = eventLocationUrl(event);
   const category = categories.find((item) => item.id === event.category)?.label;
   return (
-    <main className={`container subpage ${layouts.page}`}>
+    <main className={`container subpage ${layouts.page} ${layouts.detailPage}`}>
       <AppLink className="back-link" href="/">
         <ArrowRight size={17} />
         همهٔ ایونت‌ها
@@ -141,11 +141,11 @@ function EventDetailContent({ id }: { id: string }) {
       <header className={`${layouts.detailHero}${event.image ? "" : ` ${layouts.heroWithoutImage}`}`}>
         <div className={layouts.detailHeroCopy}>
           <span className={mediaStyles.category}>{category}</span>
-          <div className="eyebrow"><MapPin size={15} />{event.venue} · {event.city}</div>
+          <div className={`eyebrow ${layouts.heroVenue}`}><MapPin size={18} aria-hidden="true" /><span>{event.venue} · {event.city}</span></div>
           <h1>{event.title}</h1>
           <div className={layouts.heroFacts}>
-            <span><CalendarDays size={18} />{date(event.starts_at, true)}</span>
-            <span><Clock3 size={18} />{clock(event.starts_at)} تا {clock(event.ends_at)}</span>
+            <span><CalendarDays size={18} aria-hidden="true" />{date(event.starts_at, true)}</span>
+            <span><Clock3 size={18} aria-hidden="true" />{clock(event.starts_at)} تا {clock(event.ends_at)}</span>
           </div>
           <RegistrationCountdown key={`countdown-${event.id}`} deadline={event.registration_ends_at} />
         </div>
