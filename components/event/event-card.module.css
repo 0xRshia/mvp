@@ -1,0 +1,124 @@
+.card:global(.event-card) {
+  display: flex;
+  min-inline-size: 0;
+  inline-size: 100%;
+  border: 0;
+  border-radius: 28px;
+  background: var(--image-overlay);
+  color: var(--image-foreground);
+  perspective: 1000px;
+  text-decoration: none;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.card:global(.event-card):hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.surface {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 500px;
+  aspect-ratio: 3 / 4;
+  padding: 18px;
+  border-radius: inherit;
+  background: var(--image-overlay);
+  transition: transform var(--motion-fast) var(--motion-ease);
+}
+
+.surface::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--image-overlay) 30%, transparent),
+    color-mix(in srgb, var(--image-overlay) 12%, transparent) 20%,
+    color-mix(in srgb, var(--image-overlay) 76%, transparent) 52%,
+    color-mix(in srgb, var(--image-overlay) 96%, transparent) 100%);
+}
+
+.image {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  transition: transform var(--motion-fast) var(--motion-ease);
+}
+
+.withoutImage {
+  background:
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--brand) 24%, transparent), transparent 70%),
+    var(--image-overlay);
+}
+
+.topline { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; min-block-size: 48px; }
+.capacity, .dateStamp, .editorPick {
+  border: 1px solid var(--glass-border);
+  background: var(--glass-surface);
+  color: var(--image-foreground);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.capacity {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-inline-size: 100%;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.capacity svg, .venue svg, .facts svg { flex-shrink: 0; }
+.soldOut { border-style: dashed; }
+.spacer { flex: 1; min-block-size: 72px; }
+.content { display: flex; flex-direction: column; gap: 8px; }
+.categoryRow { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.tags { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.category { padding: 4px 12px; border-radius: 999px; background: var(--primary); color: var(--primary-foreground); font-size: 12px; line-height: 1.8; }
+.editorPick { display: flex; align-items: center; gap: 5px; border-radius: 8px; padding: 4px 7px; font-size: 11px; }
+.dateStamp { display: flex; flex-shrink: 0; flex-direction: column; align-items: center; justify-content: center; min-inline-size: 56px; padding: 8px 10px; border-radius: 16px; line-height: 1.4; }
+.dateStamp strong { font-size: 30px; font-weight: 500; }
+.dateStamp span { font-size: 12px; }
+.card .title { margin: 0; font-size: 22px; font-weight: 800; line-height: 1.65; overflow-wrap: anywhere; color: var(--image-foreground); }
+.venue { display: flex; align-items: baseline; gap: 6px; margin: 0; font-size: 13px; line-height: 1.8; }
+.venue svg { align-self: flex-start; margin-block-start: 4px; }
+.venue span { overflow-wrap: anywhere; }
+.facts { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; font-size: 11px; }
+.facts > * { display: inline-flex; align-items: center; gap: 5px; }
+.price { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 6px; padding-block: 4px; }
+.price > span { font-size: 11px; }
+.price strong { font-size: 17px; font-weight: 700; }
+.price small { font-size: 12px; font-weight: 400; }
+.action { display: flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 10px; min-block-size: var(--control-height); block-size: var(--control-height); border-radius: 999px; background: var(--primary); color: var(--primary-foreground); font-size: 14px; font-weight: 700; transition: background-color var(--motion-fast) var(--motion-ease); }
+.action svg { transition: transform var(--motion-fast) var(--motion-ease); }
+.card:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; }
+.card:focus-visible .action { background: var(--primary-hover); }
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .surface { transform: rotateX(1deg) rotateY(-1deg); }
+  .card:hover .image { transform: scale(1.025); }
+  .card:hover .action { background: var(--primary-hover); }
+  .card:hover .action svg { transform: translateX(-3px); }
+}
+@media (max-width: 600px) {
+  .surface { padding: 16px; min-block-size: 490px; }
+  .card:global(.event-card) { border-radius: 26px; }
+  .card .title { font-size: 21px; }
+  .spacer { min-block-size: 50px; }
+  .capacity { padding: 7px 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .surface, .image, .action svg { transition: none; }
+  .card:hover .surface, .card:hover .image, .card:hover .action svg { transform: none; }
+}

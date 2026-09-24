@@ -62,7 +62,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
+  min-block-size: var(--control-height);
   cursor: pointer;
 }
 
@@ -81,7 +81,7 @@
 }
 
 .arrow {
-  width: 44px;
+  inline-size: var(--control-height);
   flex-shrink: 0;
 }
 

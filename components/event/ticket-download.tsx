@@ -67,10 +67,10 @@ export function TicketDownload({
         onClick={download}
       >
         <ButtonLabel busy={busy} pending={<><LoaderCircle size={17} className={styles.spinner} />در حال آماده‌سازی بلیت…</>}>
-          <Download size={17} />{quantity > 1 ? "دانلود همهٔ بلیت‌ها (PDF)" : "دانلود بلیت (PDF)"}
+          <Download size={17} />{quantity > 1 ? "دانلود همهٔ بلیت‌ها (پی‌دی‌اف)" : "دانلود بلیت (پی‌دی‌اف)"}
         </ButtonLabel>
       </button>
-      {prominent && <small className={styles.hint}>{quantity > 1 ? `${fa(quantity)} صفحه در یک فایل؛ هر صفحه یک بلیت با کد QR اختصاصی.` : "فایل بلیت را ذخیره کن و هنگام ورود نشان بده."}</small>}
+      {prominent && <small className={styles.hint}>{quantity > 1 ? `${fa(quantity)} صفحه در یک فایل؛ هر صفحه یک بلیت با کیوآرکد اختصاصی.` : "فایل بلیت را ذخیره کن و هنگام ورود نشان بده."}</small>}
       {file && (
         <p className={styles.ready} role="status">
           فایل آماده است. <a href={file.url} download={file.name}>ذخیرهٔ دوباره</a>

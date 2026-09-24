@@ -1,6 +1,6 @@
 .form {
   display: grid;
-  gap: 26px;
+  gap: 28px;
   min-width: 0;
 }
 
@@ -12,14 +12,26 @@
 }
 
 .section legend {
-  margin-bottom: 14px;
+  margin-block-end: 18px;
   font-size: 17px;
   font-weight: 750;
 }
 
+.step {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 34px;
+  block-size: 34px;
+  margin-inline-end: 10px;
+  border-radius: 11px;
+  background: var(--secondary);
+  color: var(--primary-text);
+  font-size: 13px;
+}
+
 .section + .section {
-  border-top: 1px solid var(--border);
-  padding-top: 22px;
+  border-block-start: 1px solid var(--border);
+  padding-block-start: 24px;
 }
 
 .fields {
@@ -46,12 +58,12 @@
 .form textarea {
   width: 100%;
   min-width: 0;
-  min-height: 49px;
+  min-height: var(--control-height, 48px);
   border: 1px solid var(--input);
-  border-radius: 9px;
+  border-radius: 12px;
   padding: 10px 13px;
   outline: none;
-  font-size: 16px;
+  font-size: 14px;
   background: var(--card);
 }
 
@@ -131,11 +143,12 @@
   --rdp-accent-color: var(--primary-text);
   --rdp-accent-background-color: var(--accent);
   --rdp-day-width: 40px;
-  --rdp-day-height: 40px;
+  --rdp-day-height: var(--control-height);
   --rdp-day_button-width: 38px;
-  --rdp-day_button-height: 38px;
-  --rdp-nav_button-width: 30px;
-  --rdp-nav-height: 44px;
+  --rdp-day_button-height: var(--control-height);
+  --rdp-nav_button-width: var(--control-height);
+  --rdp-nav_button-height: var(--control-height);
+  --rdp-nav-height: var(--control-height);
   --rdp-weekday-padding: 0.5rem 0;
   font-size: 13px;
 }
@@ -278,8 +291,8 @@
   justify-content: center;
   flex-shrink: 0;
   gap: 5px;
-  min-width: 40px;
-  min-height: 40px;
+  min-width: var(--control-height, 48px);
+  min-height: var(--control-height, 48px);
   padding: 4px 8px;
   color: var(--text-secondary);
   background: var(--secondary);
@@ -292,10 +305,37 @@
 }
 
 .actions {
+  position: sticky;
+  inset-block-end: calc(-1 * var(--dialog-block-padding, 34px));
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  padding-top: 3px;
+  margin-inline: calc(-1 * var(--dialog-inline-padding, 34px));
+  padding-inline: var(--dialog-inline-padding, 34px);
+  padding-block: 18px var(--dialog-block-padding, 34px);
+  border-block-start: 1px solid var(--border);
+  background: var(--card);
+}
+
+.actions > button { flex: 1; }
+
+.uploadField {
+  position: relative;
+  padding: 20px;
+  border: 1px dashed var(--border);
+  border-radius: 18px;
+  background: var(--background);
+  cursor: pointer;
+}
+
+.uploadField:focus-within { outline: 2px solid var(--ring); outline-offset: 3px; }
+.uploadField:has(input:disabled) { opacity: 0.55; cursor: default; }
+.uploadAction { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-block-size: var(--control-height, 48px); margin-block-start: 8px; border-radius: 12px; background: var(--secondary); color: var(--primary-text); font-size: 14px; }
+.form .uploadField input[type="file"] { position: absolute; inline-size: 1px; block-size: 1px; min-block-size: 1px; min-height: 1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); }
+
+@supports (-webkit-touch-callout: none) {
+  .form input, .form textarea, .form select { font-size: 16px; }
 }
 
 @media (max-width: 620px) {

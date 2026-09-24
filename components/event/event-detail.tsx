@@ -31,9 +31,10 @@ import { EventGallery } from "./event-gallery";
 import { RegistrationCountdown } from "./registration-countdown";
 import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import { registrationState, REGISTRATION_CLOSED } from "@/lib/registration";
-import { fa, date, clock, categories, type EventDetailData } from "@/lib/types";
+import { fa, faDigits, date, clock, categories, type EventDetailData } from "@/lib/types";
 import styles from "./ticket-download.module.css";
 import mediaStyles from "./event-media.module.css";
+import layouts from "./page-layouts.module.css";
 export default function EventDetail({ id }: { id: string }) {
   return <Suspense fallback={<LoadingPage variant="event" />}><EventDetailContent id={id} /></Suspense>;
 }
@@ -118,13 +119,13 @@ function EventDetailContent({ id }: { id: string }) {
   }
   if (loading)
     return (
-      <main className="container subpage">
+      <main className={`container subpage ${layouts.page}`}>
         <Loading variant="event" />
       </main>
     );
   if (error)
     return (
-      <main className="container subpage">
+      <main className={`container subpage ${layouts.page}`}>
         <ErrorBox message={error} retry={load} />
       </main>
     );
@@ -132,37 +133,27 @@ function EventDetailContent({ id }: { id: string }) {
   const mapUrl = eventLocationUrl(event);
   const category = categories.find((item) => item.id === event.category)?.label;
   return (
-    <main className="container subpage">
+    <main className={`container subpage ${layouts.page}`}>
       <AppLink className="back-link" href="/">
         <ArrowRight size={17} />
         همهٔ ایونت‌ها
       </AppLink>
-      <div className="detail-grid">
-        <article className={event.image ? undefined : mediaStyles.detailWithoutCover}>
-          {event.image && (
-            <div className="detail-photo">
-              <img src={event.image} alt={`تصویر ${event.title}`} />
-              <span className="image-category">{category}</span>
-            </div>
-          )}
+      <header className={`${layouts.detailHero}${event.image ? "" : ` ${layouts.heroWithoutImage}`}`}>
+        <div className={layouts.detailHeroCopy}>
+          <span className={mediaStyles.category}>{category}</span>
+          <div className="eyebrow"><MapPin size={15} />{event.venue} · {event.city}</div>
+          <h1>{event.title}</h1>
+          <div className={layouts.heroFacts}>
+            <span><CalendarDays size={18} />{date(event.starts_at, true)}</span>
+            <span><Clock3 size={18} />{clock(event.starts_at)} تا {clock(event.ends_at)}</span>
+          </div>
+          <RegistrationCountdown key={`countdown-${event.id}`} deadline={event.registration_ends_at} />
+        </div>
+        {event.image && <div className={layouts.detailHeroImage}><img src={event.image} alt={`تصویر ${event.title}`} /></div>}
+      </header>
+      <div className={`detail-grid ${layouts.detailGrid}`}>
+        <article className={layouts.detailArticle}>
           <div className="detail-copy">
-            {!event.image && <span className={mediaStyles.category}>{category}</span>}
-            <div className="eyebrow">
-              <MapPin size={15} />
-              {event.venue} · {event.city}
-            </div>
-            <h1>{event.title}</h1>
-            <RegistrationCountdown key={`countdown-${event.id}`} deadline={event.registration_ends_at} />
-            <div className="detail-facts">
-              <span>
-                <CalendarDays />
-                {date(event.starts_at, true)}
-              </span>
-              <span>
-                <Clock3 />
-                {clock(event.starts_at)} تا {clock(event.ends_at)}
-              </span>
-            </div>
             <EventGallery key={event.id} images={event.gallery} title={event.title} />
             <h2>دربارهٔ این قرار</h2>
             <p className="description">{event.description}</p>
@@ -190,7 +181,7 @@ function EventDetailContent({ id }: { id: string }) {
             )}
           </div>
         </article>
-        <aside className="booking-panel">
+        <aside className={`booking-panel ${layouts.bookingPanel}`} aria-label="انتخاب و رزرو بلیت">
           <div className="eyebrow">
             <Ticket size={17} />
             جای تو اینجاست
@@ -338,9 +329,9 @@ function EventDetailContent({ id }: { id: string }) {
             />
             <small id="ticket-buyer-help">
               {quantity > 1
-                ? "همهٔ بلیت‌ها به نام خریدار ثبت می‌شوند؛ هر نفر یک بلیت و کد QR جداگانه دارد."
+                ? "همهٔ بلیت‌ها به نام خریدار ثبت می‌شوند؛ هر نفر یک بلیت و کد کیوآر جداگانه دارد."
                 : "این نام روی بلیت و در فهرست مهمان‌های میزبان نمایش داده می‌شود."}
-              {" "}شمارهٔ همراه حساب شما: <bdi>{user?.phone}</bdi>
+              {" "}شمارهٔ همراه حساب شما: <bdi>{faDigits(user?.phone ?? "")}</bdi>
             </small>
           </div>
           <div className="checkout-summary">
@@ -362,7 +353,7 @@ function EventDetailContent({ id }: { id: string }) {
             </p>
           )}
           <p className="muted">
-            پس از تأیید، فایل PDF بلیت‌ها آمادهٔ دانلود است و همیشه در «بلیت‌های من» می‌ماند.
+            پس از تأیید، فایل پی‌دی‌اف بلیت‌ها آمادهٔ دانلود است و همیشه در «بلیت‌های من» می‌ماند.
           </p>
           {event.sample === 1 && (
             <p className="notice">

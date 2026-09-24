@@ -37,7 +37,7 @@ function timeLabel(minutes: number) {
 
 function validateImages(files: File[]) {
   if (files.some((file) => !IMAGE_MIME_TYPES.some((type) => type === file.type)))
-    return "فقط تصویر JPEG، PNG یا WebP انتخاب کنید.";
+    return "فقط تصویر جی‌پگ، پی‌ان‌جی یا وب‌پی انتخاب کنید.";
   if (files.some((file) => file.size === 0 || file.size > MAX_IMAGE_BYTES))
     return "هر تصویر باید حداکثر ۵ مگابایت باشد و فایل خالی نباشد.";
   if (files.reduce((total, file) => total + file.size, 0) > MAX_EVENT_IMAGE_BYTES)
@@ -201,7 +201,7 @@ export function EventForm({
       aria-busy={saving}
     >
       <fieldset className={styles.section} disabled={saving}>
-        <legend>دربارهٔ ایونت</legend>
+        <legend><span className={styles.step}>۰۱</span>دربارهٔ ایونت</legend>
         <div className={styles.fields}>
           <label className={styles.wide}>
             عنوان ایونت
@@ -235,7 +235,7 @@ export function EventForm({
               dir="ltr"
               required
               maxLength={2048}
-              placeholder="https://example.com/location"
+              placeholder="پیوند کامل محل برگزاری"
               aria-describedby={mapsError ? "event-maps-help event-maps-error" : "event-maps-help"}
               aria-invalid={!!mapsError}
               onBlur={(event) => {
@@ -258,7 +258,7 @@ export function EventForm({
       </fieldset>
 
       <fieldset className={styles.section} disabled={saving}>
-        <legend>روز و ساعت</legend>
+        <legend><span className={styles.step}>۰۲</span>روز و ساعت</legend>
         <p id="event-time-help" className={styles.help}>تاریخ شمسی و ساعت‌ها به وقت تهران هستند. ساعت‌ها را با فاصلهٔ ۵ دقیقه انتخاب کنید.</p>
         <div className={styles.schedule}>
           <div className={styles.calendarPanel}>
@@ -324,7 +324,7 @@ export function EventForm({
       </fieldset>
 
       <fieldset className={styles.section} disabled={saving}>
-        <legend>مهلت ثبت‌نام</legend>
+        <legend><span className={styles.step}>۰۳</span>مهلت ثبت‌نام</legend>
         <p id="registration-time-help" className={styles.help}>
           تاریخ و ساعت به وقت تهران است. پیش‌فرض، ۲۴ ساعت پیش از ایونت است؛ برای ایونت نزدیک‌تر، زمان شروع در نظر گرفته می‌شود.
         </p>
@@ -376,11 +376,11 @@ export function EventForm({
       </fieldset>
 
       <fieldset className={styles.section} disabled={saving}>
-        <legend>بلیت و ظرفیت</legend>
+        <legend><span className={styles.step}>۰۴</span>بلیت و ظرفیت</legend>
         <div className={styles.fields}>
           <label>
             قیمت هر نفر (تومان)
-            <input name="price" inputMode="numeric" required defaultValue="0" />
+            <input name="price" inputMode="numeric" required defaultValue="۰" />
           </label>
           <label>
             ظرفیت (خالی = نامحدود)
@@ -391,12 +391,13 @@ export function EventForm({
       </fieldset>
 
       <fieldset className={styles.section} disabled={saving}>
-        <legend className={styles.iconLabel}><ImagePlus size={19} />تصاویر ایونت (اختیاری)</legend>
-        <p id="event-images-help" className={styles.help}>JPEG، PNG یا WebP؛ هر تصویر حداکثر ۵ مگابایت و مجموع تصاویر حداکثر ۲۰ مگابایت.</p>
+        <legend className={styles.iconLabel}><span className={styles.step}>۰۵</span>تصاویر ایونت (اختیاری)</legend>
+        <p id="event-images-help" className={styles.help}>جی‌پگ، پی‌ان‌جی یا وب‌پی؛ هر تصویر حداکثر ۵ مگابایت و مجموع تصاویر حداکثر ۲۰ مگابایت.</p>
         <div className={styles.uploads}>
-          <label>
+          <label className={styles.uploadField}>
             کاور ایونت
             <span className={styles.help}>در فهرست ایونت‌ها و بالای صفحهٔ ایونت نمایش داده می‌شود.</span>
+            <span className={styles.uploadAction}><ImagePlus size={18} aria-hidden="true" />انتخاب تصویر کاور</span>
             <input type="file" accept={IMAGE_MIME_TYPES.join(",")} aria-describedby="event-images-help" onChange={(event) => {
               chooseCover(event.currentTarget.files?.[0]);
               event.currentTarget.value = "";
@@ -417,9 +418,10 @@ export function EventForm({
               </div>
             </div>
           )}
-          <label>
+          <label className={styles.uploadField}>
             عکس‌های اسلایدشو ({fa(gallery.length)} از {fa(MAX_GALLERY_IMAGES)})
             <span className={styles.help}>حداکثر ۶ عکس اضافه کنید و ترتیب نمایش آن‌ها را تغییر دهید. بدون کاور، عکس اول در فهرست ایونت‌ها نمایش داده می‌شود.</span>
+            <span className={styles.uploadAction}><ImagePlus size={18} aria-hidden="true" />انتخاب عکس‌های ایونت</span>
             <input type="file" accept={IMAGE_MIME_TYPES.join(",")} multiple disabled={saving || gallery.length >= MAX_GALLERY_IMAGES} aria-describedby="event-images-help" onChange={(event) => {
               addGallery(Array.from(event.currentTarget.files ?? []));
               event.currentTarget.value = "";

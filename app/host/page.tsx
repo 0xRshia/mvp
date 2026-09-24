@@ -1,4 +1,5 @@
 "use client";
+import layouts from "@/components/event/page-layouts.module.css";
 import { AppLink } from "@/components/event/app-navigation";
 import { AnimatedRegion } from "@/components/ui/animated-region";
 import { ButtonLabel } from "@/components/ui/button-label";
@@ -46,6 +47,7 @@ import {
   date,
   clock,
   fa,
+  faDigits,
   type EventItem,
   type Reservation,
 } from "@/lib/types";
@@ -180,8 +182,8 @@ export default function Host() {
     URL.revokeObjectURL(url);
   }
   return (
-    <main className="container subpage">
-      <div className="page-heading host-heading">
+    <main className={`container subpage ${layouts.page} ${layouts.workspace}`}>
+      <div className={`page-heading host-heading ${layouts.pageHeading}`}>
         <div>
           <div className="eyebrow">خانهٔ ایونت‌های شما</div>
           <h1>پنل میزبان</h1>
@@ -509,7 +511,7 @@ export default function Host() {
                       <TableRow key={a.id}>
                         <TableCell>{a.name || "بدون نام"}</TableCell>
                         <TableCell>
-                          <bdi>{a.phone}</bdi>
+                          <bdi>{faDigits(a.phone ?? "")}</bdi>
                         </TableCell>
                         <TableCell>{a.title}</TableCell>
                         <TableCell>{fa(a.quantity)}</TableCell>
@@ -573,7 +575,7 @@ export default function Host() {
         }}
       >
         <DialogContent
-          className="app-dialog event-form-dialog"
+          className={`app-dialog event-form-dialog ${layouts.creationDialog}`}
           dir="rtl"
           showCloseButton={false}
         >

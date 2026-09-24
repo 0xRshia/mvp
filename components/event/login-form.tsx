@@ -12,7 +12,8 @@ import {
 import { api } from "@/lib/client";
 import { useAuth } from "./app-shell";
 import { ErrorBox } from "./shared";
-import { digits, fa, type AuthRequestResponse } from "@/lib/types";
+import { digits, fa, faDigits, type AuthRequestResponse } from "@/lib/types";
+import layouts from "./page-layouts.module.css";
 export default function LoginForm({ host = false }: { host?: boolean }) {
   const navigate = useAppNavigate();
   const { user, refresh, smsReady, loading, temporaryLoginEnabled } = useAuth();
@@ -79,12 +80,23 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
     }
   }
   return (
-    <main className="auth-page container">
+    <main className={`auth-page container ${layouts.authPage}`}>
       <AppLink className="back-link" href="/">
         <ArrowRight size={17} />
         بازگشت به ایونت‌ها
       </AppLink>
-      <div className="auth-card">
+      <div className={layouts.authLayout}>
+        <aside className={layouts.authWelcome}>
+          <span className="eyebrow">هم‌قدم، همراه تجربه‌های تازه</span>
+          <h2>{host ? "قرارهای ماندگار، از شما شروع می‌شوند." : "برای یک قرار خوب، هم‌قدم پیدا کن."}</h2>
+          <p>{host ? "ایونت‌ها، بلیت‌ها و ورود مهمان‌ها را در یک فضای ساده مدیریت کنید." : "ایونت‌های شهر را کشف کن، بلیت بگیر و برای تجربهٔ بعدی آماده شو."}</p>
+          <div className={layouts.welcomeArt} aria-hidden="true">
+            <span />
+            <span />
+          </div>
+          <span className={layouts.welcomeNote}><ShieldCheck size={17} />یک حساب برای همهٔ قرارهایت</span>
+        </aside>
+      <div className={`auth-card ${layouts.authCard}`}>
         <div className="dialog-symbol">
           {host ? <ShieldCheck size={30} /> : <Smartphone size={30} />}
         </div>
@@ -93,7 +105,7 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
         </h1>
         <p>
           {challenge
-            ? `کد پیامک‌شده به ${phone} را وارد کنید.`
+            ? `کد پیامک‌شده به ${faDigits(phone)} را وارد کنید.`
             : host
               ? "با شمارهٔ همراه تأییدشدهٔ میزبان وارد شوید."
               : "برای گرفتن بلیت، با شمارهٔ همراهت وارد شو."}
@@ -126,21 +138,21 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
                     autoComplete="tel"
                     dir="ltr"
                     placeholder="۰۹۱۲ ۱۲۳ ۴۵۶۷"
-                    value={phone}
+                    value={faDigits(phone)}
                     onChange={(e) => setPhone(e.target.value)}
                     maxLength={17}
                     required
                   />
                 </label>
                 <label>
-                  نام شما <span className="muted"></span>
+                  <span>نام شما <span className="muted">(اختیاری)</span></span>
                   <input
                     aria-label="نام شما"
                     autoComplete="given-name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     maxLength={80}
-                    placeholder=""
+                    placeholder="نامی که دوست داری صدایت کنیم"
                   />
                 </label>
               </>
@@ -200,18 +212,13 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
               </button>
             )}
             {/* TODO(PRODUCTION): REMOVE_TEMP_LOGIN — restore the SMS-only notice. */}
-            {!loading && temporaryLoginEnabled && (
-              <p className="notice">
-                ورود آزمایشی فعال است؛ شماره‌های آزمایشی بدون کد پیامکی وارد
-                می‌شوند.
-              </p>
-            )}
-            {!loading && !smsReady && (
-              <p className="notice">
-                {temporaryLoginEnabled
+            {!loading && (temporaryLoginEnabled || !smsReady) && (
+              <div className={`notice ${layouts.serviceNotice}`}>
+                {temporaryLoginEnabled && <p>ورود آزمایشی فعال است؛ شماره‌های آزمایشی بدون کد پیامکی وارد می‌شوند.</p>}
+                {!smsReady && <p>{temporaryLoginEnabled
                   ? "ورود پیامکی برای سایر شماره‌ها هنوز فعال نشده است."
-                  : "ورود پیامکی هنوز فعال نشده است؛ پس از راه‌اندازی سرویس پیامک می‌توانید وارد شوید."}
-              </p>
+                  : "ورود پیامکی هنوز فعال نشده است؛ پس از راه‌اندازی سرویس پیامک می‌توانید وارد شوید."}</p>}
+              </div>
             )}
           </form>
         )}
@@ -225,6 +232,7 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
             میزبان هستید؟ ورود به پنل میزبان
           </AppLink>
         )}
+      </div>
       </div>
     </main>
   );

@@ -70,6 +70,8 @@ export const categories = [
   { id: "coffee", label: "قهوه و کافه" },
 ];
 export const fa = (n: number) => new Intl.NumberFormat("fa-IR").format(n);
+export const faDigits = (value: string | number) =>
+  String(value).replace(/[0-9]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[Number(digit)]);
 export const date = (time: number, full = false) =>
   new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
     timeZone: "Asia/Tehran",

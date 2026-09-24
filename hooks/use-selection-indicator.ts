@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef } from "react";
 
-/** Measure in physical coordinates so the same indicator works in RTL and LTR. */
+/** Anchor the indicator to inline-start in either writing direction. */
 export function useSelectionIndicator<T extends HTMLElement>(selector: string) {
   const ref = useRef<T>(null);
 
@@ -16,7 +16,11 @@ export function useSelectionIndicator<T extends HTMLElement>(selector: string) {
         return;
       }
       // Layout offsets exclude the control's press scale and the track's scroll.
-      container.style.setProperty("--indicator-x", `${selected.offsetLeft}px`);
+      const rtl = getComputedStyle(container).direction === "rtl";
+      const inlineOffset = rtl
+        ? selected.offsetLeft - (container.clientWidth - selected.offsetWidth)
+        : selected.offsetLeft;
+      container.style.setProperty("--indicator-x", `${inlineOffset}px`);
       container.style.setProperty("--indicator-y", `${selected.offsetTop}px`);
       container.style.setProperty("--indicator-width", `${selected.offsetWidth}px`);
       container.style.setProperty("--indicator-height", `${selected.offsetHeight}px`);

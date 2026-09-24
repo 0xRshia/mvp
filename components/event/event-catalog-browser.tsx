@@ -23,6 +23,9 @@ import { Switch } from "@/components/ui/switch";
 import { Blank, Choice, ErrorBox, Loading } from "@/components/event/shared";
 import { EventCard } from "@/components/event/event-card";
 import { EventGroup } from "./event-group";
+import { useAuth } from "./app-shell";
+import { ConicSpin } from "@/components/ui/conic-spin";
+import styles from "./discovery.module.css";
 import { useEventBrowse } from "./event-browse-provider";
 import { useEventCatalog } from "@/hooks/use-event-catalog";
 import { filterEvents, groupEvents, type CatalogView } from "@/lib/event-catalog";
@@ -58,6 +61,7 @@ const groupDefinitions = [
 ] as const;
 
 export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogView }) {
+  const { user } = useAuth();
   const now = useDeadlineClock(undefined);
   const { filters, updateFilters, resetFilters } = useEventBrowse();
   const { category, query, city, sort, when, free, point, area } = filters;
@@ -68,14 +72,13 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
   const [locationOpen, setLocationOpen] = useState(false),
     [locating, setLocating] = useState(false),
     [locationError, setLocationError] = useState("");
-  useEffect(() => {
-    if (localStorage.getItem("hg_location_choice")) return;
-    const timer = setTimeout(() => setLocationOpen(true), 0);
-    return () => clearTimeout(timer);
-  }, []);
   function closeLocation() {
-    localStorage.setItem("hg_location_choice", "chosen");
     setLocationOpen(false);
+  }
+  function showResults() {
+    const results = document.getElementById("results");
+    results?.focus({ preventScroll: true });
+    results?.scrollIntoView({ behavior: prefersReducedMotion() ? "instant" : "smooth", block: "start" });
   }
   function locate() {
     setLocationError("");
@@ -173,38 +176,37 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
   return (
     <main className="discover container">
       {view !== "home" && <AppLink href="/" className="back-link">بازگشت به کشف ایونت‌ها</AppLink>}
-      <div className={`intro${view === "home" ? " intro-home" : ""}`}>
-        <div>
-          {view === "home" ? <>
-          <div className="eyebrow">
-            <span />
-            بیرون از روزمرگی
+      {view === "home" ? (
+        <section className={styles.hero} aria-labelledby="home-title">
+          <ConicSpin className={styles.glow} />
+          <div className={styles.grid} aria-hidden="true" />
+          <div className={styles.heroContent}>
+            <div className={`eyebrow ${styles.eyebrow}`}><span />بیرون از روزمرگی</div>
+            <h1 id="home-title">یک قرار خوب، <span className={styles.typing}>همین نزدیکی.</span></h1>
+            <p>موسیقی، تجربه‌های تازه و آدم‌هایی که هنوز نمی‌شناسی.<br />قرار بعدی‌ات را در هم‌قدم پیدا کن.</p>
+            <div className={styles.actions}>
+              <button type="button" className={`button ${styles.explore}`} onClick={showResults}>
+                کشف ایونت‌ها <ArrowLeft size={18} aria-hidden="true" />
+              </button>
+              <AppLink className="button outline" href={user ? "/reservations" : "/login"}>
+                {user ? "بلیت‌های من" : "ورود / ثبت‌نام"}
+              </AppLink>
+            </div>
           </div>
-          <h1>
-            یک قرار خوب، <span className="hero-typing">همین نزدیکی.</span>
-          </h1>
-          <p>موسیقی، تجربه‌های تازه و آدم‌هایی که هنوز نمی‌شناسی.</p>
-          </> : <>
+        </section>
+      ) : (
+        <div className="intro">
+          <div>
             <h1>{title}</h1>
             <p>قرار بعدی‌ات را پیدا کن.</p>
-          </>}
+          </div>
         </div>
-        <button
-          className="location-button"
-          onClick={() => setLocationOpen(true)}
-        >
-          <img className="location-art" src="/icons/map.png" alt="" width={28} height={28} draggable={false} />
-          <span>{city === "nearby" ? "اطراف شما" : city}</span>
-          <ChevronDown size={15} />
-        </button>
-      </div>
+      )}
       <form
-        className="search-bar"
+        className={`search-bar ${styles.search}`}
         onSubmit={(e) => {
           e.preventDefault();
-          document
-            .getElementById("results")
-            ?.scrollIntoView({ behavior: prefersReducedMotion() ? "instant" : "smooth", block: "start" });
+          showResults();
         }}
       >
         <Search />
@@ -224,16 +226,11 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
             <X size={16} />
           </button>
         )}
-        <span className="search-divider" />
-        <span className="search-city">
-          <img className="location-art" src="/icons/map.png" alt="" width={24} height={24} draggable={false} />
-          {point?.label ?? `کافه‌های ${city}`}
-        </span>
         <button className="button">
           جستجو <ArrowLeft size={17} />
         </button>
       </form>
-      <div className="category-row">
+      <div className={`category-row ${styles.categories}`} aria-label="دسته‌بندی ایونت‌ها">
         {categories.map((option) => (
           <button
             key={option.id}
@@ -249,7 +246,7 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
           </button>
         ))}
       </div>
-      <div className="section-heading" id="results">
+      <div className={`section-heading ${styles.resultsHeading}`} id="results" tabIndex={-1}>
         <div>
           <h2>
             {city === "nearby" ? "ایونت‌های اطراف شما" : `این روزهای ${city}`}
@@ -261,6 +258,11 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
           </p>
         </div>
         <div className="filters">
+          <button type="button" className="location-button" aria-label={`انتخاب شهر و موقعیت؛ ${point?.label ?? (city === "nearby" ? "اطراف شما" : city)}`} aria-haspopup="dialog" onClick={() => setLocationOpen(true)}>
+            <img className="location-art" src="/icons/map.png" alt="" width={24} height={24} draggable={false} />
+            <span>{point?.label ?? (city === "nearby" ? "اطراف شما" : city)}</span>
+            <ChevronDown size={15} aria-hidden="true" />
+          </button>
           <label className="free-filter">
             <Switch
               checked={view === "free" || free}

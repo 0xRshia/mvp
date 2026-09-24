@@ -76,10 +76,10 @@ async function scannerRequest<T>(
 function cameraMessage(error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
   if (/permission|denied|notallowed/i.test(message))
-    return "اجازهٔ دسترسی به دوربین داده نشد. دسترسی دوربین را در تنظیمات مرورگر فعال کنید یا تصویر QR را انتخاب کنید.";
+    return "اجازهٔ دسترسی به دوربین داده نشد. دسترسی دوربین را در تنظیمات مرورگر فعال کنید یا تصویر کیوآر را انتخاب کنید.";
   if (/notfound|not found|no camera/i.test(message))
-    return "دوربینی پیدا نشد. می‌توانید تصویر QR بلیت را انتخاب کنید.";
-  return "دوربین باز نشد. برنامه‌های دیگری که از دوربین استفاده می‌کنند را ببندید و دوباره تلاش کنید، یا تصویر QR را انتخاب کنید.";
+    return "دوربینی پیدا نشد. می‌توانید تصویر کیوآر بلیت را انتخاب کنید.";
+  return "دوربین باز نشد. برنامه‌های دیگری که از دوربین استفاده می‌کنند را ببندید و دوباره تلاش کنید، یا تصویر کیوآر را انتخاب کنید.";
 }
 
 export default function ScannerPage() {
@@ -164,7 +164,7 @@ export default function ScannerPage() {
     setBusy(true);
     try {
       if (!/^hg-ticket:v1:[a-f0-9]{64}$/.test(qr))
-        throw new Error("این QR متعلق به بلیت‌های هم‌قدم نیست. QR اصلی بلیت را اسکن کنید.");
+        throw new Error("این کیوآر متعلق به بلیت‌های هم‌قدم نیست. کیوآر اصلی بلیت را اسکن کنید.");
       const checked = await scannerRequest<ScanResult>(keyRef.current, controller.signal, qr);
       if (!controller.signal.aborted) setResult(checked);
     } catch (error) {
@@ -181,11 +181,11 @@ export default function ScannerPage() {
     const controller = sessionRef.current;
     if (!event || !controller || controller.signal.aborted || startingRef.current || busyRef.current || imageBusyRef.current) return;
     if (!window.isSecureContext) {
-      setCameraError("برای استفاده از دوربین، لینک اسکنر را با HTTPS باز کنید. انتخاب تصویر QR هم در دسترس است.");
+      setCameraError("برای استفاده از دوربین، لینک اسکنر را با اتصال امن باز کنید. انتخاب تصویر کیوآر هم در دسترس است.");
       return;
     }
     if (!navigator.mediaDevices?.getUserMedia) {
-      setCameraError("این مرورگر به دوربین دسترسی ندارد. لینک را در مرورگر گوشی باز کنید یا تصویر QR را انتخاب کنید.");
+      setCameraError("این مرورگر به دوربین دسترسی ندارد. لینک را در مرورگر گوشی باز کنید یا تصویر کیوآر را انتخاب کنید.");
       return;
     }
     startingRef.current = true;
@@ -247,7 +247,7 @@ export default function ScannerPage() {
       await checkTicket(decoded.data);
     } catch {
       if (!controller.signal.aborted)
-        setScanError("QR خوانا در تصویر پیدا نشد. تصویر واضحِ یک بلیت را انتخاب کنید؛ فایل PDF را ابتدا به تصویر تبدیل کنید.");
+        setScanError("کیوآر خوانا در تصویر پیدا نشد. تصویر واضحِ یک بلیت را انتخاب کنید؛ فایل پی‌دی‌اف را ابتدا به تصویر تبدیل کنید.");
     } finally {
       if (!controller.signal.aborted) {
         imageBusyRef.current = false;
@@ -279,7 +279,7 @@ export default function ScannerPage() {
                 <video ref={videoRef} muted playsInline aria-label="تصویر دوربین اسکنر" />
                 {camera !== "on" && <div className="scanner-camera-overlay">
                   {camera === "starting" ? <LoaderCircle className="scanner-spin" size={42} /> : <ScanLine size={52} />}
-                  <strong>{camera === "starting" ? "در حال باز کردن دوربین…" : "QR بلیت را آماده کنید"}</strong>
+                  <strong>{camera === "starting" ? "در حال باز کردن دوربین…" : "کیوآر بلیت را آماده کنید"}</strong>
                   <span>{camera === "starting" ? "اجازهٔ دسترسی به دوربین را تأیید کنید." : "دوربین پشت گوشی برای اسکن انتخاب می‌شود."}</span>
                 </div>}
               </div>
@@ -302,13 +302,13 @@ export default function ScannerPage() {
                 </button>
                 <button className="button outline" onClick={() => fileRef.current?.click()} disabled={busy || imageBusy || camera === "starting"} aria-busy={imageBusy}>
                   <ButtonLabel busy={imageBusy} pending={<><LoaderCircle className="scanner-spin" size={19} />خواندن تصویر…</>}>
-                    <ImageUp size={19} />انتخاب تصویر QR
+                    <ImageUp size={19} />انتخاب تصویر کیوآر
                   </ButtonLabel>
                 </button>
-                <input ref={fileRef} type="file" accept="image/*" onChange={(change) => void scanImage(change)} aria-label="انتخاب تصویر QR بلیت" hidden />
+                <input ref={fileRef} type="file" accept="image/*" onChange={(change) => void scanImage(change)} aria-label="انتخاب تصویر کیوآر بلیت" hidden />
               </div>
               {cameraError && <p className="scanner-notice" role="alert">{cameraError}</p>}
-              <p className="scanner-hint">QR را در قاب نگه دارید. پس از خواندن هر بلیت، دوربین متوقف می‌شود؛ برای نفر بعد «اسکن بلیت بعدی» را بزنید. ثبت ورود به اینترنت نیاز دارد.</p>
+              <p className="scanner-hint">کیوآر را در قاب نگه دارید. پس از خواندن هر بلیت، دوربین متوقف می‌شود؛ برای نفر بعد «اسکن بلیت بعدی» را بزنید. ثبت ورود به اینترنت نیاز دارد.</p>
             </section>
             <section className="scanner-result-area" aria-label="نتیجهٔ بررسی بلیت" aria-live="polite" aria-atomic="true">
               <AnimatedRegion transitionKey={busy || imageBusy ? "checking" : result ? `${result.status}:${result.ticket.ordinal}:${result.ticket.checked_in_at}` : scanError || "ready"}>

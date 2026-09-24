@@ -1,4 +1,5 @@
 "use client";
+import layouts from "@/components/event/page-layouts.module.css";
 import { ButtonLabel } from "@/components/ui/button-label";
 import { AppLink, useAppNavigate } from "./app-navigation";
 import { AnimatedRegion } from "@/components/ui/animated-region";
@@ -37,7 +38,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api } from "@/lib/client";
-import { clock, date, fa, type EventItem } from "@/lib/types";
+import { clock, date, fa, faDigits, type EventItem } from "@/lib/types";
 
 type HostEventData = {
   event: EventItem;
@@ -228,7 +229,7 @@ export default function HostEventPanel({ id }: { id: string }) {
 
   if (authLoading)
     return (
-      <main className="container subpage">
+      <main className={`container subpage ${layouts.page} ${layouts.workspace}`}>
         {backLink}
         <Loading variant="host-event" />
       </main>
@@ -236,7 +237,7 @@ export default function HostEventPanel({ id }: { id: string }) {
 
   if (!user?.isHost)
     return (
-      <main className="container subpage">
+      <main className={`container subpage ${layouts.page} ${layouts.workspace}`}>
         {backLink}
         <Blank
           title={
@@ -253,16 +254,16 @@ export default function HostEventPanel({ id }: { id: string }) {
 
   if (!data)
     return (
-      <main className="container subpage">
+      <main className={`container subpage ${layouts.page} ${layouts.workspace}`}>
         {backLink}
         {error ? <ErrorBox message={error} retry={reload} /> : <Loading variant="host-event" />}
       </main>
     );
 
   return (
-    <main className="container subpage host-event-panel">
+    <main className={`container subpage host-event-panel ${layouts.page} ${layouts.workspace}`}>
       {backLink}
-      <div className="page-heading host-heading">
+      <div className={`page-heading host-heading ${layouts.pageHeading}`}>
         <div>
           <div className="eyebrow">مدیریت یک قرار خوب</div>
           <h1>{data.event.title}</h1>
@@ -371,7 +372,7 @@ export default function HostEventPanel({ id }: { id: string }) {
             به دوربین را بدهید.
           </li>
           <li>
-            کد QR بلیت هم‌قدم را مقابل دوربین بگیرید. هر صفحهٔ فایل PDF، یک
+            کد کیوآر بلیت هم‌قدم را مقابل دوربین بگیرید. هر صفحهٔ فایل پی‌دی‌اف، یک
             بلیت و یک کد جداگانه دارد.
           </li>
           <li>
@@ -420,7 +421,7 @@ export default function HostEventPanel({ id }: { id: string }) {
             onClick={() => void exportAttendees()}
           >
             <Download size={17} />{" "}
-            <ButtonLabel busy={exporting} pending="در حال دریافت…">دریافت نام‌ها و شماره‌ها (CSV)</ButtonLabel>
+            <ButtonLabel busy={exporting} pending="در حال دریافت…">دریافت نام‌ها و شماره‌ها (سی‌اس‌وی)</ButtonLabel>
           </button>
         </div>
         <p className="host-attendee-count" aria-live="polite">
@@ -428,7 +429,7 @@ export default function HostEventPanel({ id }: { id: string }) {
             ? "در حال دریافت فهرست…"
             : error
               ? "دریافت فهرست انجام نشد. دوباره تلاش کنید."
-              : `${fa(data.attendeeTotal)} خرید${query.trim() ? " مطابق جستجو" : " تأییدشده"}؛ خروجی CSV شامل تمام نتایج ${query.trim() ? "این جستجو" : "ایونت"} است.`}
+              : `${fa(data.attendeeTotal)} خرید${query.trim() ? " مطابق جستجو" : " تأییدشده"}؛ خروجی سی‌اس‌وی شامل تمام نتایج ${query.trim() ? "این جستجو" : "ایونت"} است.`}
         </p>
         <AnimatedRegion aria-busy={loading} transitionKey={error || data.attendees.map((attendee) => attendee.id).join(",")}>
           {error ? (
@@ -453,7 +454,7 @@ export default function HostEventPanel({ id }: { id: string }) {
                         <p className="muted">آزمایشی؛ بدون دریافت وجه</p>
                       )}
                     </TableCell>
-                    <TableCell><bdi>{attendee.phone}</bdi></TableCell>
+                    <TableCell><bdi>{faDigits(attendee.phone ?? "")}</bdi></TableCell>
                     <TableCell>{fa(attendee.quantity)}</TableCell>
                     <TableCell>
                       <span

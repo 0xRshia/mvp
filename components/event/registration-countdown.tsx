@@ -28,7 +28,7 @@ export function RegistrationCountdown({ deadline, compact = false }: { deadline:
   if (remaining === null) return null;
   if (remaining === 0) {
     return (
-      <div className={className}>
+      <div className={`${className} ${styles.closed}`}>
         <span className={styles.label}><Clock3 size={18} aria-hidden="true" />{REGISTRATION_CLOSED}</span>
       </div>
     );

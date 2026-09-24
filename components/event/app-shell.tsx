@@ -85,6 +85,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (scannerOnly) return <div data-route-content className="route-content">{children}</div>;
   return (
     <AuthContext.Provider value={{ ...state, refresh }}>
+      <a className="skip-link" href="#main-content">رفتن به محتوای اصلی</a>
       <header className="site-header">
         <div className="header-inner">
           <AppLink className="brand" href="/">
@@ -137,7 +138,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <div data-route-content className="route-content">{children}</div>
+      <div id="main-content" tabIndex={-1} data-route-content className="route-content">{children}</div>
       <footer className="container footer">
         <AppLink className="brand" href="/">
           هم‌قدم

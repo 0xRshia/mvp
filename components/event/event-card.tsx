@@ -1,13 +1,14 @@
 import { AppLink } from "@/components/event/app-navigation";
-import { ArrowUpLeft, MapPin, Users } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock3, MapPin, Sparkles, Users } from "lucide-react";
 import { RegistrationCountdown } from "./registration-countdown";
 import {
   categories,
   fa,
   date,
+  clock,
   type EventItem,
 } from "@/lib/types";
-import mediaStyles from "./event-media.module.css";
+import styles from "./event-card.module.css";
 
 export function EventCard({
   event,
@@ -18,24 +19,25 @@ export function EventCard({
   priority?: boolean;
   highlight?: boolean;
 }) {
+  const image = event.image || event.thumbnail;
+  const category = categories.find((item) => item.id === event.category)?.label;
+  const startsAt = new Date(event.starts_at).toISOString();
+
   return (
-    <AppLink className="event-card" href={`/events/${event.id}`}>
-      <div className={event.thumbnail ? "event-image" : mediaStyles.cardHeader}>
-        {event.thumbnail && (
+    <AppLink className={`event-card ${styles.card}`} href={`/events/${event.id}`}
+      aria-label={`مشاهدهٔ ایونت ${event.title}`}>
+      <div className={`${styles.surface}${image ? "" : ` ${styles.withoutImage}`}`}>
+        {image && (
           <img
-            src={event.thumbnail}
-            alt={`تصویر ${event.title}`}
+            className={styles.image}
+            src={image}
+            alt=""
             loading={priority ? "eager" : "lazy"}
             draggable={false}
           />
         )}
-        {highlight && event.remaining !== 0 && (
-          <span className="editor-pick">
-            وقت یک تجربهٔ تازه <span>✦</span>
-          </span>
-        )}
-        <div className="event-image-footer">
-          <span className={`event-capacity${event.remaining === 0 ? " sold-out" : ""}`}>
+        <div className={styles.topline}>
+          <span className={`${styles.capacity}${event.remaining === 0 ? ` ${styles.soldOut}` : ""}`}>
             <Users size={15} aria-hidden="true" />
             {event.remaining === null
               ? "ظرفیت نامحدود"
@@ -43,47 +45,45 @@ export function EventCard({
                 ? "تکمیل ظرفیت"
                 : `${fa(event.remaining)} نفر باقی مانده`}
           </span>
-          <time className="date-stamp" dateTime={new Date(event.starts_at).toISOString()}
-            aria-label={date(event.starts_at, true)}>
-            <strong>
-              {new Intl.DateTimeFormat("fa-IR", {
-                day: "numeric",
-                timeZone: "Asia/Tehran",
-              }).format(event.starts_at)}
-            </strong>
-            <span>
-              {new Intl.DateTimeFormat("fa-IR", {
-                month: "long",
-                timeZone: "Asia/Tehran",
-              }).format(event.starts_at)}
-            </span>
-          </time>
+          <RegistrationCountdown deadline={event.registration_ends_at} compact />
         </div>
-      </div>
-      <div className="event-content">
-        <div className="event-meta">
-          <span>
-            <MapPin size={15} />
-            {event.venue}
-          </span>
-          <span>
-            {event.distance !== undefined
-              ? `${fa(Math.round(event.distance * 10) / 10)} کیلومتر`
-              : event.city}
-          </span>
-        </div>
-        <p className="event-category">{categories.find((category) => category.id === event.category)?.label}</p>
-        <h3>{event.title}</h3>
-        <RegistrationCountdown deadline={event.registration_ends_at} compact />
-        <div className="card-bottom">
-          <strong className={event.price === 0 ? "free" : ""}>
-            {event.price ? fa(event.price) : "رایگان"}
-            {event.price > 0 && <small> تومان</small>}
-          </strong>
-          <span className="ticket-link">
-            دیدن ایونت
-            <ArrowUpLeft size={18} />
-          </span>
+        <div className={styles.spacer} />
+        <div className={styles.content}>
+          <div className={styles.categoryRow}>
+            <div className={styles.tags}>
+              {category && <span className={styles.category}>{category}</span>}
+              {highlight && event.remaining !== 0 && (
+                <span className={styles.editorPick}>
+                  <Sparkles size={13} aria-hidden="true" />وقت یک تجربهٔ تازه
+                </span>
+              )}
+            </div>
+            <time className={styles.dateStamp} dateTime={startsAt} aria-label={date(event.starts_at, true)}>
+              <strong>{new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                day: "numeric", timeZone: "Asia/Tehran",
+              }).format(event.starts_at)}</strong>
+              <span>{new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+                month: "long", timeZone: "Asia/Tehran",
+              }).format(event.starts_at)}</span>
+            </time>
+          </div>
+          <h3 className={styles.title}>{event.title}</h3>
+          <p className={styles.venue}>
+            <MapPin size={16} aria-hidden="true" />
+            <span>{event.venue}، {event.city}</span>
+          </p>
+          <div className={styles.facts}>
+            <time dateTime={startsAt}><CalendarDays size={14} aria-hidden="true" />{date(event.starts_at)}</time>
+            <span><Clock3 size={14} aria-hidden="true" />ساعت {clock(event.starts_at)}</span>
+            {event.distance !== undefined && (
+              <span>{fa(Math.round(event.distance * 10) / 10)} کیلومتر</span>
+            )}
+          </div>
+          <div className={styles.price}>
+            <span>هزینهٔ هر نفر</span>
+            <strong>{event.price ? fa(event.price) : "رایگان"}{event.price > 0 && <small> تومان</small>}</strong>
+          </div>
+          <span className={styles.action}>مشاهدهٔ ایونت<ArrowLeft size={18} aria-hidden="true" /></span>
         </div>
       </div>
     </AppLink>

@@ -5,7 +5,7 @@
   gap: 12px;
 }
 .host-event-actions .button {
-  min-height: 38px;
+  min-height: var(--control-height, 48px);
   font-size: 13px;
 }
 .host-event-meta {
@@ -23,9 +23,9 @@
 }
 .host-scanner-panel {
   border: 1px solid var(--border);
-  background: var(--secondary);
-  border-radius: 20px;
-  padding: 26px;
+  background: var(--card);
+  border-radius: 26px;
+  padding: 30px;
   margin: 30px 0 36px;
 }
 .host-section-heading {
@@ -47,10 +47,10 @@
   place-items: center;
   flex: 0 0 58px;
   height: 58px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  border: 0;
+  border-radius: 18px;
   color: var(--primary-text);
-  background: var(--background);
+  background: var(--secondary);
 }
 .host-scanner-actions,
 .host-share-options {
@@ -65,7 +65,7 @@
 .host-scanner-instructions {
   margin: 20px 0 12px;
   padding-inline-start: 22px;
-  list-style: decimal;
+  list-style: persian;
   font-size: 14px;
   line-height: 2.1;
 }
@@ -73,8 +73,16 @@
   margin-top: 4px;
 }
 .host-scanner-access {
+  border-block-start: 1px solid var(--border);
+  padding-block-start: 16px;
   font-size: 13px;
   color: var(--text-muted);
+}
+.host-attendees-panel {
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  background: var(--card);
 }
 .host-attendees-heading {
   justify-content: space-between;
@@ -98,11 +106,11 @@
   gap: 10px;
   max-width: 500px;
   min-width: 0;
-  min-height: 47px;
+  min-height: var(--control-height, 48px);
   padding: 0 14px;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   color: var(--text-muted);
 }
 .host-attendee-search:focus-within {
@@ -115,7 +123,7 @@
 .host-attendee-search input {
   width: 100%;
   min-width: 0;
-  height: 45px;
+  height: calc(var(--control-height, 48px) - 2px);
   border: 0;
   outline: 0;
   background: transparent;
@@ -171,8 +179,10 @@
   .host-event-panel .page-heading h1 {
     font-size: 26px;
   }
-  .host-scanner-panel {
+  .host-scanner-panel,
+  .host-attendees-panel {
     padding: 20px;
+    border-radius: 22px;
   }
   .host-section-heading h2 {
     font-size: 18px;
@@ -196,6 +206,10 @@
     font-size: 13px;
     padding-inline: 12px;
   }
+}
+@supports (-webkit-touch-callout: none) {
+  .host-attendee-search input,
+  .host-scanner-link { font-size: 16px; }
 }
 @media (max-width: 440px) {
   .host-scanner-symbol {

@@ -40,11 +40,7 @@ export function EventGroup({
     <section className={`${styles.group} ${variant === "primary" ? styles.primary : ""}`}
       aria-labelledby={headingId} aria-roledescription="نمایش افقی ایونت‌ها" dir="rtl">
       <div className={styles.heading}>
-        <h2 id={headingId} aria-label={heading}>
-          {variant === "primary"
-            ? heading.split(" ").map((word, index) => <span key={index} className={styles.headingWord} aria-hidden="true">{word}</span>)
-            : heading}
-        </h2>
+        <h2 id={headingId}>{heading}</h2>
         <div className={styles.controls}>
           <button type="button" className={styles.arrow} aria-label={`قبلی: ${heading}`}
             aria-controls={trackId} disabled={!previous} onClick={() => carousel?.scrollPrev(reducedMotion)}>
@@ -72,7 +68,7 @@ export function EventGroup({
             <div className={styles.slide} key={event.id} role="group"
               aria-label={`${fa(index + 1)} از ${fa(preview.length)} ایونت`}>
               <div className={styles.entrance}>
-                <EventCard event={event} priority={priority && index < 3} />
+                <EventCard event={event} priority={priority && index < 3} highlight={variant === "primary"} />
               </div>
             </div>
           ))}

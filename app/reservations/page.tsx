@@ -35,6 +35,7 @@ import { groupReservations } from "@/lib/reservation-history";
 import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import styles from "@/components/event/ticket-download.module.css";
 import mediaStyles from "@/components/event/event-media.module.css";
+import layouts from "@/components/event/page-layouts.module.css";
 export default function Reservations() {
   return <Suspense fallback={<LoadingPage variant="reservations" />}><ReservationsContent /></Suspense>;
 }
@@ -97,7 +98,7 @@ function ReservationsContent() {
       setCancel(null);
     }
   }
-  if (currentTime === null) return <main className="container subpage"><Loading variant="reservations" /></main>;
+  if (currentTime === null) return <main className={`container subpage ${layouts.page} ${layouts.reservationsPage}`}><Loading variant="reservations" /></main>;
   const now = currentTime;
   const { past, upcoming, cancelled } = groupReservations(rows, now);
   const purchased = rows.find((r) => r.id === purchasedId && r.status === "confirmed");
@@ -118,9 +119,9 @@ function ReservationsContent() {
         {items.map((r) => {
           const locationUrl = eventLocationUrl(r);
           return (
-          <article className={`reservation-card${r.image ? "" : ` ${mediaStyles.reservationWithoutImage}`}`} key={r.id}>
+          <article className={`reservation-card ${layouts.ticketCard}${r.image ? "" : ` ${mediaStyles.reservationWithoutImage}`}`} key={r.id}>
             {r.image && <img src={r.image} alt={`تصویر ${r.title}`} />}
-            <div className="reservation-info">
+            <div className={`reservation-info ${layouts.ticketInfo}`}>
               <span
                 className={`status ${r.status === "confirmed" ? "success" : ""}`}
               >
@@ -161,7 +162,7 @@ function ReservationsContent() {
                 </p>
               )}
             </div>
-            <div className="reservation-actions">
+            <div className={`reservation-actions ${layouts.ticketActions}`}>
               {r.status === "confirmed" && (
                 <TicketDownload reservationId={r.id} quantity={r.quantity} fullWidth />
               )}
@@ -229,8 +230,8 @@ function ReservationsContent() {
     );
   }
   return (
-    <main className="container subpage">
-      <div className="page-heading">
+    <main className={`container subpage ${layouts.page} ${layouts.reservationsPage}`}>
+      <div className={`page-heading ${layouts.pageHeading}`}>
         <div className="eyebrow">
           <Ticket size={17} />
           قرارهای تو

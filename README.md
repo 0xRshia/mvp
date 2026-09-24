@@ -109,6 +109,25 @@ These numbers log in immediately without SMS credentials or an OTP. Persian digi
 
 ## Validation
 
+### Conic Spin background
+
+The decorative background follows the current theme and becomes static when reduced motion is enabled. Its parent must establish a positioned area with a height:
+
+```tsx
+import { ConicSpin } from "@/components/ui/conic-spin";
+
+export function Welcome() {
+  return (
+    <section dir="rtl" className="relative isolate overflow-hidden bg-background px-6 py-16 text-foreground">
+      <ConicSpin />
+      <h1 className="relative">یک قرار خوب، همین نزدیکی.</h1>
+    </section>
+  );
+}
+```
+
+The component uses a circle sized to 140% of its container’s larger dimension, `blur-3xl`, and the `--brand` and `--foreground` theme tokens. The 30-second ambient rotation is independent of the app’s short interaction transitions.
+
 ```sh
 npm run typecheck
 npm run build
