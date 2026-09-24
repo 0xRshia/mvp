@@ -111,14 +111,14 @@ These numbers log in immediately without SMS credentials or an OTP. Persian digi
 
 ### Conic Spin background
 
-The decorative background follows the current theme and becomes static when reduced motion is enabled. Its parent must establish a positioned area with a height:
+The decorative background follows the current theme and becomes static when reduced motion is enabled. The homepage displays it at its original token opacity inside a rounded primary border, without the former fading mask. Its parent must establish a positioned area with a height:
 
 ```tsx
 import { ConicSpin } from "@/components/ui/conic-spin";
 
 export function Welcome() {
   return (
-    <section dir="rtl" className="relative isolate overflow-hidden bg-background px-6 py-16 text-foreground">
+    <section dir="rtl" className="relative isolate overflow-hidden rounded-3xl border border-primary bg-background ps-6 pe-6 py-16 text-foreground">
       <ConicSpin />
       <h1 className="relative">یک قرار خوب، همین نزدیکی.</h1>
     </section>

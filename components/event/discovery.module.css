@@ -6,8 +6,10 @@
 }
 .glow {
   z-index: -2;
-  opacity: .55;
-  mask-image: radial-gradient(ellipse at center, var(--foreground), transparent 72%);
+  inset-block: 16px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-xl);
+  background: var(--background);
 }
 .grid {
   position: absolute;
