@@ -13,16 +13,18 @@ import styles from "./event-card.module.css";
 export function EventCard({
   event,
   priority = false,
+  mobilePair = false,
 }: {
   event: EventItem;
   priority?: boolean;
+  mobilePair?: boolean;
 }) {
   const image = event.image || event.thumbnail;
   const category = categories.find((item) => item.id === event.category)?.label;
   const startsAt = new Date(event.starts_at).toISOString();
 
   return (
-    <AppLink data-motion-item className={`event-card ${styles.card}`} href={`/events/${event.id}`}
+    <AppLink data-motion-item className={`event-card ${styles.card}${mobilePair ? ` ${styles.mobilePair}` : ""}`} href={`/events/${event.id}`}
       aria-label={`مشاهدهٔ ایونت ${event.title}`}>
       <div className={`${styles.surface}${image ? "" : ` ${styles.withoutImage}`}`}>
         {image && (
@@ -43,7 +45,7 @@ export function EventCard({
                 ? "تکمیل ظرفیت"
                 : `${fa(event.remaining)} نفر باقی مانده`}
           </span>
-          <RegistrationCountdown deadline={event.registration_ends_at} compact />
+          <RegistrationCountdown deadline={event.registration_ends_at} compact squareTiles={mobilePair} />
         </div>
         <div className={styles.spacer} />
         <div className={styles.content}>

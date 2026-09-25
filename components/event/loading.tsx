@@ -3,12 +3,13 @@ import { ScannerHeader } from "./scanner-header";
 import styles from "./loading.module.css";
 import groupStyles from "./event-group.module.css";
 import detail from "./event-detail.module.css";
+import layouts from "./page-layouts.module.css";
 
 export type LoadingVariant = "discovery" | "catalog" | "event" | "account" | "reservations" | "host" | "host-event" | "scanner";
 
-function EventCardSkeleton() {
+function EventCardSkeleton({ mobilePair = false }: { mobilePair?: boolean }) {
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card}${mobilePair ? ` ${styles.mobilePair}` : ""}`}>
       <Skeleton className={`event-image ${styles.cover}`} />
       <div className={styles.cardBody}>
         <Lines heading />
@@ -73,7 +74,7 @@ function LoadingContent({ variant }: { variant: LoadingVariant }) {
               <div className={groupStyles.viewport}>
                 <div className={groupStyles.track}>
                   {[0, 1, 2].map((item) => (
-                    <div key={item} className={groupStyles.slide}><EventCardSkeleton /></div>
+                    <div key={item} className={groupStyles.slide}><EventCardSkeleton mobilePair /></div>
                   ))}
                 </div>
               </div>
@@ -107,12 +108,21 @@ function LoadingContent({ variant }: { variant: LoadingVariant }) {
         <>
           {variant === "account" && <Skeleton className={styles.accountProfile} />}
           <Skeleton className={styles.tabs} />
-          <div className="reservation-list">
+          <div className={`reservation-list ${layouts.reservationList}`}>
             {Array.from({ length: 3 }, (_, index) => (
-              <div className="reservation-card" key={index}>
-                <Skeleton className={styles.reservationImage} />
-                <div className="reservation-info"><Lines heading /></div>
-                <div className="reservation-actions"><Skeleton className={styles.action} /></div>
+              <div className={`reservation-card ${layouts.ticketCard}`} key={index}>
+                <Skeleton className={layouts.ticketImage} />
+                <div className={`reservation-info ${layouts.ticketInfo}`}>
+                  <div className={layouts.ticketHeader}>
+                    <Skeleton className={styles.reservationStatus} />
+                    <Skeleton className={styles.reservationStatus} />
+                  </div>
+                  <Lines heading />
+                </div>
+                <div className={`reservation-actions ${layouts.ticketActions}`}>
+                  <Skeleton className={styles.action} />
+                  <Skeleton className={styles.action} />
+                </div>
               </div>
             ))}
           </div>

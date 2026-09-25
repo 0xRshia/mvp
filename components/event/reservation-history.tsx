@@ -9,7 +9,6 @@ import {
   Ticket,
   UserRound,
   LogOut,
-  CalendarDays,
   MapPin,
   ArrowLeft,
   CheckCircle2,
@@ -36,7 +35,6 @@ import { eventLocationUrl } from "@/lib/location-url";
 import { groupReservations } from "@/lib/reservation-history";
 import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import styles from "@/components/event/ticket-download.module.css";
-import mediaStyles from "@/components/event/event-media.module.css";
 import layouts from "@/components/event/page-layouts.module.css";
 export function ReservationHistory({ account = false }: { account?: boolean }) {
   const { user } = useAuth();
@@ -125,38 +123,40 @@ function ReservationHistoryContent({ account }: { account: boolean }) {
   }
   function list(items: Reservation[]) {
     return items.length ? (
-      <div data-motion-group className="reservation-list">
+      <div data-motion-group className={`reservation-list ${layouts.reservationList}`}>
         {items.map((r) => {
           const locationUrl = eventLocationUrl(r);
           return (
-          <article className={`reservation-card ${layouts.ticketCard}${r.image ? "" : ` ${mediaStyles.reservationWithoutImage}`}`} key={r.id}>
-            {r.image && <img src={r.image} alt={`تصویر ${r.title}`} />}
+          <article className={`reservation-card ${layouts.ticketCard}`} key={r.id}>
+            {r.image && <img className={layouts.ticketImage} src={r.image} alt={`تصویر ${r.title}`} />}
             <div className={`reservation-info ${layouts.ticketInfo}`}>
-              <span
-                className={`status ${r.status === "confirmed" ? "success" : ""}`}
-              >
-                {status(r)}
-              </span>
+              <div className={layouts.ticketHeader}>
+                <span className={`status ${r.status === "confirmed" ? "success" : ""}`}>
+                  {status(r)}
+                </span>
+                {r.total === 0 &&
+                  r.status === "confirmed" &&
+                  r.starts_at > now && (
+                    <button
+                      type="button"
+                      className={layouts.ticketCancel}
+                      onClick={() => setCancel(r.id)}
+                    >
+                      لغو رزرو
+                    </button>
+                  )}
+              </div>
               <AppLink href={`/events/${r.event_id}`}>
                 <h2>{r.title}</h2>
               </AppLink>
               <p>
-                <CalendarDays size={15} />
                 {date(r.starts_at)}، ساعت {clock(r.starts_at)}
               </p>
-              <p>
-                <MapPin size={15} />
-                {r.venue}
-              </p>
+              <p>{r.venue}</p>
               <div className="reservation-meta">
                 <span>{fa(r.quantity)} نفر</span>
                 <strong>{r.total ? `${fa(r.total)} تومان` : "رایگان"}</strong>
               </div>
-              {r.status === "confirmed" && (
-                <p className="ticket-code">
-                  کد رزرو: <bdi>{r.id}</bdi>
-                </p>
-              )}
               {r.reference && (
                 <p className="ticket-code">
                   شناسهٔ پرداخت: <bdi>{r.reference}</bdi>
@@ -182,16 +182,6 @@ function ReservationHistoryContent({ account }: { account: boolean }) {
                   مشاهده آدرس
                 </a>
               )}
-              {r.total === 0 &&
-                r.status === "confirmed" &&
-                r.starts_at > now && (
-                  <button
-                    className="text-button danger"
-                    onClick={() => setCancel(r.id)}
-                  >
-                    لغو رزرو
-                  </button>
-                )}
               {r.total > 0 &&
                 r.status === "hold" &&
                 (r.expires_at ?? 0) > now && (

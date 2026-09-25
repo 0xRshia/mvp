@@ -35,7 +35,7 @@
 .cover { width: 100%; border-radius: 0; }
 .cardBody { display: grid; gap: 22px; padding: 22px; }
 .cardFooter { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
-.reservationImage { width: 170px; height: 190px; border-radius: 12px; flex-shrink: 0; }
+.reservationStatus { inline-size: 88px; block-size: 28px; border-radius: 999px; }
 .accountProfile { inline-size: 100%; block-size: 120px; border-radius: 24px; }
 .table { overflow: hidden; border: 1px solid var(--border); border-radius: 12px; }
 .tableRow { display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 20px; padding: 23px 16px; border-bottom: 1px solid var(--border); }
@@ -45,13 +45,17 @@
 .catalogHeading { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; margin-bottom: 28px; }
 .search { height: 64px; width: 100%; margin-top: 12px; }
 @keyframes loading-pulse { 50% { opacity: .65; } }
-@media (max-width: 800px) {
-  .reservationImage { width: 140px; height: 155px; }
-}
 @media (max-width: 600px) {
   .card { min-block-size: 520px; border-radius: 30px; }
-  .reservationImage { width: 85px; height: 100px; border-radius: 8px; }
   .cardBody { padding: 18px; }
+  .mobilePair { min-block-size: max(240px, 150cqw); border-radius: 18px; }
+  .mobilePair .cardBody { padding: clamp(7px, 5cqw, 13px); gap: 7px; }
+  .mobilePair .lines { gap: 7px; }
+  .mobilePair .title { height: 18px; }
+  .mobilePair .line { height: 9px; }
+  .mobilePair .shortLine { height: 8px; }
+  .mobilePair .cardFooter { gap: 7px; }
+  .mobilePair .action { height: 28px; }
   .tableRow { gap: 12px; padding-inline: 12px; }
   .categoryGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
   .categoryTile { height: 98px; }

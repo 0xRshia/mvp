@@ -68,7 +68,7 @@ export function EventGroup({
             <div className={styles.slide} key={event.id} role="group"
               aria-label={`${fa(index + 1)} از ${fa(preview.length)} ایونت`}>
               <div className={styles.entrance}>
-                <EventCard event={event} priority={priority && index < 3} />
+                <EventCard event={event} priority={priority && index < 3} mobilePair />
               </div>
             </div>
           ))}

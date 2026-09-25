@@ -108,6 +108,13 @@
 .card:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; }
 .card:focus-visible .action { background: var(--primary-hover); }
 
+.mobilePair:global(.event-card) { container-type: inline-size; }
+.mobilePair .surface {
+  --countdown-compact-digit-size: clamp(13px, 4.8cqw, 17px);
+  --countdown-square-tile-size: clamp(32px, 12cqw, 44px);
+  --countdown-square-unit-gap: clamp(4px, 1.5cqw, 6px);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .card:hover .surface { transform: rotateX(1deg) rotateY(-1deg); }
   .card:hover .image { transform: scale(1.025); }
@@ -120,6 +127,74 @@
   .card:global(.event-card) { border-radius: 30px; }
   .card .title { font-size: 20px; }
   .spacer { min-block-size: 72px; }
+
+  .card:not(.mobilePair) .surface { --countdown-compact-digit-size: 15px; }
+  .card:not(.mobilePair) .title { font-size: 18px; }
+  .card:not(.mobilePair) .venue { font-size: 12px; }
+  .card:not(.mobilePair) .capacity, .card:not(.mobilePair) .facts { font-size: 10px; }
+  .card:not(.mobilePair) .category,
+  .card:not(.mobilePair) .dateStamp span,
+  .card:not(.mobilePair) .price > span,
+  .card:not(.mobilePair) .price small { font-size: 11px; }
+  .card:not(.mobilePair) .dateStamp strong { font-size: 28px; }
+  .card:not(.mobilePair) .price strong { font-size: 14px; }
+  .card:not(.mobilePair) .action { font-size: 13px; }
+
+  .mobilePair:global(.event-card) { border-radius: 18px; }
+  .mobilePair .surface {
+    --countdown-compact-digit-size: clamp(8px, 4cqw, 11px);
+    --countdown-compact-unit-gap: 4px;
+    --countdown-compact-label-size: clamp(6px, 3cqw, 8px);
+    --countdown-compact-padding: 3px;
+    --countdown-compact-height: 24px;
+    --countdown-compact-icon-size: 8px;
+    --countdown-compact-label-gap: 2px;
+    --countdown-square-tile-size: clamp(22px, 14cqw, 34px);
+    --countdown-square-unit-gap: clamp(2px, 1cqw, 3px);
+    flex: 1;
+    padding: clamp(7px, 5cqw, 13px);
+    /* Keep the portrait proportions as a minimum so wrapped text can grow the card. */
+    aspect-ratio: auto;
+    min-block-size: max(240px, 150cqw);
+  }
+  .mobilePair .topline { gap: 4px; min-block-size: 24px; }
+  .mobilePair .capacity {
+    gap: 2px;
+    min-block-size: 24px;
+    padding: 3px;
+    font-size: clamp(6px, 3cqw, 8px);
+    line-height: 1.5;
+  }
+  .mobilePair .capacity svg { inline-size: 8px; block-size: 8px; }
+  .mobilePair .spacer { min-block-size: clamp(28px, 24cqw, 64px); }
+  .mobilePair .content { gap: clamp(4px, 2.8cqw, 7px); }
+  .mobilePair .categoryRow { gap: 5px; }
+  .mobilePair .category {
+    min-inline-size: 0;
+    padding: 2px 5px;
+    margin-block-end: 2px;
+    font-size: clamp(7px, 3.5cqw, 10px);
+    overflow-wrap: anywhere;
+  }
+  .mobilePair .dateStamp {
+    min-inline-size: 28px;
+    min-block-size: 38px;
+    padding: 4px 5px;
+    border-radius: 8px;
+  }
+  .mobilePair .dateStamp strong { font-size: clamp(19px, 10cqw, 27px); }
+  .mobilePair .dateStamp span { font-size: clamp(7px, 3.5cqw, 10px); }
+  .mobilePair .title { font-size: clamp(10px, 7cqw, 18px); }
+  .mobilePair .venue { gap: 3px; font-size: clamp(8px, 4cqw, 11px); }
+  .mobilePair .venue svg { inline-size: 10px; block-size: 10px; }
+  .mobilePair .facts { gap: 3px 5px; padding-block: 1px 2px; font-size: clamp(7px, 3.5cqw, 10px); }
+  .mobilePair .facts > * { gap: 2px; min-inline-size: 0; overflow-wrap: anywhere; }
+  .mobilePair .facts svg { inline-size: 8px; block-size: 8px; }
+  .mobilePair .price { gap: 3px; min-block-size: 26px; padding: 4px 6px; }
+  .mobilePair .price > span, .mobilePair .price small { font-size: clamp(7px, 3.5cqw, 10px); }
+  .mobilePair .price strong { min-inline-size: 0; font-size: clamp(8px, 4.5cqw, 12px); overflow-wrap: anywhere; }
+  .mobilePair .action { gap: 4px; min-block-size: 28px; block-size: 28px; font-size: clamp(9px, 4.5cqw, 12px); }
+  .mobilePair .action svg { inline-size: 11px; block-size: 11px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .surface, .image, .action svg { transition: none; }
