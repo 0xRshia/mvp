@@ -114,6 +114,41 @@
 .authCard .serviceNotice { margin: 0; padding: 12px 14px; font-size: 12px; line-height: 1.9; }
 .serviceNotice p + p { margin-block-start: 6px; }
 
+.detailCountdown.detailCountdown {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 41;
+  min-block-size: calc(44px + env(safe-area-inset-top));
+  padding-block-start: env(safe-area-inset-top);
+  padding-right: max(12px, env(safe-area-inset-right));
+  padding-left: max(12px, env(safe-area-inset-left));
+  border-block-end: 1px solid var(--border);
+  background: var(--card);
+}
+:global(html):has(.detailCountdown) { scroll-padding-block-start: calc(60px + env(safe-area-inset-top)); }
+.detailCountdown ~ .detailPage .bookingPanel.bookingPanel { inset-block-start: calc(60px + env(safe-area-inset-top)); }
+
+.bookingActionBar {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: var(--event-mobile-nav-space, 0px);
+  z-index: 41;
+  display: flex;
+  justify-content: center;
+  padding: 12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  border-block-start: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: 0 -8px 24px var(--shadow-color);
+}
+.bookingActionBar > :global(.button) { max-inline-size: 340px; min-block-size: var(--control-height); margin: 0; }
+/* Reserve space through the footer as well as the event content, only while the portal is mounted. */
+:global(html):has(.bookingActionBar) {
+  --event-booking-space: calc(var(--control-height) + 25px + env(safe-area-inset-bottom));
+  --event-mobile-nav-space: 0px;
+  scroll-padding-block-end: calc(var(--event-booking-space) + var(--event-mobile-nav-space));
+}
+:global(body):has(.bookingActionBar) { padding-block-end: calc(var(--event-booking-space) + var(--event-mobile-nav-space)); }
+
 .detailPage { position: relative; isolation: isolate; }
 .detailPage::before {
   content: "";
@@ -255,6 +290,12 @@
 }
 
 @media (max-width: 600px) {
+  :global(html):has(.bookingActionBar) {
+    --event-booking-space: calc(var(--control-height) + 25px);
+    --event-mobile-nav-space: calc(76px + env(safe-area-inset-bottom));
+  }
+  .bookingActionBar { padding-block-end: 12px; }
+  .bookingActionBar > :global(.button) { max-inline-size: none; }
   .page.page { padding-block: 26px 40px; }
   .pageHeading.pageHeading { margin-block-end: 24px; padding-block-end: 22px; }
   .authPage.authPage { padding-block: 24px 40px; }

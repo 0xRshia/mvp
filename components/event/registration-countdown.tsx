@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Clock3 } from "lucide-react";
 import { useDeadlineClock } from "@/hooks/use-deadline-clock";
-import { REGISTRATION_CLOSED, registrationCountdownSeconds } from "@/lib/registration";
+import { REGISTRATION_CLOSED, registrationCountdownMinutes } from "@/lib/registration";
 import { fa } from "@/lib/types";
 import styles from "./registration-countdown.module.css";
 
@@ -21,27 +21,31 @@ function RollingDigit({ digit }: { digit: string }) {
   );
 }
 
-export function RegistrationCountdown({ deadline, compact = false }: { deadline: number; compact?: boolean }) {
-  const now = useDeadlineClock(deadline, 1000);
-  const remaining = now === null ? null : registrationCountdownSeconds(deadline, now);
-  const className = `${styles.countdown}${compact ? ` ${styles.compact}` : ""}`;
+export function RegistrationCountdown({ deadline, compact = false, className = "" }: {
+  deadline: number;
+  compact?: boolean;
+  className?: string;
+}) {
+  const now = useDeadlineClock(deadline);
+  const remaining = now === null ? null : registrationCountdownMinutes(deadline, now);
+  const countdownClassName = `${styles.countdown}${compact ? ` ${styles.compact}` : ""} ${className}`;
   if (remaining === null) return null;
   if (remaining === 0) {
     return (
-      <div className={`${className} ${styles.closed}`}>
-        <span className={styles.label}><Clock3 size={18} aria-hidden="true" />{REGISTRATION_CLOSED}</span>
+      <div className={`${countdownClassName} ${styles.closed}`}>
+        <span className={styles.label}><Clock3 size={16} aria-hidden="true" /><span>{REGISTRATION_CLOSED}</span></span>
       </div>
     );
   }
   const units = [
-    { value: Math.floor(remaining / 3600), label: "ساعت" },
-    { value: Math.floor(remaining / 60) % 60, label: "دقیقه" },
-    { value: remaining % 60, label: "ثانیه" },
+    { value: Math.floor(remaining / (24 * 60)), label: "روز" },
+    { value: Math.floor(remaining / 60) % 24, label: "ساعت" },
+    { value: remaining % 60, label: "دقیقه" },
   ];
   const description = units.map(({ value, label }) => `${fa(value)} ${label}`).join(" و ");
   return (
-    <div className={className} role="timer" aria-live="off" aria-label={`زمان باقی‌مانده تا پایان ثبت‌نام: ${description}`}>
-      <span className={styles.label} aria-hidden="true"><Clock3 size={18} />زمان باقی‌مانده تا پایان ثبت‌نام</span>
+    <div className={countdownClassName} role="timer" aria-live="off" aria-label={`زمان باقی‌مانده تا پایان ثبت‌نام: ${description}`}>
+      <span className={styles.label} aria-hidden="true"><Clock3 size={16} />مهلت ثبت‌نام</span>
       <div className={styles.units} dir="ltr" aria-hidden="true">
         {units.map(({ value, label }) => (
           <div className={styles.unit} key={label}>

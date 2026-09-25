@@ -61,7 +61,7 @@
     var(--image-overlay);
 }
 
-.topline { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px 8px; min-block-size: 44px; }
+.topline { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 8px; min-block-size: 44px; }
 .capacity, .dateStamp, .price {
   border: 1px solid var(--glass-border);
   background: var(--glass-surface);
@@ -73,13 +73,17 @@
 .capacity {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  min-inline-size: 0;
   max-inline-size: 100%;
-  min-block-size: 40px;
-  padding: 8px 12px;
+  min-block-size: 44px;
+  padding: 6px 8px;
   border-radius: 999px;
   font-size: 11px;
   line-height: 1.8;
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 .card svg { display: block; flex-shrink: 0; }
 .soldOut { border-style: dashed; }
@@ -116,7 +120,6 @@
   .card:global(.event-card) { border-radius: 30px; }
   .card .title { font-size: 20px; }
   .spacer { min-block-size: 72px; }
-  .capacity { padding: 7px 10px; font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .surface, .image, .action svg { transition: none; }

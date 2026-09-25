@@ -3,6 +3,7 @@ import { useSearchParams } from "next/navigation";
 import { ButtonLabel } from "@/components/ui/button-label";
 import { AppLink, useAppNavigate } from "@/components/event/app-navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   ArrowRight,
   ArrowLeft,
@@ -133,6 +134,8 @@ function EventDetailContent({ id }: { id: string }) {
   const mapUrl = eventLocationUrl(event);
   const category = categories.find((item) => item.id === event.category)?.label;
   return (
+    <>
+    <RegistrationCountdown key={`countdown-${event.id}`} deadline={event.registration_ends_at} className={layouts.detailCountdown} />
     <main data-motion-group className={`container subpage ${layouts.page} ${layouts.detailPage}`}>
       <AppLink className="back-link" href="/">
         <ArrowRight size={17} />
@@ -147,7 +150,6 @@ function EventDetailContent({ id }: { id: string }) {
             <span><CalendarDays size={18} aria-hidden="true" />{date(event.starts_at, true)}</span>
             <span><Clock3 size={18} aria-hidden="true" />{clock(event.starts_at)} تا {clock(event.ends_at)}</span>
           </div>
-          <RegistrationCountdown key={`countdown-${event.id}`} deadline={event.registration_ends_at} />
         </div>
         {event.image && <div data-motion-item className={layouts.detailHeroImage}><img src={event.image} alt={`تصویر ${event.title}`} /></div>}
       </header>
@@ -209,20 +211,12 @@ function EventDetailContent({ id }: { id: string }) {
             </p>
           </div>
           {closed ? (
-            <>
             <div className="notice registration-notice" role="status">
               {availability === "checking" ? "در حال بررسی مهلت ثبت‌نام…" : availability === "started"
                 ? "ثبت‌نام این ایونت پایان یافته است."
                 : availability === "expired" ? "مهلت ثبت‌نام این ایونت پایان یافته است."
                   : "ظرفیت این ایونت تکمیل شده است."}
             </div>
-            <button className="button full" disabled>
-              <ButtonLabel
-                state={availability === "checking" ? "checking" : availability === "sold_out" ? "sold-out" : "closed"}
-                states={{ checking: "در حال بررسی…", "sold-out": "تکمیل ظرفیت", closed: REGISTRATION_CLOSED }}
-              />
-            </button>
-            </>
           ) : (
             <>
               <div className="quantity-row">
@@ -262,29 +256,6 @@ function EventDetailContent({ id }: { id: string }) {
                     : "رایگان"}
                 </strong>
               </div>
-              {user ? (
-                <button
-                  className="button full"
-                  onClick={() => {
-                    if (registrationState(event, Date.now()) !== "open") return;
-                    setKey(crypto.randomUUID());
-                    setBuyerName(user.name ?? "");
-                    setBookingError("");
-                    setConfirm(true);
-                  }}
-                >
-                  {event.price ? (skipPayDevEnabled ? "رزرو بدون پرداخت" : "خرید بلیت") : "ثبت‌نام رایگان"}
-                  <ArrowLeft size={18} />
-                </button>
-              ) : (
-                <AppLink
-                  className="button full"
-                  href={`/login?next=${encodeURIComponent(`/events/${id}?quantity=${quantity}`)}`}
-                >
-                  {event.price ? (skipPayDevEnabled ? "ورود و رزرو بدون پرداخت" : "ورود و خرید بلیت") : "ورود و ثبت‌نام رایگان"}
-                  <ArrowLeft size={18} />
-                </AppLink>
-              )}
               {event.price > 0 && !paymentReady && !skipPayDevEnabled && (
                 <p className="notice">
                   فروش بلیت پس از فعال‌سازی درگاه پرداخت آغاز می‌شود.
@@ -376,5 +347,42 @@ function EventDetailContent({ id }: { id: string }) {
         </DialogContent>
       </Dialog>
     </main>
+    {/* The clock becomes available after hydration; the portal escapes the sidebar's backdrop filter. */}
+    {now !== null && createPortal(
+      <div className={layouts.bookingActionBar} role="region" aria-label="رزرو بلیت" dir="rtl">
+        {closed ? (
+          <button className="button full" disabled>
+            <ButtonLabel
+              state={availability === "checking" ? "checking" : availability === "sold_out" ? "sold-out" : "closed"}
+              states={{ checking: "در حال بررسی…", "sold-out": "تکمیل ظرفیت", closed: REGISTRATION_CLOSED }}
+            />
+          </button>
+        ) : user ? (
+          <button
+            className="button full"
+            onClick={() => {
+              if (registrationState(event, Date.now()) !== "open") return;
+              setKey(crypto.randomUUID());
+              setBuyerName(user.name ?? "");
+              setBookingError("");
+              setConfirm(true);
+            }}
+          >
+            {event.price ? (skipPayDevEnabled ? "رزرو بدون پرداخت" : "خرید بلیت") : "ثبت‌نام رایگان"}
+            <ArrowLeft size={18} />
+          </button>
+        ) : (
+          <AppLink
+            className="button full"
+            href={`/login?next=${encodeURIComponent(`/events/${id}?quantity=${quantity}`)}`}
+          >
+            {event.price ? (skipPayDevEnabled ? "ورود و رزرو بدون پرداخت" : "ورود و خرید بلیت") : "ورود و ثبت‌نام رایگان"}
+            <ArrowLeft size={18} />
+          </AppLink>
+        )}
+      </div>,
+      document.body,
+    )}
+    </>
   );
 }
