@@ -12,6 +12,7 @@ export default function Loading() {
   else if (pathname === "/events" || pathname === "/events/free") variant = "catalog";
   else if (pathname.startsWith("/events/")) variant = "event";
   else if (pathname === "/reservations") variant = "reservations";
+  else if (pathname === "/account") variant = "account";
   else if (pathname === "/host") variant = "host";
   else if (pathname.startsWith("/host/events/")) variant = "host-event";
   else if (pathname === "/scanner") variant = "scanner";

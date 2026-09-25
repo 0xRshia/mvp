@@ -2,8 +2,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ScannerHeader } from "./scanner-header";
 import styles from "./loading.module.css";
 import groupStyles from "./event-group.module.css";
+import detail from "./event-detail.module.css";
 
-export type LoadingVariant = "discovery" | "catalog" | "event" | "reservations" | "host" | "host-event" | "scanner";
+export type LoadingVariant = "discovery" | "catalog" | "event" | "account" | "reservations" | "host" | "host-event" | "scanner";
 
 function EventCardSkeleton() {
   return (
@@ -92,25 +93,19 @@ function LoadingContent({ variant }: { variant: LoadingVariant }) {
       return (
         <>
           <Skeleton className={styles.backLink} />
-          <div className="detail-grid">
-            <div>
-              <Skeleton className="detail-photo" />
-              <div className="detail-copy"><Lines heading /></div>
-              <Lines />
-            </div>
-            <div className={`booking-panel ${styles.lines}`}>
-              <Skeleton className={styles.title} />
-              <Lines />
-              <Skeleton className={styles.field} />
-              <Skeleton className={styles.field} />
-              <Skeleton className={styles.shortLine} />
-            </div>
+          <Skeleton className={detail.hero} />
+          <div className={`${detail.article} ${styles.lines}`}>
+            <Lines heading />
+            <Lines />
+            <Skeleton className={styles.field} />
           </div>
         </>
       );
+    case "account":
     case "reservations":
       return (
         <>
+          {variant === "account" && <Skeleton className={styles.accountProfile} />}
           <Skeleton className={styles.tabs} />
           <div className="reservation-list">
             {Array.from({ length: 3 }, (_, index) => (
@@ -194,7 +189,7 @@ export function Loading({ variant = "catalog" }: { variant?: LoadingVariant }) {
 export function LoadingPage({ variant }: { variant: LoadingVariant }) {
   const catalog = variant === "catalog" || variant === "discovery";
   return (
-    <main data-motion-skip className={variant === "scanner" ? "scanner-page" : `container ${catalog ? "discover" : "subpage"}`}>
+    <main data-motion-skip className={variant === "scanner" ? "scanner-page" : `container ${catalog ? "discover" : "subpage"}${variant === "event" ? ` ${detail.page}` : ""}`}>
       {variant === "scanner" ? (
         <ScannerHeader />
       ) : variant !== "event" && variant !== "host-event" ? (

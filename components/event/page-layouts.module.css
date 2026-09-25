@@ -114,117 +114,13 @@
 .authCard .serviceNotice { margin: 0; padding: 12px 14px; font-size: 12px; line-height: 1.9; }
 .serviceNotice p + p { margin-block-start: 6px; }
 
-.detailCountdown.detailCountdown {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: 41;
-  min-block-size: calc(44px + env(safe-area-inset-top));
-  padding-block-start: env(safe-area-inset-top);
-  padding-right: max(12px, env(safe-area-inset-right));
-  padding-left: max(12px, env(safe-area-inset-left));
-  border-block-end: 1px solid var(--border);
-  background: var(--card);
-}
-:global(html):has(.detailCountdown) { scroll-padding-block-start: calc(60px + env(safe-area-inset-top)); }
-.detailCountdown ~ .detailPage .bookingPanel.bookingPanel { inset-block-start: calc(60px + env(safe-area-inset-top)); }
-
-.bookingActionBar {
-  position: fixed;
-  inset-inline: 0;
-  inset-block-end: var(--event-mobile-nav-space, 0px);
-  z-index: 41;
-  display: flex;
-  justify-content: center;
-  padding: 12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-  border-block-start: 1px solid var(--border);
-  background: var(--card);
-  box-shadow: 0 -8px 24px var(--shadow-color);
-}
-.bookingActionBar > :global(.button) { max-inline-size: 340px; min-block-size: var(--control-height); margin: 0; }
-/* Reserve space through the footer as well as the event content, only while the portal is mounted. */
-:global(html):has(.bookingActionBar) {
-  --event-booking-space: calc(var(--control-height) + 25px + env(safe-area-inset-bottom));
-  --event-mobile-nav-space: 0px;
-  scroll-padding-block-end: calc(var(--event-booking-space) + var(--event-mobile-nav-space));
-}
-:global(body):has(.bookingActionBar) { padding-block-end: calc(var(--event-booking-space) + var(--event-mobile-nav-space)); }
-
-.detailPage { position: relative; isolation: isolate; }
-.detailPage::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset-block-start: 500px;
-  inset-inline-end: 0;
-  inline-size: min(75%, 700px);
-  block-size: 650px;
-  pointer-events: none;
-  background: radial-gradient(ellipse, color-mix(in srgb, var(--primary) 18%, transparent), transparent 68%);
-}
-.detailHero {
-  position: relative;
-  isolation: isolate;
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-  align-items: center;
-  min-block-size: 450px;
-  padding: 24px;
-  overflow: hidden;
-  border: 1px solid var(--surface-glass-border);
-  border-radius: 34px;
-  margin-block: 24px 32px;
-  background: var(--secondary);
-  background-clip: padding-box;
-  box-shadow: 0 20px 64px var(--shadow-color);
-}
-.detailHero::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(0deg, color-mix(in srgb, var(--image-overlay) 25%, transparent), transparent 55%);
-}
-.heroWithoutImage { grid-template-columns: minmax(0, 1fr); min-block-size: 0; }
-.heroWithoutImage::after { display: none; }
-.detailHeroCopy {
-  min-inline-size: 0;
-  padding: clamp(24px, 3vw, 36px);
-  border: 1px solid var(--surface-glass-border);
-  border-radius: 26px;
-  background: var(--card);
-  box-shadow: inset 0 1px 0 var(--surface-glass-sheen), 0 12px 40px var(--shadow-color);
-}
-.detailHeroCopy > :global(.eyebrow) { margin-block-start: 20px; }
-.detailHeroCopy .heroVenue { align-items: center; color: var(--text-secondary); gap: 8px; }
-.heroVenue span { min-inline-size: 0; overflow-wrap: anywhere; }
-.detailHeroCopy h1 { font-size: clamp(28px, 3vw, 40px); font-weight: 900; line-height: 1.7; margin-block: 14px 20px; text-wrap: balance; overflow-wrap: anywhere; }
-.heroFacts { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--text-secondary); }
-.heroFacts span { display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--surface-glass-border); border-radius: 12px; background: var(--surface-glass); }
-.detailPage svg { display: block; flex-shrink: 0; }
-.heroFacts svg, .heroVenue svg { color: var(--primary); }
-.detailHeroImage { position: absolute; z-index: -2; inset: 0; min-inline-size: 0; overflow: hidden; }
-.detailHeroImage img { position: absolute; inset: 0; display: block; inline-size: 100%; block-size: 100%; object-fit: cover; }
-.detailGrid.detailGrid { grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; }
-.detailArticle { min-inline-size: 0; padding: 30px; border: 1px solid var(--surface-glass-border); border-radius: 28px; background: var(--card); box-shadow: inset 0 1px 0 var(--surface-glass-sheen), 0 16px 48px var(--shadow-color); }
-.detailArticle :global(.detail-copy) { padding: 0; }
-.detailArticle :global(.detail-copy) > :first-child { margin-block-start: 0; }
-.bookingPanel.bookingPanel { border: 1px solid var(--surface-glass-border); border-radius: 28px; padding: 26px; background: var(--card); inset-block-start: 24px; box-shadow: inset 0 1px 0 var(--surface-glass-sheen), 0 18px 54px var(--shadow-color); }
-.bookingPanel :global(.booking-facts) { gap: 10px; border-block-end: 0; padding-block-end: 0; }
-.bookingPanel :global(.booking-facts) > p { min-block-size: 44px; padding: 10px 12px; border: 1px solid var(--surface-glass-border); border-radius: 12px; background: var(--surface-glass); }
-.bookingPanel :global(.booking-facts) > :global(.booking-capacity) { align-self: stretch; border-color: var(--border); background: var(--secondary); color: var(--secondary-foreground); }
-.bookingPanel :global(.booking-facts) > :global(.booking-capacity.sold-out) { background: var(--badge-neutral); color: var(--badge-neutral-foreground); }
-.bookingPanel :global(.quantity-control) { gap: 12px; }
-.bookingPanel :global(.total-row) { padding: 14px; background: var(--secondary); color: var(--secondary-foreground); border-radius: 12px; }
-.bookingPanel :global(.booking-note) { align-items: center; }
-.detailArticle :global(.map-link) { min-block-size: var(--control-height); padding: 10px 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--secondary); color: var(--secondary-foreground); transition: background-color var(--motion-fast), color var(--motion-fast); }
-.detailArticle :global(.map-link):hover { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .detailHeroCopy { background: var(--surface-glass-strong); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
-  .detailArticle, .bookingPanel.bookingPanel { background: var(--surface-glass); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
-}
-
 .reservationsPage :global(.reservation-list) { gap: 20px; }
+.accountProfile { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; padding: 24px; margin-block-end: 32px; border: 1px solid var(--border); border-radius: 24px; background: var(--card); }
+.accountIdentity { display: flex; align-items: center; gap: 16px; min-inline-size: 0; }
+.accountAvatar { display: grid; place-items: center; flex: none; inline-size: 60px; block-size: 60px; border-radius: 20px; background: var(--accent); color: var(--accent-foreground); }
+.accountIdentity h2 { font-size: 20px; font-weight: 700; overflow-wrap: anywhere; }
+.accountIdentity p { font-size: 13px; color: var(--text-secondary); margin-block-start: 6px; }
+.accountHistoryTitle { font-size: 21px; font-weight: 800; margin-block-end: 24px; }
 .ticketCard.ticketCard { border-radius: 24px; padding: 20px; gap: 24px; background: var(--card); box-shadow: 0 8px 28px var(--shadow-color); align-items: center; }
 .ticketCard.ticketCard > img { inline-size: 156px; block-size: 172px; border-radius: 16px; object-fit: cover; }
 .ticketInfo.ticketInfo { min-inline-size: 0; padding: 0; }
@@ -269,8 +165,6 @@
   .ticketCard.ticketCard { gap: 18px; }
   .ticketCard.ticketCard > img { inline-size: 120px; block-size: 152px; }
   .ticketActions.ticketActions { padding-inline-start: 18px; min-inline-size: 164px; }
-  .detailGrid.detailGrid { grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; }
-  .bookingPanel.bookingPanel { padding: 22px; }
 }
 
 @media (max-width: 800px) {
@@ -278,10 +172,6 @@
   .authWelcome { text-align: center; padding: 0; }
   .authWelcome h2 { font-size: 28px; margin-block: 10px; }
   .authWelcome > p, .welcomeArt, .welcomeNote { display: none; }
-  .detailHero { grid-template-columns: minmax(0, 1fr); padding-block-start: 210px; }
-  .heroWithoutImage { padding-block-start: 24px; }
-  .detailGrid.detailGrid { grid-template-columns: minmax(0, 1fr); }
-  .bookingPanel.bookingPanel { position: static; grid-row: auto; }
   .ticketCard.ticketCard { flex-wrap: wrap; }
   .ticketInfo.ticketInfo { flex: 1; }
   .ticketActions.ticketActions { flex: 1 1 100%; border-inline-start: 0; border-block-start: 1px solid var(--border); padding-inline-start: 0; padding-block-start: 18px; flex-direction: row; flex-wrap: wrap; }
@@ -290,12 +180,6 @@
 }
 
 @media (max-width: 600px) {
-  :global(html):has(.bookingActionBar) {
-    --event-booking-space: calc(var(--control-height) + 25px);
-    --event-mobile-nav-space: calc(76px + env(safe-area-inset-bottom));
-  }
-  .bookingActionBar { padding-block-end: 12px; }
-  .bookingActionBar > :global(.button) { max-inline-size: none; }
   .page.page { padding-block: 26px 40px; }
   .pageHeading.pageHeading { margin-block-end: 24px; padding-block-end: 22px; }
   .authPage.authPage { padding-block: 24px 40px; }
@@ -303,12 +187,6 @@
   .authWelcome h2 { font-size: 25px; }
   .authCard.authCard { border-radius: 24px; padding: 24px; }
   .authCard.authCard h1 { font-size: 22px; }
-  .detailHero { margin-block: 18px 22px; border-radius: 28px; padding: 180px 12px 12px; }
-  .heroWithoutImage { padding-block-start: 12px; }
-  .detailHeroCopy { padding: 22px; border-radius: 22px; }
-  .detailHeroCopy h1 { font-size: 26px; }
-  .detailArticle { padding: 22px; border-radius: 22px; }
-  .bookingPanel.bookingPanel { border-radius: 22px; }
   .ticketCard.ticketCard { padding: 18px; gap: 16px; }
   .ticketCard.ticketCard > img { inline-size: 100%; block-size: 190px; }
   .ticketInfo.ticketInfo { flex-basis: 100%; }

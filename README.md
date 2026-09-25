@@ -44,7 +44,8 @@ Apply all migrations in filename order once to a fresh local database. For an ex
 - Suggested events from confirmed booking categories (including free registrations), followed by confirmed paid ticket popularity and newest creation dates. Suggestions respect discovery filters and exclude already-booked or unavailable events. Historical events with unknown creation dates appear after dated events in the same ranking tier and never receive a newly-added label.
 - Discovery groups Free → Suggested → New → All in RTL swipeable rows, with eight-event previews and a final listing link. `/events` and `/events/free` show full filtered grids; `?view=new` orders known creation dates newest first, and `?view=suggested` preserves recommendation ranking with an eight-event cap. Browsing filters survive client navigation in memory; reloading restores defaults and never persists precise coordinates. The homepage title and introduction are centered above the location selector.
 - Initial location choice, browser geolocation, manual city/neighborhood selection, straight-line distance sorting, category/text/date/free filters.
-- Event details, finite or unlimited capacity, 1–6 tickets per order, free registration, paid holds and redirect to Zarinpal. Available-capacity badges use an orange tint and contrasting text in cards and booking panels; sold-out badges remain neutral. Free and paid events share an animated Persian hours/minutes/seconds countdown below the title in details and cards when less than 48 hours remain until registration closes. At expiry, the countdown becomes a registration-closed message. Reduced motion disables digit animations, not time updates; booking deadlines remain authoritative.
+- Event details use a rounded image hero, Persian date stamp, capacity badge and day/hour/minute registration countdown during the final four days. The description, venue link and gallery follow in a single column, with light and dark themes. A fixed purchase bar replaces mobile bottom navigation on detail pages: choose tickets, adjust 1–6 seats, then continue to the existing name/payment confirmation. Removing the last selected ticket resets the bar without creating a reservation. Quantity survives login; capacity, deadline and payment limits remain server-enforced. Ratings and discounts are not shown because the app does not store them.
+- `/account` shows the signed-in name, phone, logout and the same purchase history as `/reservations`. Customer navigation keeps both Account and My Tickets. Host tools are available only through direct `/host` and `/host/login` URLs, with existing server permissions. Normal login defaults to Account, including for host accounts; explicit checkout returns and payment-result links are preserved.
 - Iranian phone normalization, expiring SMS OTPs, rate limits, single-use verification, database-backed sessions and logout.
 - Reservation history has three tabs: رفته (ended confirmed bookings), پیش رو (unended confirmed bookings, live payment holds, and payments needing follow-up), and لغو شده (cancellations, failed bookings, and expired holds). Actual payment status labels and retry/recheck actions remain available. Confirmed history cards offer a full-width PDF download, followed by a full-width venue-location link when a stored destination or valid coordinates exist. Each purchased seat has a separate Persian ticket page with event address and its own persistent QR. PDF download is also available immediately after confirmation. Future unused free reservations can be cancelled.
 - Separate host login, server-enforced host permissions, event creation and publish/pause controls, sales charts, and exact totals. Each event has a panel with purchaser name/phone search, paginated purchases, check-in totals, and UTF-8 CSV export of all matching purchases across pages. The overview retains its explicitly labeled current-page export.
@@ -90,8 +91,8 @@ Set the server-side `TEMP_LOGIN_ENABLED=true` in the ignored local `.env`, then 
 
 | Phone | Role while enabled | Destination |
 | --- | --- | --- |
-| `09108624707` | Regular user | Reservations, or the valid requested event |
-| `09108624708` | Host | Host dashboard |
+| `09108624707` | Regular user | Account, or the valid requested customer route |
+| `09108624708` | Host | Account or requested customer route; host dashboard from `/host/login` |
 
 These numbers log in immediately without SMS credentials or an OTP. Persian digits and equivalent `+98` numbers are accepted. They create real database accounts and the normal 30-day HttpOnly session cookie; repeated logins reuse the same account. Existing names are preserved; blank names use the supplied name or a Persian test-account label. No events or reservations are created by login. Server-side temporary roles take precedence over `HOST_PHONES` for these two numbers while enabled.
 
@@ -130,6 +131,7 @@ The component uses a circle sized to 140% of its container’s larger dimension,
 
 ```sh
 npm run typecheck
+npm run test:account-checkout
 npm run build
 # Builds must be current; the suite starts its own isolated local Worker:
 npm run test:integration

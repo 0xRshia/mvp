@@ -2,7 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import { ButtonLabel } from "@/components/ui/button-label";
 import { AppLink, useAppNavigate } from "@/components/event/app-navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowRight,
@@ -10,11 +10,9 @@ import {
   MapPin,
   CalendarDays,
   Clock3,
-  Users,
-  ShieldCheck,
   Plus,
   Minus,
-  Ticket,
+  Trash2,
 } from "lucide-react";
 import {
   Dialog,
@@ -23,7 +21,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useAuth } from "./app-shell";
-import { MAX_ORDER_TOMAN } from "@/lib/payment-limits";
+import { maxTicketQuantity, requestedTicketQuantity } from "@/lib/ticket-selection";
 import { api } from "@/lib/client";
 import { eventLocationUrl } from "@/lib/location-url";
 import { Blank, ErrorBox, Loading } from "./shared";
@@ -34,63 +32,56 @@ import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import { registrationState, REGISTRATION_CLOSED } from "@/lib/registration";
 import { fa, faDigits, date, clock, categories, type EventDetailData } from "@/lib/types";
 import styles from "./ticket-download.module.css";
-import mediaStyles from "./event-media.module.css";
-import layouts from "./page-layouts.module.css";
+import detail from "./event-detail.module.css";
 export default function EventDetail({ id }: { id: string }) {
-  return <Suspense fallback={<LoadingPage variant="event" />}><EventDetailContent id={id} /></Suspense>;
+  return <Suspense fallback={<LoadingPage variant="event" />}><EventDetailSession id={id} /></Suspense>;
 }
 
-function EventDetailContent({ id }: { id: string }) {
+function EventDetailSession({ id }: { id: string }) {
   const requestedQuantity = useSearchParams().get("quantity");
+  const { user } = useAuth();
+  return <EventDetailContent key={`${id}:${requestedQuantity}:${user?.id ?? "guest"}`} id={id} requestedQuantity={requestedQuantity} />;
+}
+
+function EventDetailContent({ id, requestedQuantity }: { id: string; requestedQuantity: string | null }) {
   const navigate = useAppNavigate();
   const requestVersion = useRef(0);
+  const submitting = useRef(false);
+  const purchaseButton = useRef<HTMLButtonElement>(null);
+  const decreaseButton = useRef<HTMLButtonElement>(null);
   const [event, setEvent] = useState<EventDetailData | null>(null),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true),
-    [quantity, setQuantity] = useState(1),
+    [quantity, setQuantity] = useState(0),
     [busy, setBusy] = useState(false),
     [confirm, setConfirm] = useState(false),
     [buyerName, setBuyerName] = useState(""),
     [key, setKey] = useState(""),
     [bookingError, setBookingError] = useState("");
-  const { user, paymentReady, skipPayDevEnabled } = useAuth();
+  const { user, loading: authLoading, paymentReady, skipPayDevEnabled } = useAuth();
   const now = useDeadlineClock(event ? Math.min(event.registration_ends_at, event.starts_at) : undefined);
   const availability = event && now !== null ? registrationState(event, now) : "checking";
   const closed = availability !== "open";
-  async function load() {
+  const load = useCallback(() => {
     const version = ++requestVersion.current;
-    setLoading(true);
-    setError("");
-    try {
-      const loaded = (await api<{ event: EventDetailData }>(`/api/events/${id}`))
-        .event;
+    return api<{ event: EventDetailData }>(`/api/events/${id}`).then(({ event: loaded }) => {
       if (version !== requestVersion.current) return;
       setEvent(loaded);
-      const requested = Number(
-        requestedQuantity,
-      );
-      setQuantity(
-          Math.max(
-            1,
-            Math.min(
-              Number.isInteger(requested) && requested >= 1 && requested <= 6 ? requested : 1,
-              loaded.remaining ?? 6,
-              loaded.price ? Math.floor(MAX_ORDER_TOMAN / loaded.price) : 6,
-            ),
-          ),
-      );
-    } catch (e) {
-      if (version === requestVersion.current) setError((e as Error).message);
-    } finally {
+      setQuantity(requestedTicketQuantity(requestedQuantity, loaded));
+      setConfirm(false);
+    }).catch((error: Error) => {
+      if (version === requestVersion.current) setError(error.message);
+    }).finally(() => {
       if (version === requestVersion.current) setLoading(false);
-    }
-  }
+    });
+  }, [id, requestedQuantity]);
   useEffect(() => {
     void load();
-    return () => { requestVersion.current++; };
-  }, [id, requestedQuantity]);
+    const version = requestVersion.current;
+    return () => { requestVersion.current = version + 1; };
+  }, [load]);
   async function book() {
-    if (!event || busy) return;
+    if (!event || !user || submitting.current || quantity < 1 || quantity > maxTicketQuantity(event)) return;
     if (registrationState(event, Date.now()) !== "open") {
       setConfirm(false);
       return;
@@ -100,6 +91,8 @@ function EventDetailContent({ id }: { id: string }) {
       setBookingError("نام و نام خانوادگی را بین ۲ تا ۸۰ نویسه وارد کنید.");
       return;
     }
+    submitting.current = true;
+    const version = requestVersion.current;
     setBusy(true);
     setBookingError("");
     try {
@@ -107,170 +100,103 @@ function EventDetailContent({ id }: { id: string }) {
         reservation: { id: string; status: string };
         paymentUrl: string | null;
       }>("/api/reservations", { eventId: id, quantity, name, requestKey: key });
+      if (version !== requestVersion.current) return;
       if (result.paymentUrl) window.location.assign(result.paymentUrl);
       else
         navigate(
           `/reservations?${result.reservation.status === "confirmed" ? "booked" : "pending"}=${result.reservation.id}`,
         );
     } catch (e) {
-      setBookingError((e as Error).message);
+      if (version === requestVersion.current) setBookingError((e as Error).message);
     } finally {
-      setBusy(false);
+      submitting.current = false;
+      if (version === requestVersion.current) setBusy(false);
     }
   }
   if (loading)
     return (
-      <main data-motion-group className={`container subpage ${layouts.page}`}>
+      <main data-motion-group className={`container subpage ${detail.page}`}>
         <Loading variant="event" />
       </main>
     );
   if (error)
     return (
-      <main data-motion-group className={`container subpage ${layouts.page}`}>
-        <ErrorBox message={error} retry={load} />
+      <main data-motion-group className={`container subpage ${detail.page}`}>
+        <ErrorBox message={error} retry={() => { setLoading(true); setError(""); void load(); }} />
       </main>
     );
   if (!event) return <Blank title="ایونت پیدا نشد" />;
   const mapUrl = eventLocationUrl(event);
   const category = categories.find((item) => item.id === event.category)?.label;
+  const maximum = maxTicketQuantity(event);
+  const paymentUnavailable = event.price > 0 && !skipPayDevEnabled && (!paymentReady || event.sample === 1);
+  const purchaseDisabled = closed || authLoading || paymentUnavailable || maximum < 1;
+  const startsAt = new Date(event.starts_at).toISOString();
+  const price = event.price * Math.max(1, quantity);
+  function continueBooking() {
+    if (purchaseDisabled || quantity < 1 || quantity > maximum || !event || registrationState(event, Date.now()) !== "open") return;
+    if (!user) {
+      navigate(`/login?next=${encodeURIComponent(`/events/${id}?quantity=${quantity}`)}`);
+      return;
+    }
+    setKey(crypto.randomUUID());
+    setBuyerName(user.name ?? "");
+    setBookingError("");
+    setConfirm(true);
+  }
   return (
     <>
-    <RegistrationCountdown key={`countdown-${event.id}`} deadline={event.registration_ends_at} className={layouts.detailCountdown} />
-    <main data-motion-group className={`container subpage ${layouts.page} ${layouts.detailPage}`}>
+    <main data-motion-group className={`container subpage ${detail.page}`}>
       <AppLink className="back-link" href="/">
         <ArrowRight size={17} />
         همهٔ ایونت‌ها
       </AppLink>
-      <header className={`${layouts.detailHero}${event.image ? "" : ` ${layouts.heroWithoutImage}`}`}>
-        <div data-motion-group className={layouts.detailHeroCopy}>
-          <span className={mediaStyles.category}>{category}</span>
-          <div className={`eyebrow ${layouts.heroVenue}`}><MapPin size={18} aria-hidden="true" /><span>{event.venue} · {event.city}</span></div>
+      <header className={`${detail.hero}${event.image ? "" : ` ${detail.withoutImage}`}`}>
+        {event.image && <img className={detail.heroImage} src={event.image} alt={`تصویر ${event.title}`} />}
+        <div className={detail.topline}>
+          <span className={detail.capacity}>
+            {event.remaining === null ? "ظرفیت نامحدود" : event.remaining === 0 ? "تکمیل ظرفیت" : `${fa(event.remaining)} نفر باقی مانده`}
+          </span>
+          <RegistrationCountdown key={event.id} deadline={event.registration_ends_at} tiles />
+        </div>
+        <div className={detail.heroCopy}>
+          <div className={detail.categoryRow}>
+            {category && <span className={detail.category}>{category}</span>}
+            <time className={detail.dateStamp} dateTime={startsAt} aria-label={date(event.starts_at, true)}>
+              <strong>{new Intl.DateTimeFormat("fa-IR-u-ca-persian", { day: "numeric", timeZone: "Asia/Tehran" }).format(event.starts_at)}</strong>
+              <span>{new Intl.DateTimeFormat("fa-IR-u-ca-persian", { month: "long", timeZone: "Asia/Tehran" }).format(event.starts_at)}</span>
+            </time>
+          </div>
           <h1>{event.title}</h1>
-          <div className={layouts.heroFacts}>
-            <span><CalendarDays size={18} aria-hidden="true" />{date(event.starts_at, true)}</span>
-            <span><Clock3 size={18} aria-hidden="true" />{clock(event.starts_at)} تا {clock(event.ends_at)}</span>
+          <p className={detail.venue}><MapPin size={16} aria-hidden="true" /><span>{event.venue}، {event.city}</span></p>
+          <div className={detail.facts}>
+            <time dateTime={startsAt}><CalendarDays size={14} aria-hidden="true" />{date(event.starts_at)}</time>
+            <span><Clock3 size={14} aria-hidden="true" />ساعت {clock(event.starts_at)} تا {clock(event.ends_at)}</span>
           </div>
         </div>
-        {event.image && <div data-motion-item className={layouts.detailHeroImage}><img src={event.image} alt={`تصویر ${event.title}`} /></div>}
       </header>
-      <div className={`detail-grid ${layouts.detailGrid}`}>
-        <article className={layouts.detailArticle}>
-          <div data-motion-group className="detail-copy">
-            <EventGallery key={event.id} images={event.gallery} title={event.title} />
-            <h2>دربارهٔ این قرار</h2>
-            <p className="description">{event.description}</p>
-            <h2>کجا همدیگر را می‌بینیم؟</h2>
-            <p>
-              {event.venue}{event.address ? `، ${event.address}` : ""}
-            </p>
-            {mapUrl && (
-              <a
-                className="map-link"
-                href={mapUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <MapPin size={17} />
-                باز کردن پیوند محل برگزاری
-                <ArrowLeft size={15} />
-              </a>
-            )}
-            {event.sample === 1 && (
-              <p className="sample-note">
-                این یک ایونت نمونه برای بررسی محصول است و برنامهٔ واقعی این
-                کافه نیست. تصاویر جنبهٔ نمایشی دارند.
-              </p>
-            )}
-          </div>
-        </article>
-        <aside data-motion-group className={`booking-panel ${layouts.bookingPanel}`} aria-label="انتخاب و رزرو بلیت">
-          <div className="eyebrow">
-            <Ticket size={17} />
-            جای تو اینجاست
-          </div>
-          <h2>
-            {event.price ? fa(event.price) : "رایگان"}
-            {event.price > 0 && <small> تومان / هر نفر</small>}
-          </h2>
-          <div className="booking-facts">
-            <p>
-              <CalendarDays size={18} />
-              {date(event.starts_at)}
-            </p>
-            <p>
-              <Clock3 size={18} />
-              ساعت {clock(event.starts_at)}
-            </p>
-            <p className={`booking-capacity${event.remaining === 0 ? " sold-out" : ""}`}>
-              <Users size={18} />
-              {event.remaining === null
-                ? "بدون محدودیت ظرفیت"
-                : event.remaining === 0
-                  ? "تکمیل ظرفیت"
-                  : `${fa(event.remaining)} نفر باقی مانده`}
-            </p>
-          </div>
-          {closed ? (
-            <div className="notice registration-notice" role="status">
-              {availability === "checking" ? "در حال بررسی مهلت ثبت‌نام…" : availability === "started"
-                ? "ثبت‌نام این ایونت پایان یافته است."
-                : availability === "expired" ? "مهلت ثبت‌نام این ایونت پایان یافته است."
-                  : "ظرفیت این ایونت تکمیل شده است."}
-            </div>
-          ) : (
-            <>
-              <div className="quantity-row">
-                <span>تعداد نفرات</span>
-                <div className="quantity-control">
-                  <button
-                    disabled={quantity <= 1}
-                    onClick={() => setQuantity((n) => n - 1)}
-                    aria-label="کم کردن تعداد"
-                  >
-                    <Minus size={16} />
-                  </button>
-                  <strong key={quantity} className="motion-number">{fa(quantity)}</strong>
-                  <button
-                    disabled={
-                      quantity >=
-                      Math.min(
-                        event.remaining ?? 6,
-                        6,
-                        event.price
-                          ? Math.floor(MAX_ORDER_TOMAN / event.price)
-                          : 6,
-                      )
-                    }
-                    onClick={() => setQuantity((n) => n + 1)}
-                    aria-label="زیاد کردن تعداد"
-                  >
-                    <Plus size={16} />
-                  </button>
-                </div>
-              </div>
-              <div className="total-row">
-                <span>مبلغ نهایی</span>
-                <strong>
-                  {event.price
-                    ? `${fa(event.price * quantity)} تومان`
-                    : "رایگان"}
-                </strong>
-              </div>
-              {event.price > 0 && !paymentReady && !skipPayDevEnabled && (
-                <p className="notice">
-                  فروش بلیت پس از فعال‌سازی درگاه پرداخت آغاز می‌شود.
-                </p>
-              )}
-              <p className="booking-note">
-                <ShieldCheck size={15} />
-                {event.price
-                  ? (skipPayDevEnabled ? "حالت آزمایشی: رزرو بدون دریافت وجه تأیید می‌شود" : "رزرو نهایی پس از تأیید پرداخت")
-                  : "تأیید آنی، بدون نیاز به پرداخت"}
-              </p>
-            </>
-          )}
-        </aside>
-      </div>
+      <article data-motion-group className={detail.article}>
+        <h2>دربارهٔ این قرار</h2>
+        <p className={detail.description}>{event.description}</p>
+        <h2>کجا همدیگر را می‌بینیم؟</h2>
+        <p>{event.venue}{event.address ? `، ${event.address}` : ""}</p>
+        {mapUrl && (
+          <a className={`button ${detail.mapLink}`} href={mapUrl} target="_blank" rel="noopener noreferrer">
+            <MapPin size={17} aria-hidden="true" />
+            مشاهده محل برگزاری
+            <ArrowLeft size={17} aria-hidden="true" />
+          </a>
+        )}
+        {event.sample === 1 && (
+          <p className={detail.sampleNote}>این یک ایونت نمونه برای بررسی محصول است و برنامهٔ واقعی این کافه نیست. تصاویر جنبهٔ نمایشی دارند.</p>
+        )}
+        <EventGallery key={event.id} images={event.gallery} title={event.title} />
+      </article>
+      {closed && availability !== "checking" && (
+        <p className="notice" role="status">{availability === "sold_out" ? "ظرفیت این ایونت تکمیل شده است." : "مهلت ثبت‌نام این ایونت پایان یافته است."}</p>
+      )}
+      {paymentUnavailable && <p className="notice">{event.sample === 1 ? "این ایونت نمونه است و امکان پرداخت واقعی ندارد." : "فروش بلیت پس از فعال‌سازی درگاه پرداخت آغاز می‌شود."}</p>}
+      {skipPayDevEnabled && event.price > 0 && <p className="notice">حالت آزمایشی: رزرو بدون دریافت وجه تأیید می‌شود.</p>}
       <Dialog
         open={confirm && !closed}
         onOpenChange={(v) => {
@@ -347,39 +273,44 @@ function EventDetailContent({ id }: { id: string }) {
         </DialogContent>
       </Dialog>
     </main>
-    {/* The clock becomes available after hydration; the portal escapes the sidebar's backdrop filter. */}
     {now !== null && createPortal(
-      <div className={layouts.bookingActionBar} role="region" aria-label="رزرو بلیت" dir="rtl">
-        {closed ? (
-          <button className="button full" disabled>
-            <ButtonLabel
-              state={availability === "checking" ? "checking" : availability === "sold_out" ? "sold-out" : "closed"}
-              states={{ checking: "در حال بررسی…", "sold-out": "تکمیل ظرفیت", closed: REGISTRATION_CLOSED }}
-            />
-          </button>
-        ) : user ? (
-          <button
-            className="button full"
-            onClick={() => {
-              if (registrationState(event, Date.now()) !== "open") return;
-              setKey(crypto.randomUUID());
-              setBuyerName(user.name ?? "");
-              setBookingError("");
-              setConfirm(true);
-            }}
-          >
-            {event.price ? (skipPayDevEnabled ? "رزرو بدون پرداخت" : "خرید بلیت") : "ثبت‌نام رایگان"}
-            <ArrowLeft size={18} />
-          </button>
-        ) : (
-          <AppLink
-            className="button full"
-            href={`/login?next=${encodeURIComponent(`/events/${id}?quantity=${quantity}`)}`}
-          >
-            {event.price ? (skipPayDevEnabled ? "ورود و رزرو بدون پرداخت" : "ورود و خرید بلیت") : "ورود و ثبت‌نام رایگان"}
-            <ArrowLeft size={18} />
-          </AppLink>
-        )}
+      <div className={detail.purchaseBar} data-selected={quantity > 0 || undefined} role="region" aria-label="رزرو بلیت" dir="rtl">
+        <div className={detail.purchaseInner}>
+          <div className={detail.price}>
+            <span>{quantity > 0 ? `مجموع ${fa(quantity)} بلیت` : "هزینهٔ هر نفر"}</span>
+            <strong>{event.price ? `${fa(price)} تومان` : "رایگان"}</strong>
+          </div>
+          {!quantity || closed ? (
+            <button ref={purchaseButton} className={`button ${detail.buyButton}`} disabled={purchaseDisabled}
+              onClick={() => {
+                if (registrationState(event, Date.now()) !== "open") return;
+                setQuantity(1);
+                requestAnimationFrame(() => decreaseButton.current?.focus());
+              }}>
+              {closed ? availability === "sold_out" ? "تکمیل ظرفیت" : REGISTRATION_CLOSED : paymentUnavailable || maximum < 1 ? "خرید در دسترس نیست" : event.price ? "خرید بلیت" : "ثبت‌نام رایگان"}
+            </button>
+          ) : (
+            <>
+              <div className={detail.quantityControl} role="group" aria-label="تعداد بلیت" dir="ltr">
+                <button ref={decreaseButton} type="button" disabled={busy} aria-label={quantity === 1 ? "حذف انتخاب بلیت" : "کم کردن تعداد"}
+                  onClick={() => {
+                    setQuantity((value) => Math.max(0, value - 1));
+                    if (quantity === 1) requestAnimationFrame(() => purchaseButton.current?.focus());
+                  }}>
+                  {quantity === 1 ? <Trash2 size={18} /> : <Minus size={18} />}
+                </button>
+                <strong aria-live="polite" aria-atomic="true">{fa(quantity)}</strong>
+                <button type="button" disabled={busy || quantity >= maximum} aria-label="زیاد کردن تعداد"
+                  onClick={() => setQuantity((value) => Math.min(maximum, value + 1))}>
+                  <Plus size={18} />
+                </button>
+              </div>
+              <button className={`button ${detail.continueButton}`} disabled={purchaseDisabled || busy} onClick={continueBooking}>
+                ادامه <ArrowLeft size={17} aria-hidden="true" />
+              </button>
+            </>
+          )}
+        </div>
       </div>,
       document.body,
     )}

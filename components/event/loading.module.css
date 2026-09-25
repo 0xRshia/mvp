@@ -36,6 +36,7 @@
 .cardBody { display: grid; gap: 22px; padding: 22px; }
 .cardFooter { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
 .reservationImage { width: 170px; height: 190px; border-radius: 12px; flex-shrink: 0; }
+.accountProfile { inline-size: 100%; block-size: 120px; border-radius: 24px; }
 .table { overflow: hidden; border: 1px solid var(--border); border-radius: 12px; }
 .tableRow { display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 20px; padding: 23px 16px; border-bottom: 1px solid var(--border); }
 .tableRow:first-child { background: var(--secondary); padding-block: 16px; }

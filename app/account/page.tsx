@@ -1,5 +1,5 @@
 import { ReservationHistory } from "@/components/event/reservation-history";
 
-export default function Reservations() {
-  return <ReservationHistory />;
+export default function Account() {
+  return <ReservationHistory account />;
 }

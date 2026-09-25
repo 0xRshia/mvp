@@ -10,6 +10,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { api } from "@/lib/client";
+import { loginDestination } from "@/lib/login-destination";
 import { useAuth } from "./app-shell";
 import { ErrorBox } from "./shared";
 import { digits, fa, faDigits, type AuthRequestResponse } from "@/lib/types";
@@ -29,13 +30,8 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
     const t = setTimeout(() => setWait(wait - 1), 1000);
     return () => clearTimeout(t);
   }, [wait]);
-  function destination(toHost = host) {
-    if (toHost) return "/host";
-    const raw = new URLSearchParams(window.location.search).get("next");
-    return raw &&
-      /^\/(events\/[\w-]+(?:\?quantity=[1-6])?|reservations)$/.test(raw)
-      ? raw
-      : "/reservations";
+  function destination() {
+    return loginDestination(new URLSearchParams(window.location.search).get("next"), host);
   }
   async function request() {
     if (busy) return;
@@ -49,7 +45,7 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
       // TODO(PRODUCTION): REMOVE_TEMP_LOGIN — immediate sessions bypass the OTP screen.
       if ("user" in r) {
         await refresh();
-        navigate(destination(r.user.isHost));
+        navigate(destination());
         return;
       }
       setChallenge(r.challengeId);
@@ -114,9 +110,9 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
         {user ? (
           <div data-motion-group className="auth-form">
             <p>شما وارد حساب خود شده‌اید.</p>
-            <AppLink href={host ? "/host" : "/reservations"} className="button full">
-              {host ? "رفتن به پنل میزبان" : "دیدن بلیت‌های من"}
-            </AppLink>
+            <button type="button" onClick={() => navigate(destination())} className="button full">
+              {host ? "رفتن به پنل میزبان" : "ادامه به حساب یا رزرو"}
+            </button>
           </div>
         ) : (
           <form
@@ -228,11 +224,6 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
           <ShieldCheck size={16} />
           شمارهٔ شما فقط برای حساب و رزروها استفاده می‌شود.
         </div>
-        {!host && (
-          <AppLink className="text-button" href="/host/login">
-            میزبان هستید؟ ورود به پنل میزبان
-          </AppLink>
-        )}
       </div>
       </div>
     </main>

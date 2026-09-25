@@ -9,7 +9,6 @@ import {
 import { usePathname } from "next/navigation";
 import {
   ArrowLeft,
-  ArrowUpLeft,
   Compass,
   Ticket,
   UserRound,
@@ -31,6 +30,8 @@ type Auth = {
   paymentReady: boolean;
   skipPayDevEnabled: boolean;
   refresh: () => Promise<void>;
+  logout: () => Promise<void>;
+  loggingOut: boolean;
 };
 const AuthContext = createContext<Auth>({
   user: null,
@@ -40,6 +41,8 @@ const AuthContext = createContext<Auth>({
   paymentReady: false,
   skipPayDevEnabled: false,
   refresh: async () => {},
+  logout: async () => {},
+  loggingOut: false,
 });
 export const useAuth = () => useContext(AuthContext);
 export function AppShell({ children }: { children: ReactNode }) {
@@ -51,20 +54,19 @@ export function AppShell({ children }: { children: ReactNode }) {
     paymentReady: false,
     skipPayDevEnabled: false,
   });
-  const path = usePathname();
-  const discovering = path === "/" || path === "/events" || path === "/events/" || path === "/events/free" || path === "/events/free/";
+  const path = usePathname().replace(/\/$/, "") || "/";
+  const eventDetail = /^\/events\/[^/]+$/.test(path) && path !== "/events/free";
+  const discovering = path === "/" || path === "/events" || path === "/events/free";
   const navigate = useAppNavigate();
   const desktopNav = useSelectionIndicator<HTMLElement>("a.active");
   const mobileNav = useSelectionIndicator<HTMLElement>("a.active");
   const [loggingOut, setLoggingOut] = useState(false);
-  const scannerOnly = path === "/scanner" || path === "/scanner/";
+  const scannerOnly = path === "/scanner";
   async function refresh() {
-    try {
-      const d = await api<Omit<Auth, "refresh" | "loading">>("/api/me");
-      setState({ ...d, loading: false });
-    } catch {
-      setState((s) => ({ ...s, loading: false }));
-    }
+    await api<Omit<Auth, "refresh" | "loading" | "logout" | "loggingOut">>("/api/me").then(
+      (data) => setState({ ...data, loading: false }),
+      () => setState((state) => ({ ...state, loading: false })),
+    );
   }
   useEffect(() => {
     if (!scannerOnly) void refresh();
@@ -84,7 +86,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
   if (scannerOnly) return <div data-route-content className="route-content">{children}</div>;
   return (
-    <AuthContext.Provider value={{ ...state, refresh }}>
+    <AuthContext.Provider value={{ ...state, refresh, logout, loggingOut }}>
       <a className="skip-link" href="#main-content">رفتن به محتوای اصلی</a>
       <header className="site-header">
         <div className="header-inner">
@@ -104,20 +106,19 @@ export function AppShell({ children }: { children: ReactNode }) {
               بلیت‌های من
             </AppLink>
             <AppLink
-              className={path.startsWith("/host") ? "active" : ""}
-              href="/host"
+              className={path === "/account" ? "active" : ""}
+              href="/account"
             >
-              {state.user?.isHost ? "پنل میزبان" : "میزبان شوید"}{" "}
-              <ArrowUpLeft size={15} />
+              حساب کاربری
             </AppLink>
           </nav>
           <div className="account-actions">
             <ThemeMenu />
             {state.user ? (
               <>
-                <AppLink className="button outline login-link" href="/reservations">
+                <AppLink className="button outline login-link" href="/account">
                   <UserRound size={16} />
-                  {state.user.name || "حساب من"}
+                  {state.user.name || "حساب کاربری"}
                 </AppLink>
                 <button
                   className="icon-button logout"
@@ -138,7 +139,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <div id="main-content" tabIndex={-1} data-route-content className="route-content">{children}</div>
+      <div id="main-content" tabIndex={-1} data-route-content data-event-detail={eventDetail || undefined} className="route-content">{children}</div>
       <footer className="container footer">
         <AppLink className="brand" href="/">
           هم‌قدم
@@ -146,7 +147,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <span>قرارهای کوچک، خاطره‌های ماندگار.</span>
         <AppLink href="/credits">دربارهٔ تصاویر و ایونت‌های نمونه</AppLink>
       </footer>
-      <nav ref={mobileNav} className="mobile-nav selection-track" aria-label="منوی اصلی">
+      <nav ref={mobileNav} className={`mobile-nav selection-track${eventDetail ? " event-detail-nav" : ""}`} aria-label="منوی اصلی">
         <span className="selection-indicator" aria-hidden="true" />
         <AppLink className={discovering ? "active" : ""} href="/">
           <Compass size={21} />
@@ -159,9 +160,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Ticket size={21} />
           بلیت‌های من
         </AppLink>
-        <AppLink className={path.startsWith("/host") ? "active" : ""} href="/host">
+        <AppLink className={path === "/account" ? "active" : ""} href="/account">
           <UserRound size={21} />
-          پنل میزبان
+          حساب کاربری
         </AppLink>
       </nav>
       <Toaster position="top-center" dir="rtl" richColors />

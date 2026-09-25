@@ -7,7 +7,6 @@ import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import { useEffect, useMemo, useState } from "react";
 import {
   Search,
-  Ticket,
   ChevronDown,
   LocateFixed,
   ArrowLeft,
@@ -341,18 +340,6 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
         </div>
       )}
       </CatalogResultsTransition>
-      <div className="host-invite">
-        <div className="host-icon">
-          <Ticket size={30} />
-        </div>
-        <div>
-          <h2>یک تجربه برای به اشتراک گذاشتن داری؟</h2>
-          <p>ایونتت را بساز و با آدم‌های تازه آشنا شو.</p>
-        </div>
-        <AppLink href="/host" className="button">
-          میزبان یک ایونت شو <ArrowLeft size={18} />
-        </AppLink>
-      </div>
       <Dialog
         open={locationOpen}
         onOpenChange={(open) => {
