@@ -61,7 +61,7 @@
     var(--image-overlay);
 }
 
-.topline { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 8px; min-block-size: 44px; }
+.topline { display: flex; justify-content: space-between; align-items: stretch; gap: 8px; min-block-size: 44px; }
 .capacity, .dateStamp, .price {
   border: 1px solid var(--glass-border);
   background: var(--glass-surface);
