@@ -27,7 +27,7 @@
 .withoutImage { background: var(--image-overlay); }
 .topline { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .capacity, .dateStamp {
-  border: 1px solid var(--glass-border);
+  border: 0;
   background: var(--glass-surface);
   color: var(--image-foreground);
   -webkit-backdrop-filter: blur(18px);
@@ -61,7 +61,7 @@
   inset-inline: 0;
   inset-block-end: 0;
   padding: 14px max(24px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
-  border-block-start: 1px solid var(--border);
+  border-block-start: 0;
   background: var(--surface-overlay);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);

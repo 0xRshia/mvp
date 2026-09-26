@@ -108,10 +108,8 @@
   --image-overlay: var(--palette-ink);
   --image-foreground: #fff;
   --glass-surface: rgb(0 0 0 / 30%);
-  --glass-border: color-mix(in srgb, var(--palette-gray) 38%, transparent);
   --surface-glass: color-mix(in srgb, var(--card) 78%, transparent);
   --surface-glass-strong: color-mix(in srgb, var(--card) 90%, transparent);
-  --surface-glass-border: color-mix(in srgb, var(--foreground) 12%, transparent);
   --surface-glass-sheen: color-mix(in srgb, var(--card) 65%, transparent);
   --radius: 1rem;
   --chart-1: var(--primary-text);
@@ -544,7 +542,7 @@ h1 span {
 }
 .event-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 26px;
 }
 .event-card {
@@ -1861,7 +1859,8 @@ h1 span {
     inset-inline-start: 0;
     background: var(--surface-overlay);
     backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border);
+    border-top: 0;
+    box-shadow: 0 -6px 24px var(--shadow-color);
     display: flex;
     height: calc(76px + env(safe-area-inset-bottom));
     padding-bottom: env(safe-area-inset-bottom);
