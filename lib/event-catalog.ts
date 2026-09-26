@@ -14,7 +14,7 @@ export type CatalogFilters = {
   area: string;
 };
 export const defaultCatalogFilters: CatalogFilters = {
-  category: "all", query: "", city: "تهران", sort: "soon", when: "all",
+  category: "all", query: "", city: "all", sort: "soon", when: "all",
   free: false, point: null, area: "all",
 };
 export type CatalogEntry = { event: EventItem; reason?: EventSuggestion["reason"] };
@@ -29,7 +29,7 @@ export function filterEvents(events: EventItem[], filters: CatalogFilters, now: 
       ? distanceKm(point.lat, point.lng, event.lat, event.lng) : undefined,
   })).filter((event) =>
     event.starts_at > now &&
-    (city === "nearby" ? (event.distance ?? Infinity) < 50 : event.city === city) &&
+    (city === "all" || (city === "nearby" ? (event.distance ?? Infinity) < 50 : event.city === city)) &&
     (category === "all" || event.category === category) &&
     (!free || event.price === 0) &&
     (when === "all" || event.starts_at < now + (when === "week" ? 7 : 1) * 86400000) &&

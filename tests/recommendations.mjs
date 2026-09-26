@@ -166,6 +166,10 @@ export async function testRecommendations({ db, call, event, user, check, now, r
     "Empty filters and catalogs produce no fabricated suggestions");
 
   const catalogFilters = { ...defaultCatalogFilters, city };
+  const allCityFiltered = filterEvents(expanded.data.events, defaultCatalogFilters, now);
+  check(allCityFiltered.some((item) => item.city === city) &&
+    allCityFiltered.some((item) => item.city === "شهر دیگر"),
+    "Default catalog includes events from multiple cities when location controls are inactive");
   const filtered = filterEvents(expanded.data.events, catalogFilters, now);
   const groups = groupEvents(filtered, expanded.data.suggestions, now);
   check(groups.all.length === filtered.length && groups.all.length > 8,

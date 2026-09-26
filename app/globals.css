@@ -107,7 +107,7 @@
   --shadow-hover: color-mix(in srgb, var(--palette-ink) 10%, transparent);
   --image-overlay: var(--palette-ink);
   --image-foreground: #fff;
-  --glass-surface: color-mix(in srgb, var(--palette-gray) 22%, transparent);
+  --glass-surface: rgb(0 0 0 / 30%);
   --glass-border: color-mix(in srgb, var(--palette-gray) 38%, transparent);
   --surface-glass: color-mix(in srgb, var(--card) 78%, transparent);
   --surface-glass-strong: color-mix(in srgb, var(--card) 90%, transparent);
@@ -418,28 +418,6 @@ h1 span {
   from { clip-path: inset(0 0 0 100%); }
   to { clip-path: inset(0); }
 }
-.location-button {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  background: var(--secondary);
-  color: var(--secondary-foreground);
-  border: 1px solid var(--border);
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-size: 15px;
-}
-.location-button svg:first-child {
-  color: currentColor;
-}
-.location-button:hover {
-  color: var(--primary-foreground);
-  background: var(--primary);
-  border-color: var(--primary);
-}
-.location-button:hover svg:first-child {
-  color: inherit;
-}
 .search-bar {
   display: flex;
   align-items: center;
@@ -523,11 +501,6 @@ h1 span {
   height: 100%;
   object-fit: contain;
   transition: transform var(--motion-fast) var(--motion-ease);
-}
-.location-art {
-  display: block;
-  flex-shrink: 0;
-  object-fit: contain;
 }
 .category-label {
   line-height: 1.6;
@@ -915,16 +888,6 @@ h1 span {
     max-width: 100%;
     margin-top: 5px;
   }
-  .location-button {
-    padding: 7px 11px;
-    font-size: 14px;
-    position: static;
-    align-self: flex-start;
-    gap: 6px;
-  }
-  .location-button svg {
-    width: 15px;
-  }
   .search-bar {
     height: 61px;
     padding: 8px 12px;
@@ -1070,20 +1033,6 @@ h1 span {
 .free-filter [data-slot="switch"] {
   /* The thumb moves left-to-right independently of its Persian label. */
   direction: ltr;
-}
-.location-caption {
-  font-size: 14px;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin: -9px 0 20px;
-}
-.location-caption button {
-  color: var(--primary-text);
-  border: 0;
-  background: none;
 }
 .sold-out {
   background: var(--badge-neutral);
@@ -1960,10 +1909,6 @@ h1 span {
     font-size: 14px;
     gap: 9px;
   }
-  .location-caption {
-    font-size: 13px;
-    margin-top: -5px;
-  }
   .footer > a:last-child {
     font-size: 13px;
     width: 100%;
@@ -2376,23 +2321,20 @@ button[aria-busy="true"] { cursor: progress; }
 .motion-number { display: inline-block; min-inline-size: 1ch; animation: hg-enter var(--motion-fast) var(--motion-ease); }
 
 /* Shared action geometry stays stable while labels and pending states change. */
-:is(.button, .icon-button, .theme-trigger, .location-button, .text-button, .quantity-control button, .choice) {
+:is(.button, .icon-button, .theme-trigger, .text-button, .quantity-control button, .choice) {
   block-size: var(--control-height);
   min-block-size: var(--control-height);
 }
 :is(.icon-button, .theme-trigger, .quantity-control button) { inline-size: var(--control-height); flex-shrink: 0; }
 .icon-button { border: 1px solid var(--border); border-radius: 12px; }
-:is(.button, .icon-button, .theme-trigger, .location-button, .text-button, .back-link, .quantity-control button) svg { display: block; flex-shrink: 0; }
+:is(.button, .icon-button, .theme-trigger, .text-button, .back-link, .quantity-control button) svg { display: block; flex-shrink: 0; }
 .search-bar .button, .login-link, .reservation-actions .button { min-block-size: var(--control-height); }
 .search-bar { min-block-size: 68px; }
 .search-bar .icon-button { border: 0; background: transparent; }
 .filters { row-gap: 10px; }
 .free-filter { min-block-size: var(--control-height); }
-.filters .location-button { min-inline-size: 0; }
-.filters .location-button > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 600px) {
-  .filters .location-button { inline-size: 100%; justify-content: center; }
-  .filters .free-filter { justify-self: end; }
+  .filters .free-filter { justify-self: start; }
 }
 .category { perspective: 600px; }
 @media (hover: hover) and (pointer: fine) {

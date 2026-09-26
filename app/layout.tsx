@@ -5,9 +5,9 @@ import { ThemeProvider } from "@/components/event/theme-provider";
 import { AppNavigation } from "@/components/event/app-navigation";
 import { EventBrowseProvider } from "@/components/event/event-browse-provider";
 export const metadata: Metadata = {
-  title: "هم‌قدم | کشف ایونت‌های تهران",
+  title: "هم‌قدم | کشف ایونت‌ها",
   description:
-    "یک قرار خوب، همین نزدیکی. ایونت‌های کافه‌های تهران را پیدا کنید و بلیت بگیرید.",
+    "یک قرار خوب، همین نزدیکی. ایونت‌های دلخواهت را پیدا کن و بلیت بگیر.",
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 export default function RootLayout({

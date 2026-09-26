@@ -1,23 +1,14 @@
 "use client";
-import { ButtonLabel } from "@/components/ui/button-label";
 import { AppLink } from "@/components/event/app-navigation";
 import { CatalogResultsTransition } from "./catalog-results-transition";
 import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useDeadlineClock } from "@/hooks/use-deadline-clock";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Search,
-  ChevronDown,
-  LocateFixed,
   ArrowLeft,
   X,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Blank, Choice, ErrorBox, Loading } from "@/components/event/shared";
 import { EventCard } from "@/components/event/event-card";
@@ -31,7 +22,6 @@ import { filterEvents, groupEvents, type CatalogView } from "@/lib/event-catalog
 import {
   categories,
   fa,
-  distanceKm,
   type EventItem,
   type EventSuggestion,
 } from "@/lib/types";
@@ -45,13 +35,6 @@ const categoryIcons: Record<string, string> = {
   games: "/icons/games.png",
   coffee: "/icons/coffe.png",
 };
-const neighborhoods = [
-  { value: "all", label: "همهٔ تهران" },
-  { value: "vanak", label: "ونک", lat: 35.757, lng: 51.409 },
-  { value: "center", label: "کریم‌خان و مرکز شهر", lat: 35.715, lng: 51.417 },
-  { value: "enghelab", label: "انقلاب", lat: 35.701, lng: 51.391 },
-  { value: "north", label: "تجریش", lat: 35.804, lng: 51.429 },
-];
 const groupDefinitions = [
   { view: "free", heading: "ایونت‌های رایگان", href: "/events/free" },
   { view: "suggested", heading: "پیشنهاد برای تو", href: "/events?view=suggested" },
@@ -63,58 +46,15 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
   const { user } = useAuth();
   const now = useDeadlineClock(undefined);
   const { filters, updateFilters, resetFilters } = useEventBrowse();
-  const { category, query, city, sort, when, free, point, area } = filters;
+  const { category, query, sort, when, free } = filters;
   const { catalog, loading: fetching, error, reload } = useEventCatalog();
   const events = catalog?.events ?? emptyEvents;
   const suggestions = catalog?.suggestions ?? emptySuggestions;
   const loading = fetching || now === null;
-  const [locationOpen, setLocationOpen] = useState(false),
-    [locating, setLocating] = useState(false),
-    [locationError, setLocationError] = useState("");
-  function closeLocation() {
-    setLocationOpen(false);
-  }
   function showResults() {
     const results = document.getElementById("results");
     results?.focus({ preventScroll: true });
     results?.scrollIntoView({ behavior: prefersReducedMotion() ? "instant" : "smooth", block: "start" });
-  }
-  function locate() {
-    setLocationError("");
-    if (!navigator.geolocation) {
-      setLocationError(
-        "مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند. محله را انتخاب کنید.",
-      );
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const p = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          label: "موقعیت شما",
-        };
-        const nearby = events
-          .flatMap((event) =>
-            event.lat !== null && event.lng !== null &&
-            Number.isFinite(event.lat) && Number.isFinite(event.lng)
-              ? [{ ...event, d: distanceKm(p.lat, p.lng, event.lat, event.lng) }]
-              : [],
-          )
-          .sort((a, b) => a.d - b.d);
-        updateFilters({ point: p, sort: "distance", area: "all", city: nearby[0]?.d < 50 ? nearby[0].city : "nearby" });
-        setLocating(false);
-        closeLocation();
-      },
-      () => {
-        setLocationError(
-          "دسترسی به موقعیت فراهم نشد. می‌توانید محله را دستی انتخاب کنید.",
-        );
-        setLocating(false);
-      },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },
-    );
   }
   const filtered = useMemo(() => now === null ? [] : filterEvents(events,
     { ...filters, free: view === "free" || free }, now), [events, filters, free, view, now]);
@@ -124,7 +64,6 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
     view, filters, Object.values(groups).map((items) => items.map(({ event }) => event.id)),
   ]);
   const title = groupDefinitions.find((group) => group.view === view)?.heading;
-  const cities = Array.from(new Set(["تهران", ...events.map((e) => e.city)]));
   useEffect(() => {
     const mc = (
       document as Document & {
@@ -247,9 +186,7 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
       </div>
       <div className={`section-heading ${styles.resultsHeading}`} id="results" tabIndex={-1}>
         <div>
-          <h2>
-            {city === "nearby" ? "ایونت‌های اطراف شما" : `این روزهای ${city}`}
-          </h2>
+          <h2>این روزها</h2>
           <p aria-live="polite">
             {loading
               ? "در حال پیدا کردن ایونت‌ها…"
@@ -257,11 +194,6 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
           </p>
         </div>
         <div className="filters">
-          <button type="button" className="location-button" aria-label={`انتخاب شهر و موقعیت؛ ${point?.label ?? (city === "nearby" ? "اطراف شما" : city)}`} aria-haspopup="dialog" onClick={() => setLocationOpen(true)}>
-            <img className="location-art" src="/icons/map.png" alt="" width={24} height={24} draggable={false} />
-            <span>{point?.label ?? (city === "nearby" ? "اطراف شما" : city)}</span>
-            <ChevronDown size={15} aria-hidden="true" />
-          </button>
           <label className="free-filter">
             <Switch
               checked={view === "free" || free}
@@ -284,25 +216,14 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
           {view !== "suggested" && view !== "new" && <Choice
             label="مرتب‌سازی"
             value={sort}
-            onChange={(v) => {
-              if (v === "distance" && !point) setLocationOpen(true);
-              else updateFilters({ sort: v });
-            }}
+            onChange={(v) => updateFilters({ sort: v })}
             options={[
               { value: "soon", label: "زودترین ایونت‌ها" },
-              { value: "distance", label: "نزدیک‌ترین به من" },
               { value: "price", label: "کمترین قیمت" },
             ]}
           />}
         </div>
       </div>
-      {point && (
-        <p className="location-caption">
-          <LocateFixed size={14} /> فاصلهٔ مستقیم{" "}
-          {area === "all" ? "از موقعیت شما" : `و تقریبی از ${point.label}`} ·{" "}
-          <button onClick={() => setLocationOpen(true)}>تغییر موقعیت</button>
-        </p>
-      )}
       <CatalogResultsTransition transitionKey={resultsKey}>
       {loading ? (
         <Loading variant={view === "home" ? "discovery" : "catalog"} />
@@ -340,60 +261,6 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
         </div>
       )}
       </CatalogResultsTransition>
-      <Dialog
-        open={locationOpen}
-        onOpenChange={(open) => {
-          if (!open) closeLocation();
-          else setLocationOpen(true);
-        }}
-      >
-        <DialogContent className="app-dialog" dir="rtl" showCloseButton={false}>
-          <div className="dialog-symbol">
-            <img className="location-art" src="/icons/map.png" alt="" width={64} height={64} draggable={false} />
-          </div>
-          <DialogTitle>قرارهای نزدیکت را پیدا کنیم؟</DialogTitle>
-          <DialogDescription>
-            با دسترسی به موقعیت، نزدیک‌ترین ایونت‌ها اول نمایش داده می‌شوند.
-            موقعیت دقیق شما ذخیره نمی‌شود.
-          </DialogDescription>
-          <button
-            className="button full"
-            onClick={locate}
-            disabled={locating || loading}
-          >
-            <LocateFixed size={18} />
-            <ButtonLabel busy={locating} pending="در حال دریافت موقعیت…">استفاده از موقعیت من</ButtonLabel>
-          </button>
-          {locationError && <ErrorBox message={locationError} />}
-          <div className="or-divider">یا خودت انتخاب کن</div>
-          <Choice
-            label="انتخاب شهر"
-            value={cities.includes(city) ? city : "تهران"}
-            onChange={(v) => {
-              updateFilters({ city: v, point: null, area: "all", sort: "soon" });
-            }}
-            options={cities.map((c) => ({ value: c, label: c }))}
-          />
-          {city === "تهران" && (
-            <Choice
-              label="انتخاب محله"
-              value={area}
-              onChange={(v) => {
-                const n = neighborhoods.find((n) => n.value === v);
-                if (n?.lat) {
-                  updateFilters({ area: v, point: { lat: n.lat, lng: n.lng!, label: n.label }, sort: "distance" });
-                } else {
-                  updateFilters({ area: v, point: null, sort: "soon" });
-                }
-              }}
-              options={neighborhoods}
-            />
-          )}
-          <button className="button outline full" onClick={closeLocation}>
-            دیدن ایونت‌های {city === "nearby" ? "اطراف" : city}
-          </button>
-        </DialogContent>
-      </Dialog>
     </main>
   );
 }

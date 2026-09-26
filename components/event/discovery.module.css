@@ -7,7 +7,6 @@
 .glow {
   z-index: -2;
   inset-block: 16px;
-  border: 1px solid var(--primary);
   border-radius: var(--radius-xl);
   background: var(--background);
 }
@@ -37,8 +36,8 @@
 @keyframes reveal { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0); } }
 @media (max-width: 600px) {
   .hero { padding-block: 48px 38px; }
-  .hero h1 { font-size: clamp(29px, 8vw, 40px); }
-  .typing { display: block; }
+  .hero h1 { font-size: clamp(18px, 5vw, 29px); white-space: nowrap; }
+  .typing { display: inline-block; }
   .hero p { font-size: 14px; margin-block: 14px 24px; }
   .actions { gap: 8px; }
   .actions > * { min-inline-size: 0; padding-inline: 18px; }
