@@ -45,5 +45,9 @@ export const POST = (req: Request) =>
       )
       .first<{ phone: string }>();
     if (!consumed) throw new ApiError(400, "کد واردشده درست نیست.");
+    await db
+      .prepare("UPDATE challenges SET consumed=1 WHERE phone=? AND id<>? AND consumed=0")
+      .bind(consumed.phone, data.challengeId)
+      .run();
     return createSession(req, consumed.phone, data.name);
   });

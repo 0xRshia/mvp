@@ -24,8 +24,14 @@ try {
   try {
     const result = saved.prepare("PRAGMA integrity_check").get();
     if (result.integrity_check !== "ok") throw new Error("Backup integrity check failed");
-    const hasMedia = saved.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='event_media'").get();
-    const images = hasMedia ? saved.prepare("SELECT storage_key,byte_size FROM event_media").all() : [];
+    const tables = saved.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('event_media','article_media')").all();
+    const images = [];
+    if (tables.some(({ name }) => name === "event_media")) {
+      images.push(...saved.prepare("SELECT storage_key,byte_size FROM event_media").all());
+    }
+    if (tables.some(({ name }) => name === "article_media")) {
+      images.push(...saved.prepare("SELECT storage_key,byte_size FROM article_media").all());
+    }
     const mediaPath = process.env.MEDIA_PATH;
     if (images.length && (!mediaPath || !isAbsolute(mediaPath))) {
       throw new Error("MEDIA_PATH must be absolute to back up uploaded images");

@@ -26,7 +26,7 @@ export type EventMediaRow = {
   created_at: number;
 };
 
-export async function discardEventRequest(req: Request) {
+export async function discardEventRequest(req: Request, byteLimit = MAX_EVENT_REQUEST_BYTES) {
   if (!req.body || req.body.locked || req.bodyUsed) return;
   const reader = req.body.getReader();
   const timer = setTimeout(() => { void reader.cancel().catch(() => {}); }, 5000);
@@ -38,7 +38,7 @@ export async function discardEventRequest(req: Request) {
       const { done, value } = await reader.read();
       if (done) break;
       size += value.byteLength;
-      if (size > MAX_EVENT_REQUEST_BYTES) {
+      if (size > byteLimit) {
         await reader.cancel();
         break;
       }
@@ -213,6 +213,11 @@ export async function readEventSubmission(req: Request): Promise<{
   }
   if (!req.body) throw new ApiError(400, "اطلاعات درخواست معتبر نیست.");
   if (Number(req.headers.get("content-length")) > MAX_EVENT_REQUEST_BYTES) {
+    // A full set of individually valid files can exceed the combined limit.
+    // Drain that envelope without parsing it so Workerd can serve the next
+    // request; cancellation mid-body can otherwise restart its local proxy.
+    const rejectedEnvelope = (MAX_GALLERY_IMAGES + 1) * MAX_IMAGE_BYTES + 1024 * 1024;
+    await discardEventRequest(req, rejectedEnvelope);
     throw new ApiError(413, "حجم درخواست بیش از حد مجاز است.");
   }
   let count = 0;

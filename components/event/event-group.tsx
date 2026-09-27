@@ -11,21 +11,28 @@ import { fa } from "@/lib/types";
 import styles from "./event-group.module.css";
 
 export function EventGroup({
-  heading, items, href, variant = "neutral", priority = false,
+  heading, items, href, variant = "neutral", priority = false, serverNow,
 }: {
   heading: string;
   items: CatalogEntry[];
   href: string;
   variant?: "neutral" | "primary";
   priority?: boolean;
+  serverNow?: number;
 }) {
   const headingId = useId();
   const trackId = useId();
   const reducedMotion = useReducedMotion();
   const preview = items.slice(0, EVENT_PREVIEW_LIMIT);
   const [viewportRef, carousel] = useEmblaCarousel({
-    direction: "rtl", loop: false, align: "start", containScroll: "trimSnaps",
-    duration: reducedMotion ? 0 : 25,
+    // Keep the last, shorter group at inline-start without repeating earlier cards.
+    direction: "rtl", loop: false, align: "start", containScroll: false,
+    slidesToScroll: 1, skipSnaps: false,
+    breakpoints: {
+      "(min-width: 601px)": { slidesToScroll: 2 },
+      "(min-width: 901px)": { slidesToScroll: 3 },
+    },
+    duration: reducedMotion ? 0 : 20,
   });
   const subscribe = useCallback((callback: () => void) => {
     if (!carousel) return () => {};
@@ -68,19 +75,16 @@ export function EventGroup({
             <div className={styles.slide} key={event.id} role="group"
               aria-label={`${fa(index + 1)} از ${fa(preview.length)} ایونت`}>
               <div className={styles.entrance}>
-                <EventCard event={event} priority={priority && index < 3} mobilePair />
+                <EventCard event={event} priority={priority && index < 3} mobilePair serverNow={serverNow} />
               </div>
             </div>
           ))}
-          <div className={styles.slide}>
-            <AppLink data-motion-item href={href} className={styles.showAll}>
-              <ArrowLeft size={28} aria-hidden="true" />
-              <strong>مشاهدهٔ همه</strong>
-              <span>{heading}</span>
-            </AppLink>
-          </div>
         </div>
       </div>
+      <AppLink data-motion-item href={href} className={styles.showAll} aria-label={`مشاهدهٔ همه: ${heading}`}>
+        مشاهدهٔ همه
+        <ArrowLeft size={18} aria-hidden="true" />
+      </AppLink>
     </section>
   );
 }

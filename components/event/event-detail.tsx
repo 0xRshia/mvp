@@ -33,6 +33,7 @@ import { registrationState, REGISTRATION_CLOSED } from "@/lib/registration";
 import { fa, faDigits, date, clock, categories, type EventDetailData } from "@/lib/types";
 import styles from "./ticket-download.module.css";
 import detail from "./event-detail.module.css";
+import { ReviewSection } from "./review-section";
 export default function EventDetail({ id }: { id: string }) {
   return <Suspense fallback={<LoadingPage variant="event" />}><EventDetailSession id={id} /></Suspense>;
 }
@@ -50,6 +51,7 @@ function EventDetailContent({ id, requestedQuantity }: { id: string; requestedQu
   const purchaseButton = useRef<HTMLButtonElement>(null);
   const decreaseButton = useRef<HTMLButtonElement>(null);
   const [event, setEvent] = useState<EventDetailData | null>(null),
+    [serverNow, setServerNow] = useState<number>(),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true),
     [quantity, setQuantity] = useState(0),
@@ -59,14 +61,15 @@ function EventDetailContent({ id, requestedQuantity }: { id: string; requestedQu
     [key, setKey] = useState(""),
     [bookingError, setBookingError] = useState("");
   const { user, loading: authLoading, paymentReady, skipPayDevEnabled } = useAuth();
-  const now = useDeadlineClock(event ? Math.min(event.registration_ends_at, event.starts_at) : undefined);
+  const now = useDeadlineClock(event ? Math.min(event.registration_ends_at, event.starts_at) : undefined, 60000, serverNow);
   const availability = event && now !== null ? registrationState(event, now) : "checking";
   const closed = availability !== "open";
   const load = useCallback(() => {
     const version = ++requestVersion.current;
-    return api<{ event: EventDetailData }>(`/api/events/${id}`).then(({ event: loaded }) => {
+    return api<{ event: EventDetailData; serverNow?: number }>(`/api/events/${id}`).then(({ event: loaded, serverNow: currentServerNow }) => {
       if (version !== requestVersion.current) return;
       setEvent(loaded);
+      setServerNow(currentServerNow);
       setQuantity(requestedTicketQuantity(requestedQuantity, loaded));
       setConfirm(false);
     }).catch((error: Error) => {
@@ -157,7 +160,7 @@ function EventDetailContent({ id, requestedQuantity }: { id: string; requestedQu
           <span className={detail.capacity}>
             {event.remaining === null ? "ظرفیت نامحدود" : event.remaining === 0 ? "تکمیل ظرفیت" : `${fa(event.remaining)} نفر باقی مانده`}
           </span>
-          <RegistrationCountdown key={event.id} deadline={event.registration_ends_at} tiles />
+          <RegistrationCountdown key={event.id} deadline={event.registration_ends_at} serverNow={serverNow} tiles />
         </div>
         <div className={detail.heroCopy}>
           <div className={detail.categoryRow}>
@@ -192,6 +195,7 @@ function EventDetailContent({ id, requestedQuantity }: { id: string; requestedQu
         )}
         <EventGallery key={event.id} images={event.gallery} title={event.title} />
       </article>
+      <ReviewSection eventId={event.id} sample={event.sample === 1} />
       {closed && availability !== "checking" && (
         <p className="notice" role="status">{availability === "sold_out" ? "ظرفیت این ایونت تکمیل شده است." : "مهلت ثبت‌نام این ایونت پایان یافته است."}</p>
       )}

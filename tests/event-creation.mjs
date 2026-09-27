@@ -134,7 +134,11 @@ export async function testEventCreation({ db, call, base, host, guest, eventForm
     [form(eventForm, photo(Buffer.alloc(5 * 1024 * 1024 + 1))), 413],
     [form(eventForm, undefined, Array.from({ length: 7 }, () => photo(coverBytes))), 400],
     [form(eventForm, undefined, Array.from({ length: 5 }, () => photo(Buffer.alloc(5 * 1024 * 1024)))), 413],
-  ]) check((await submit(body)).status === expected, "Invalid, oversized, mismatched, or excessive images are rejected");
+  ]) {
+    const rejected = await submit(body);
+    check(rejected.status === expected,
+      `Invalid, oversized, mismatched, or excessive images are rejected (${rejected.status}, expected ${expected}: ${JSON.stringify(rejected.data)})`);
+  }
   const duplicateCover = form(eventForm, photo(coverBytes));
   duplicateCover.append("cover", photo(firstBytes), "second.jpg");
   check((await submit(duplicateCover)).status === 400, "More than one cover is rejected");

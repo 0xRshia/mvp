@@ -42,11 +42,11 @@ export function sameOrigin(req: Request) {
     throw new ApiError(403, "درخواست معتبر نیست. صفحه را دوباره باز کنید.");
   if (!origin) throw new ApiError(403, "درخواست معتبر نیست.");
 }
-export async function body(req: Request) {
-  if (Number(req.headers.get("content-length") ?? 0) > 16000)
+export async function body(req: Request, maxBytes = 16000) {
+  if (Number(req.headers.get("content-length") ?? 0) > maxBytes)
     throw new ApiError(413, "اطلاعات واردشده بیش از حد طولانی است.");
   const text = await req.text();
-  if (text.length > 16000)
+  if (new TextEncoder().encode(text).byteLength > maxBytes)
     throw new ApiError(413, "اطلاعات واردشده بیش از حد طولانی است.");
   try {
     const value = JSON.parse(text);
@@ -114,6 +114,18 @@ export function isHost(phone: string) {
     .map((x) => x.trim())
     .includes(phone);
 }
+export function isAdmin(phone: string) {
+  return (config().ADMIN_PHONES ?? "").split(",").some((value) => {
+    try { return phoneNumber(value.trim()) === phone; }
+    catch { return false; }
+  });
+}
+
+export async function requireAdmin(req: Request) {
+  const user = await requireUser(req);
+  if (!user.isAdmin) throw new ApiError(403, "دسترسی مدیریت سایت برای این حساب فعال نیست.");
+  return user;
+}
 export async function currentUser(req: Request): Promise<User | null> {
   const token = req.headers
     .get("cookie")
@@ -128,7 +140,7 @@ export async function currentUser(req: Request): Promise<User | null> {
     )
     .bind(await hash(token), Date.now())
     .first<{ id: string; phone: string; name: string }>();
-  return user ? { ...user, isHost: isHost(user.phone) } : null;
+  return user ? { ...user, isHost: isHost(user.phone), isAdmin: isAdmin(user.phone) } : null;
 }
 export async function requireUser(req: Request, host = false) {
   const user = await currentUser(req);
@@ -168,9 +180,9 @@ export async function createSession(
   const user = await db
     .prepare("SELECT id,phone,name FROM users WHERE phone=?")
     .bind(phone)
-    .first<Omit<User, "isHost">>();
+    .first<Omit<User, "isHost" | "isAdmin">>();
   if (!user) throw new Error("Session user unavailable");
-  return json({ user: { ...user, isHost: isHost(phone) } }, 200, {
+  return json({ user: { ...user, isHost: isHost(phone), isAdmin: isAdmin(phone) } }, 200, {
     "Set-Cookie": sessionCookie(req, token, age),
   });
 }

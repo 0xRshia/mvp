@@ -21,14 +21,15 @@ function RollingDigit({ digit }: { digit: string }) {
   );
 }
 
-export function RegistrationCountdown({ deadline, compact = false, tiles = false, squareTiles = false, className = "" }: {
+export function RegistrationCountdown({ deadline, serverNow, compact = false, tiles = false, squareTiles = false, className = "" }: {
   deadline: number;
+  serverNow?: number;
   compact?: boolean;
   tiles?: boolean;
   squareTiles?: boolean;
   className?: string;
 }) {
-  const now = useDeadlineClock(deadline);
+  const now = useDeadlineClock(deadline, 60000, serverNow);
   const remaining = now === null ? null : registrationCountdownMinutes(deadline, now);
   const countdownClassName = `${styles.countdown}${compact ? ` ${styles.compact}` : ""}${tiles ? ` ${styles.tiles}` : ""}${squareTiles ? ` ${styles.squareTiles}` : ""} ${className}`;
   if (remaining === null) return null;

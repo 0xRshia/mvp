@@ -23,9 +23,12 @@ export type EventItem = {
   remaining: number | null;
   attendees: number;
   distance?: number;
+  rating_count?: number;
+  rating_average?: number | null;
 };
 export type EventDetailData = EventItem & {
   gallery: { id: string; url: string }[];
+  serverNow?: number;
 };
 export type EventSuggestion = {
   eventId: string;
@@ -34,12 +37,13 @@ export type EventSuggestion = {
 export type EventCatalog = {
   events: EventItem[];
   suggestions: EventSuggestion[];
+  serverNow?: number;
 };
-export type User = { id: string; phone: string; name: string; isHost: boolean };
+export type User = { id: string; phone: string; name: string; isHost: boolean; isAdmin: boolean };
 // TODO(PRODUCTION): REMOVE_TEMP_LOGIN — remove the immediate-user response when retiring demo login.
 export type AuthRequestResponse =
   | { user: User }
-  | { challengeId: string; resendAfter: number; expiresIn: number };
+  | { challengeId: string; resendAfter: number; expiresIn: number; serverNow: number; expiresAt: number; resendAt: number };
 export type Reservation = {
   id: string;
   event_id: string;

@@ -2,7 +2,7 @@
 import { ButtonLabel } from "@/components/ui/button-label";
 import { AppLink, useAppNavigate } from "@/components/event/app-navigation";
 import { AnimatedRegion } from "@/components/ui/animated-region";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Smartphone, ArrowRight, ShieldCheck, ArrowLeft } from "lucide-react";
 import {
   InputOTP,
@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/input-otp";
 import { api } from "@/lib/client";
 import { loginDestination } from "@/lib/login-destination";
+import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import { useAuth } from "./app-shell";
 import { ErrorBox } from "./shared";
 import { digits, fa, faDigits, type AuthRequestResponse } from "@/lib/types";
 import layouts from "./page-layouts.module.css";
-export default function LoginForm({ host = false }: { host?: boolean }) {
+export default function LoginForm({ host = false, admin = false }: { host?: boolean; admin?: boolean }) {
   const navigate = useAppNavigate();
   const { user, refresh, smsReady, loading, temporaryLoginEnabled } = useAuth();
   const [phone, setPhone] = useState(""),
@@ -24,14 +25,16 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
     [challenge, setChallenge] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
-    [wait, setWait] = useState(0);
-  useEffect(() => {
-    if (wait <= 0) return;
-    const t = setTimeout(() => setWait(wait - 1), 1000);
-    return () => clearTimeout(t);
-  }, [wait]);
-  function destination() {
-    return loginDestination(new URLSearchParams(window.location.search).get("next"), host);
+    [expiresAt, setExpiresAt] = useState<number>(),
+    [resendAt, setResendAt] = useState<number>(),
+    [serverNow, setServerNow] = useState<number>();
+  const clockNow = useDeadlineClock(expiresAt, 1000, serverNow);
+  const clockValue = clockNow ?? serverNow ?? 0;
+  const wait = !resendAt ? 0 : Math.max(0, Math.ceil((resendAt - clockValue) / 1000));
+  const secondsLeft = !expiresAt ? null : Math.max(0, Math.ceil((expiresAt - clockValue) / 1000));
+  function destination(isAdmin = user?.isAdmin ?? false) {
+    if (admin && !isAdmin) throw new Error("این شمارهٔ همراه دسترسی مدیر سایت ندارد.");
+    return loginDestination(new URLSearchParams(window.location.search).get("next"), host, admin);
   }
   async function request() {
     if (busy) return;
@@ -44,13 +47,17 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
       );
       // TODO(PRODUCTION): REMOVE_TEMP_LOGIN — immediate sessions bypass the OTP screen.
       if ("user" in r) {
+        if (admin && !r.user.isAdmin) throw new Error("این شمارهٔ همراه دسترسی مدیر سایت ندارد.");
         await refresh();
-        navigate(destination());
+        navigate(destination(r.user.isAdmin));
         return;
       }
       setChallenge(r.challengeId);
       setCode("");
-      setWait(r.resendAfter);
+      const receivedAt = Date.now();
+      setServerNow(r.serverNow ?? receivedAt);
+      setResendAt(r.resendAt ?? receivedAt + r.resendAfter * 1000);
+      setExpiresAt(r.expiresAt ?? receivedAt + r.expiresIn * 1000);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -62,13 +69,14 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
     setBusy(true);
     setError("");
     try {
-      await api("/api/auth/verify", {
+      const result = await api<{ user: { isAdmin?: boolean } }>("/api/auth/verify", {
         challengeId: challenge,
         code: digits(code),
         name,
       });
+      if (admin && !result.user.isAdmin) throw new Error("این شمارهٔ همراه دسترسی مدیر سایت ندارد.");
       await refresh();
-      navigate(destination());
+      navigate(destination(!!result.user.isAdmin));
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -83,9 +91,9 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
       </AppLink>
       <div data-motion-group className={layouts.authLayout}>
         <aside className={layouts.authWelcome}>
-          <span className="eyebrow">هم‌قدم، همراه تجربه‌های تازه</span>
-          <h2>{host ? "قرارهای ماندگار، از شما شروع می‌شوند." : "برای یک قرار خوب، هم‌قدم پیدا کن."}</h2>
-          <p>{host ? "ایونت‌ها، بلیت‌ها و ورود مهمان‌ها را در یک فضای ساده مدیریت کنید." : "ایونت‌های شهر را کشف کن، بلیت بگیر و برای تجربهٔ بعدی آماده شو."}</p>
+          <span className="eyebrow">{admin ? "پنل مدیریت هم‌قدم" : "هم‌قدم، همراه تجربه‌های تازه"}</span>
+          <h2>{host ? "قرارهای ماندگار، از شما شروع می‌شوند." : admin ? "مدیریت تجربه‌های هم‌قدم." : "برای یک قرار خوب، هم‌قدم پیدا کن."}</h2>
+          <p>{host ? "ایونت‌ها، بلیت‌ها و ورود مهمان‌ها را در یک فضای ساده مدیریت کنید." : admin ? "برای ادامه، شمارهٔ مدیر سایت را با کد پیامکی تأیید کنید." : "ایونت‌های شهر را کشف کن، بلیت بگیر و برای تجربهٔ بعدی آماده شو."}</p>
           <div className={layouts.welcomeArt} aria-hidden="true">
             <span />
             <span />
@@ -94,14 +102,15 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
         </aside>
       <div data-motion-group className={`auth-card ${layouts.authCard}`}>
         <div className="dialog-symbol">
-          {host ? <ShieldCheck size={30} /> : <Smartphone size={30} />}
+          {host || admin ? <ShieldCheck size={30} /> : <Smartphone size={30} />}
         </div>
         <h1>
-          {host ? "به پنل میزبان خوش آمدید" : "قرار بعدی، از اینجا شروع می‌شود"}
+          {host ? "به پنل میزبان خوش آمدید" : admin ? "ورود مدیر سایت" : "قرار بعدی، از اینجا شروع می‌شود"}
         </h1>
         <p>
           {challenge
             ? `کد پیامک‌شده به ${faDigits(phone)} را وارد کنید.`
+            : admin ? "با شمارهٔ همراه مدیر سایت وارد شوید."
             : host
               ? "با شمارهٔ همراه تأییدشدهٔ میزبان وارد شوید."
               : "برای گرفتن بلیت، با شمارهٔ همراهت وارد شو."}
@@ -110,9 +119,10 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
         {user ? (
           <div data-motion-group className="auth-form">
             <p>شما وارد حساب خود شده‌اید.</p>
-            <button type="button" onClick={() => navigate(destination())} className="button full">
-              {host ? "رفتن به پنل میزبان" : "ادامه به حساب یا رزرو"}
+            <button type="button" onClick={() => { try { navigate(destination()); } catch (cause) { setError((cause as Error).message); } }} className="button full">
+              {host ? "رفتن به پنل میزبان" : admin ? "رفتن به پنل مدیریت" : "ادامه به حساب یا رزرو"}
             </button>
+            {error && <ErrorBox message={error} />}
           </div>
         ) : (
           <form
@@ -163,6 +173,7 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
                     onChange={(v) => setCode(digits(v))}
                     autoComplete="one-time-code"
                     inputMode="numeric"
+                    aria-describedby="otp-countdown"
                   >
                     <InputOTPGroup>
                       {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -171,11 +182,15 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
+                {secondsLeft !== null && <p className="otp-countdown" id="otp-countdown" role="timer" aria-live="off">{secondsLeft > 0 ? `اعتبار کد: ${fa(secondsLeft)} ثانیه` : "کد منقضی شده؛ کد تازه بگیرید."}</p>}
                 <button
                   type="button"
                   className="text-button"
                   onClick={() => {
-                    setChallenge("");
+                setChallenge("");
+                    setExpiresAt(undefined);
+                    setResendAt(undefined);
+                    setServerNow(undefined);
                     setError("");
                   }}
                 >
@@ -187,7 +202,7 @@ export default function LoginForm({ host = false }: { host?: boolean }) {
             {error && <ErrorBox message={error} />}
             <button
               className="button full"
-              disabled={busy || !!(challenge && code.length !== 6)}
+              disabled={busy || !!(challenge && (code.length !== 6 || secondsLeft === 0))}
               aria-busy={busy}
             >
               <ButtonLabel

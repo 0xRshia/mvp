@@ -39,7 +39,7 @@ export async function seedSamples() {
   );
 }
 export const eventThumbnail = `COALESCE(e.image,(SELECT '/api/media/' || id FROM event_media WHERE event_id=e.id AND role='gallery' ORDER BY position LIMIT 1))`;
-export const eventSelect = `SELECT e.*, ${eventThumbnail} thumbnail, COALESCE((SELECT SUM(quantity) FROM reservations WHERE event_id=e.id AND status='confirmed'),0) attendees, CASE WHEN e.capacity IS NULL THEN NULL ELSE MAX(0,e.capacity-COALESCE((SELECT SUM(quantity) FROM reservations WHERE event_id=e.id AND (status='confirmed' OR (status='hold' AND expires_at>?1))),0)) END remaining FROM events e`;
+export const eventSelect = `SELECT e.*, ${eventThumbnail} thumbnail, COALESCE((SELECT SUM(quantity) FROM reservations WHERE event_id=e.id AND status='confirmed'),0) attendees, CASE WHEN e.capacity IS NULL THEN NULL ELSE MAX(0,e.capacity-COALESCE((SELECT SUM(quantity) FROM reservations WHERE event_id=e.id AND (status='confirmed' OR (status='hold' AND expires_at>?1))),0)) END remaining, CASE WHEN e.sample=0 THEN COALESCE((SELECT COUNT(*) FROM event_reviews er WHERE er.event_id=e.id AND er.status='published'),0) ELSE 0 END rating_count, CASE WHEN e.sample=0 THEN (SELECT AVG(er.rating) FROM event_reviews er WHERE er.event_id=e.id AND er.status='published') ELSE NULL END rating_average FROM events e`;
 export async function getEvent(id: string) {
   return database()
     .prepare(eventSelect + " WHERE e.id=?2")

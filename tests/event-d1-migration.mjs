@@ -137,7 +137,19 @@ try {
   });
   assert.equal(deadlineAfter[5].results.find((column) => column.name === "registration_ends_at").notnull, 1);
   assert.deepEqual(deadlineAfter[6].results, []);
+  const community = await execute("verify additive community and content migration", "--command", `
+    SELECT name FROM sqlite_master WHERE type='table' AND name IN ('articles','article_media','site_content','contact_messages','host_customer_metadata','event_reviews','review_replies') ORDER BY name;
+    SELECT key FROM site_content ORDER BY key;
+    SELECT status,published_at FROM articles;
+    PRAGMA foreign_key_check;
+  `);
+  assert.equal(community[0].results.length, 7, "All community tables exist");
+  assert.deepEqual(community[1].results.map((row) => row.key), ["about", "contact", "faq"]);
+  assert.equal(community[2].results.length, 3, "Three original guides are seeded");
+  assert(community[2].results.every((row) => row.status === "draft" && row.published_at === null), "Guides stay unpublished until admin review");
+  assert.deepEqual(community[3].results, []);
   console.log("PASS local D1 Maps/media and registration deadline migrations preserve data, tokens, indexes and foreign keys; deadlines backfill exactly 24 hours before start.");
+  console.log("PASS community/content tables and unpublished guide seeds preserve existing records and relationships.");
 } finally {
   fs.rmSync(directory, { recursive: true, force: true });
 }

@@ -4,6 +4,7 @@ import { getEvent, eventThumbnail } from "@/lib/events";
 import { reserveSql } from "@/lib/booking-sql";
 import { startPayment, type StoredBooking } from "@/lib/payments";
 import { ensureTickets } from "@/lib/tickets";
+import { pageResult, readPage } from "@/lib/pagination";
 import {
   ApiError,
   boundary,
@@ -18,6 +19,20 @@ import {
 export const GET = (req: Request) =>
   boundary(async () => {
     const user = await requireUser(req);
+    const url = new URL(req.url);
+    const paginated = url.searchParams.has("page") || url.searchParams.has("pageSize");
+    const { page, pageSize, offset } = readPage(url, 10);
+    const db = database();
+    if (paginated) {
+      const [{ results }, count] = await Promise.all([
+        db.prepare(
+          `SELECT r.id,r.event_id,r.quantity,r.total,r.status,r.created_at,r.expires_at,r.reference,r.payment_state,COALESCE(r.attendee_name,u.name) name,COALESCE(r.attendee_phone,u.phone) phone,e.title,e.venue,e.address,e.city,e.maps_url,e.lat,e.lng,${eventThumbnail} image,e.starts_at,e.ends_at FROM reservations r JOIN events e ON e.id=r.event_id JOIN users u ON u.id=r.user_id WHERE r.user_id=? ORDER BY r.created_at DESC,r.id DESC LIMIT ? OFFSET ?`,
+        ).bind(user.id, pageSize, offset).all(),
+        db.prepare("SELECT COUNT(*) total FROM reservations WHERE user_id=?")
+          .bind(user.id).first<{ total: number }>(),
+      ]);
+      return json({ ...pageResult(results, Number(count?.total ?? 0), page, pageSize), serverNow: Date.now() });
+    }
     const { results } = await database()
       .prepare(
         `SELECT r.id,r.event_id,r.quantity,r.total,r.status,r.created_at,r.expires_at,r.reference,r.payment_state,COALESCE(r.attendee_name,u.name) name,COALESCE(r.attendee_phone,u.phone) phone,e.title,e.venue,e.address,e.city,e.maps_url,e.lat,e.lng,${eventThumbnail} image,e.starts_at,e.ends_at FROM reservations r JOIN events e ON e.id=r.event_id JOIN users u ON u.id=r.user_id WHERE r.user_id=? ORDER BY r.created_at DESC`,

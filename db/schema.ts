@@ -5,6 +5,7 @@ import {
   real,
   index,
   uniqueIndex,
+  primaryKey,
 } from "drizzle-orm/sqlite-core";
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
@@ -131,3 +132,84 @@ export const eventScanners = sqliteTable("event_scanners", {
   token: text("token").notNull().unique(),
   created_at: integer("created_at").notNull(),
 });
+
+export const articles = sqliteTable("articles", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  excerpt: text("excerpt").notNull().default(""),
+  body: text("body").notNull(),
+  category: text("category").notNull().default(""),
+  author_name: text("author_name").notNull(),
+  status: text("status").notNull().default("draft"),
+  published_at: integer("published_at"),
+  created_at: integer("created_at").notNull(),
+  updated_at: integer("updated_at").notNull(),
+  updated_by: text("updated_by").references(() => users.id),
+}, (t) => [index("idx_articles_status_published").on(t.status, t.published_at)]);
+
+export const articleMedia = sqliteTable("article_media", {
+  id: text("id").primaryKey(),
+  article_id: text("article_id").notNull().unique().references(() => articles.id, { onDelete: "cascade" }),
+  storage_key: text("storage_key").notNull().unique(),
+  content_type: text("content_type").notNull(),
+  byte_size: integer("byte_size").notNull(),
+  created_at: integer("created_at").notNull(),
+});
+
+export const siteContent = sqliteTable("site_content", {
+  key: text("key").primaryKey(),
+  content: text("content").notNull(),
+  updated_at: integer("updated_at").notNull(),
+  updated_by: text("updated_by").references(() => users.id),
+});
+
+export const contactMessages = sqliteTable("contact_messages", {
+  id: text("id").primaryKey(),
+  user_id: text("user_id").references(() => users.id),
+  name: text("name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  status: text("status").notNull().default("new"),
+  created_at: integer("created_at").notNull(),
+  updated_at: integer("updated_at").notNull(),
+}, (t) => [index("idx_contact_status_created").on(t.status, t.created_at)]);
+
+export const hostCustomerMetadata = sqliteTable("host_customer_metadata", {
+  host_id: text("host_id").notNull().references(() => users.id),
+  user_id: text("user_id").notNull().references(() => users.id),
+  notes: text("notes").notNull().default(""),
+  tags: text("tags").notNull().default("[]"),
+  updated_at: integer("updated_at").notNull(),
+}, (t) => [primaryKey({ columns: [t.host_id, t.user_id] })]);
+
+export const eventReviews = sqliteTable("event_reviews", {
+  id: text("id").primaryKey(),
+  event_id: text("event_id").notNull().references(() => events.id),
+  user_id: text("user_id").notNull().references(() => users.id),
+  rating: integer("rating").notNull(),
+  comment: text("comment").notNull().default(""),
+  status: text("status").notNull().default("pending"),
+  created_at: integer("created_at").notNull(),
+  updated_at: integer("updated_at").notNull(),
+  moderated_by: text("moderated_by").references(() => users.id),
+  moderated_at: integer("moderated_at"),
+}, (t) => [
+  uniqueIndex("idx_reviews_event_user").on(t.event_id, t.user_id),
+  index("idx_reviews_event_status_created").on(t.event_id, t.status, t.created_at),
+  index("idx_reviews_status_created").on(t.status, t.created_at),
+]);
+
+export const reviewReplies = sqliteTable("review_replies", {
+  id: text("id").primaryKey(),
+  review_id: text("review_id").notNull().unique().references(() => eventReviews.id, { onDelete: "cascade" }),
+  host_id: text("host_id").notNull().references(() => users.id),
+  comment: text("comment").notNull(),
+  status: text("status").notNull().default("pending"),
+  created_at: integer("created_at").notNull(),
+  updated_at: integer("updated_at").notNull(),
+  moderated_by: text("moderated_by").references(() => users.id),
+  moderated_at: integer("moderated_at"),
+}, (t) => [index("idx_replies_status_created").on(t.status, t.created_at)]);

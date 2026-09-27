@@ -3,13 +3,14 @@ import { AppLink } from "@/components/event/app-navigation";
 import { CatalogResultsTransition } from "./catalog-results-transition";
 import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { useDeadlineClock } from "@/hooks/use-deadline-clock";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Search,
   ArrowLeft,
   X,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { NumberedPagination } from "@/components/ui/numbered-pagination";
 import { Blank, Choice, ErrorBox, Loading } from "@/components/event/shared";
 import { EventCard } from "@/components/event/event-card";
 import { EventGroup } from "./event-group";
@@ -44,10 +45,11 @@ const groupDefinitions = [
 
 export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogView }) {
   const { user } = useAuth();
-  const now = useDeadlineClock(undefined);
   const { filters, updateFilters, resetFilters } = useEventBrowse();
   const { category, query, sort, when, free } = filters;
   const { catalog, loading: fetching, error, reload } = useEventCatalog();
+  const now = useDeadlineClock(undefined, 60_000, catalog?.serverNow);
+  const [pageSelection, setPageSelection] = useState({ key: "", page: 1 });
   const events = catalog?.events ?? emptyEvents;
   const suggestions = catalog?.suggestions ?? emptySuggestions;
   const loading = fetching || now === null;
@@ -60,8 +62,12 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
     { ...filters, free: view === "free" || free }, now), [events, filters, free, view, now]);
   const groups = useMemo(() => groupEvents(filtered, suggestions, now ?? 0), [filtered, suggestions, now]);
   const listing = view === "home" ? groups.all : groups[view];
+  const pageKey = JSON.stringify([view, filters]);
+  const totalPages = Math.max(1, Math.ceil(listing.length / 12));
+  const page = Math.min(pageSelection.key === pageKey ? pageSelection.page : 1, totalPages);
+  const pageItems = listing.slice((page - 1) * 12, page * 12);
   const resultsKey = loading ? "loading" : error || JSON.stringify([
-    view, filters, Object.values(groups).map((items) => items.map(({ event }) => event.id)),
+    view, filters, page, Object.values(groups).map((items) => items.map(({ event }) => event.id)),
   ]);
   const title = groupDefinitions.find((group) => group.view === view)?.heading;
   useEffect(() => {
@@ -246,21 +252,30 @@ export default function EventCatalogBrowser({ view = "home" }: { view?: CatalogV
           {groupDefinitions.filter((group) => groups[group.view].length > 0).map((group, index) => (
             <EventGroup key={group.view} heading={group.heading} items={groups[group.view]}
               href={group.href} variant={group.view === "suggested" ? "primary" : "neutral"}
-              priority={index === 0} />
+              priority={index === 0} serverNow={catalog?.serverNow} />
           ))}
         </div>
       ) : (
         <div data-motion-group className="event-grid">
-          {listing.map(({ event }, i) => (
+          {pageItems.map(({ event }, i) => (
             <EventCard
               key={event.id}
               event={event}
               priority={i < 3}
+              serverNow={catalog?.serverNow}
             />
           ))}
         </div>
       )}
       </CatalogResultsTransition>
+      {view !== "home" && !loading && !error && <NumberedPagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={(nextPage) => {
+          setPageSelection({ key: pageKey, page: nextPage });
+          showResults();
+        }}
+      />}
     </main>
   );
 }

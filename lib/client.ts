@@ -6,12 +6,14 @@ export class ClientError extends Error {
     super(message);
   }
 }
-export async function api<T>(url: string, data?: unknown): Promise<T> {
+export async function api<T>(url: string, data?: unknown,
+  method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE" = data === undefined ? "GET" : "POST",
+): Promise<T> {
   let response: Response;
   const multipart = data instanceof FormData;
   try {
     response = await fetch(url, {
-      method: data === undefined ? "GET" : "POST",
+      method,
       headers:
         data === undefined || multipart ? {} : { "Content-Type": "application/json" },
       body: data === undefined ? undefined : multipart ? data : JSON.stringify(data),

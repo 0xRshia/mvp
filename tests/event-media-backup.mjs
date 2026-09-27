@@ -10,6 +10,7 @@ const source = path.join(temporary, "source.sqlite");
 const media = path.join(temporary, "uploads");
 const backups = path.join(temporary, "backups");
 const key = "10000000-0000-4000-8000-000000000000.jpg";
+const articleKey = "20000000-0000-4000-8000-000000000000.jpg";
 const bytes = fs.readFileSync("public/images/cafe.jpg");
 fs.mkdirSync(media);
 fs.mkdirSync(backups);
@@ -23,7 +24,10 @@ function run(database = source, directory = backups, mediaPath = media) {
 try {
   const db = new DatabaseSync(source);
   db.exec("CREATE TABLE event_media (storage_key TEXT PRIMARY KEY, byte_size INTEGER NOT NULL)");
+  db.exec("CREATE TABLE article_media (storage_key TEXT PRIMARY KEY, byte_size INTEGER NOT NULL)");
   db.prepare("INSERT INTO event_media VALUES (?,?)").run(key, bytes.length);
+  db.prepare("INSERT INTO article_media VALUES (?,?)").run(articleKey, bytes.length);
+  fs.writeFileSync(path.join(media, articleKey), bytes);
   db.close();
 
   const result = run();
@@ -31,16 +35,20 @@ try {
   const snapshot = fs.readdirSync(backups).find((name) => name.endsWith(".sqlite"));
   const pairedMedia = path.join(backups, snapshot.replace(/\.sqlite$/, ".media"));
   assert.deepEqual(fs.readFileSync(path.join(pairedMedia, key)), bytes);
+  assert.deepEqual(fs.readFileSync(path.join(pairedMedia, articleKey)), bytes);
   const restored = path.join(temporary, "restored.sqlite");
   const restoredMedia = path.join(temporary, "restored-uploads");
   fs.copyFileSync(path.join(backups, snapshot), restored);
   fs.cpSync(pairedMedia, restoredMedia, { recursive: true });
   const restoredDatabase = new DatabaseSync(restored, { readOnly: true });
   const reference = restoredDatabase.prepare("SELECT storage_key,byte_size FROM event_media").get();
+  const articleReference = restoredDatabase.prepare("SELECT storage_key,byte_size FROM article_media").get();
   restoredDatabase.close();
   assert.equal(reference.byte_size, bytes.length);
   assert.deepEqual(fs.readFileSync(path.join(restoredMedia, reference.storage_key)), bytes);
-  console.log("PASS paired SQLite/media backup restores the referenced image bytes");
+  assert.equal(articleReference.byte_size, bytes.length);
+  assert.deepEqual(fs.readFileSync(path.join(restoredMedia, articleReference.storage_key)), bytes);
+  console.log("PASS paired SQLite/media backup restores event images and article covers");
 
   fs.unlinkSync(path.join(media, key));
   const previous = fs.readdirSync(backups).sort();

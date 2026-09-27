@@ -94,6 +94,10 @@
 .dateStamp strong { font-size: 34px; font-weight: 500; }
 .dateStamp span { font-size: 12px; }
 .card .title { margin: 0; font-size: 23px; font-weight: 800; line-height: 1.65; overflow-wrap: anywhere; color: var(--image-foreground); }
+.rating { display: inline-flex; align-items: center; align-self: flex-start; gap: 5px; padding: 5px 10px; border-radius: 999px; background: var(--glass-surface); color: var(--image-foreground); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); font-size: 12px; }
+.rating svg { color: #ffd369; }
+.rating strong { font-size: 13px; }
+.rating small { font-size: 11px; }
 .venue { display: flex; align-items: center; gap: 7px; margin: 0; font-size: 14px; line-height: 1.8; }
 .venue span { overflow-wrap: anywhere; }
 .facts { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 8px 12px; font-size: 12px; padding-block: 2px 4px; }
@@ -112,10 +116,15 @@
   --countdown-compact-digit-size: clamp(13px, 4.8cqw, 17px);
   --countdown-square-tile-size: clamp(32px, 12cqw, 44px);
   --countdown-square-unit-gap: clamp(4px, 1.5cqw, 6px);
+  padding: clamp(14px, 6cqw, 22px);
 }
+.mobilePair .topline { flex-wrap: wrap; }
+.mobilePair .title { font-size: clamp(18px, 6.5cqw, 23px); }
+.mobilePair .facts > * { min-inline-size: 0; overflow-wrap: anywhere; }
 
 @media (hover: hover) and (pointer: fine) {
   .card:hover .surface { transform: rotateX(1deg) rotateY(-1deg); }
+  .mobilePair:hover .surface { transform: translateY(-2px); }
   .card:hover .image { transform: scale(1.025); }
   .card:hover .action { background: var(--primary-hover); }
   .card:hover .action { box-shadow: 0 4px 18px var(--focus-shadow); }

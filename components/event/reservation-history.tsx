@@ -31,19 +31,22 @@ import { Blank, ErrorBox, Loading } from "@/components/event/shared";
 import { api } from "@/lib/client";
 import { date, clock, fa, faDigits, type Reservation } from "@/lib/types";
 import { TicketDownload } from "@/components/event/ticket-download";
+import { ReceiptActions } from "@/components/event/receipt-actions";
 import { eventLocationUrl } from "@/lib/location-url";
 import { groupReservations } from "@/lib/reservation-history";
+import { NumberedPagination } from "@/components/ui/numbered-pagination";
+import { reservationAmountLabel, reservationStatusLabel } from "@/lib/account-types";
 import { useDeadlineClock } from "@/hooks/use-deadline-clock";
 import styles from "@/components/event/ticket-download.module.css";
 import layouts from "@/components/event/page-layouts.module.css";
-export function ReservationHistory({ account = false }: { account?: boolean }) {
+export function ReservationHistory({ account = false, embedded = false }: { account?: boolean; embedded?: boolean }) {
   const { user } = useAuth();
-  return <Suspense fallback={<LoadingPage variant={account ? "account" : "reservations"} />}>
-    <ReservationHistoryContent key={user?.id ?? "signed-out"} account={account} />
+  return <Suspense fallback={embedded ? <section className={`container subpage ${layouts.page}`}><Loading variant="reservations" /></section> : <LoadingPage variant={account ? "account" : "reservations"} />}>
+    <ReservationHistoryContent key={user?.id ?? "signed-out"} account={account} embedded={embedded} />
   </Suspense>;
 }
 
-function ReservationHistoryContent({ account }: { account: boolean }) {
+function ReservationHistoryContent({ account, embedded }: { account: boolean; embedded: boolean }) {
   const search = useSearchParams();
   const payment = search.has("booked") ? "booked" : (search.get("payment") ?? "");
   const purchasedId = search.get("booked") || search.get("reservation") || "";
@@ -52,25 +55,31 @@ function ReservationHistoryContent({ account }: { account: boolean }) {
   const requestVersion = useRef(0);
   const mounted = useRef(false);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [serverNow, setServerNow] = useState<number>();
   const [rows, setRows] = useState<Reservation[]>([]),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
     [cancel, setCancel] = useState<string | null>(null),
     [busy, setBusy] = useState("");
   const [busyAction, setBusyAction] = useState("");
-  const currentTime = useDeadlineClock(undefined);
+  const currentTime = useDeadlineClock(undefined, 1000, serverNow);
+  const Container = embedded ? "section" : "main";
   const load = useCallback(() => {
     const version = ++requestVersion.current;
-    return api<{ reservations: Reservation[] }>("/api/reservations").then((result) => {
+    return api<{ items: Reservation[]; totalPages: number; serverNow?: number }>(`/api/reservations?page=${page}&pageSize=10`).then((result) => {
       if (!mounted.current || version !== requestVersion.current) return;
-      setRows(result.reservations);
+      setRows(result.items);
+      setTotalPages(result.totalPages);
+      if (result.serverNow !== undefined) setServerNow(result.serverNow);
       setHasLoaded(true);
     }).catch((error: Error) => {
       if (mounted.current && version === requestVersion.current) setError(error.message);
     }).finally(() => {
       if (mounted.current && version === requestVersion.current) setLoading(false);
     });
-  }, []);
+  }, [page]);
   useEffect(() => {
     mounted.current = true;
     if (user) void load();
@@ -106,20 +115,13 @@ function ReservationHistoryContent({ account }: { account: boolean }) {
       }
     }
   }
-  if (currentTime === null) return <main data-motion-group className={`container subpage ${layouts.page} ${layouts.reservationsPage}`}><Loading variant="reservations" /></main>;
+  if (currentTime === null) return <Container data-motion-group className={`container subpage ${layouts.page} ${layouts.reservationsPage}`}><Loading variant="reservations" /></Container>;
   const now = currentTime;
   const { past, upcoming, cancelled } = groupReservations(rows, now);
   const purchased = rows.find((r) => r.id === purchasedId && r.status === "confirmed");
   function status(r: Reservation) {
-    if (r.status === "confirmed")
-      return r.ends_at > now ? "رزرو تأییدشده" : "برگزارشده";
-    if (r.status === "paid_unfulfilled") return "پرداخت نیازمند پیگیری";
-    if (r.status === "hold")
-      return (r.expires_at ?? 0) > now
-        ? "در انتظار پرداخت"
-        : "مهلت رزرو پایان یافته";
-    if (r.status === "cancelled") return "لغوشده";
-    return "پرداخت ناموفق";
+    return reservationStatusLabel(r.status, r.payment_state, r.total,
+      r.status === "hold" ? (r.expires_at ?? 0) : r.ends_at, now);
   }
   function list(items: Reservation[]) {
     return items.length ? (
@@ -155,8 +157,9 @@ function ReservationHistoryContent({ account }: { account: boolean }) {
               <p>{r.venue}</p>
               <div className="reservation-meta">
                 <span>{fa(r.quantity)} نفر</span>
-                <strong>{r.total ? `${fa(r.total)} تومان` : "رایگان"}</strong>
+                <strong>{reservationAmountLabel(r.status, r.payment_state, r.total)}</strong>
               </div>
+              {r.status === "hold" && (r.expires_at ?? 0) > now && <p className="hold-countdown" role="timer" aria-live="off">مهلت پرداخت: {fa(Math.ceil(((r.expires_at ?? now) - now) / 1000))} ثانیه</p>}
               {r.reference && (
                 <p className="ticket-code">
                   شناسهٔ پرداخت: <bdi>{r.reference}</bdi>
@@ -176,6 +179,7 @@ function ReservationHistoryContent({ account }: { account: boolean }) {
               {r.status === "confirmed" && (
                 <TicketDownload reservationId={r.id} quantity={r.quantity} fullWidth />
               )}
+              {(r.status === "confirmed" || r.status === "paid_unfulfilled") && <ReceiptActions reservationId={r.id} />}
               {locationUrl && (
                 <a className="button outline reservation-location" href={locationUrl} target="_blank" rel="noopener noreferrer">
                   <MapPin size={17} aria-hidden="true" />
@@ -230,7 +234,7 @@ function ReservationHistoryContent({ account }: { account: boolean }) {
     );
   }
   return (
-    <main data-motion-group className={`container subpage ${layouts.page} ${layouts.reservationsPage}`}>
+    <Container data-motion-group className={`container subpage ${layouts.page} ${layouts.reservationsPage}`}>
       <div className={`page-heading ${layouts.pageHeading}`}>
         <div className="eyebrow">
           <Ticket size={17} />
@@ -321,6 +325,7 @@ function ReservationHistoryContent({ account }: { account: boolean }) {
         </Tabs>
       )}
       </AnimatedRegion>
+      {user && !loading && !error && totalPages > 1 && <NumberedPagination page={page} totalPages={totalPages} onPageChange={(nextPage) => { setLoading(true); setPage(nextPage); }} disabled={loading} />}
       <AlertDialog
         open={!!cancel}
         onOpenChange={(v) => {
@@ -346,6 +351,6 @@ function ReservationHistoryContent({ account }: { account: boolean }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </main>
+    </Container>
   );
 }

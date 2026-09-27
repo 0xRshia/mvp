@@ -14,5 +14,5 @@ export const GET = (
       (e.sample === 1 && config().SEED_SAMPLE_EVENTS === "false")
     )
       throw new ApiError(404, "ایونت پیدا نشد.");
-    return json({ event: e });
+    return json({ event: { ...e, serverNow: Date.now() } });
   });

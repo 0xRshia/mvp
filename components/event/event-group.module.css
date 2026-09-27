@@ -1,5 +1,7 @@
 .group {
   --group-gap: 20px;
+  --motion-fast: 220ms;
+  --motion-press: 180ms;
   min-inline-size: 0;
   margin-block-end: 40px;
   padding: 22px;
@@ -25,9 +27,11 @@
   block-size: var(--control-height);
   padding: 0;
   border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--secondary);
-  color: var(--secondary-foreground);
+  border-radius: 12px;
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  color: inherit;
 }
 .arrow:not(:disabled):hover { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
 .arrow:disabled { opacity: .4; }
@@ -36,37 +40,38 @@
 .slide { flex: 0 0 50%; min-inline-size: 0; display: flex; padding-inline-start: var(--group-gap); }
 .entrance { display: flex; inline-size: 100%; }
 .showAll {
-  inline-size: 100%;
-  min-block-size: 620px;
-  aspect-ratio: 4 / 5;
+  inline-size: fit-content;
+  min-block-size: var(--control-height);
+  margin-block-start: 20px;
+  margin-inline-start: auto;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 16px;
-  border-radius: 28px;
+  gap: 8px;
+  border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--secondary);
   color: var(--secondary-foreground);
   text-align: center;
-  padding: 24px;
-  transition: background-color var(--motion-fast), color var(--motion-fast);
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
 }
 .showAll:hover { background: var(--primary); color: var(--primary-foreground); }
-.showAll strong { font-size: 22px; }
 .showAll > svg { transition: transform var(--motion-fast) var(--motion-ease); }
 .showAll:hover > svg { transform: translateX(-4px); }
 .viewport:focus-visible, .arrow:focus-visible, .showAll:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
 
+@media (min-width: 901px) {
+  .slide { flex-basis: calc(100% / 3); }
+}
 @media (max-width: 600px) {
   .group { padding: 10px; margin-block-end: 28px; border-radius: 26px; --group-gap: 10px; }
   .heading { gap: 8px; margin-block-end: 16px; }
   .heading h2 { font-size: 19px; gap: 8px; }
   .controls { gap: 6px; }
-  .slide { flex-basis: 80%; container-type: inline-size; }
-  .showAll { min-block-size: 560px; aspect-ratio: auto; border-radius: 24px; padding: 20px; gap: 12px; font-size: 13px; }
-  .showAll strong { font-size: 19px; }
-  .showAll > svg { inline-size: 24px; block-size: 24px; }
+  .slide { flex-basis: 100%; container-type: inline-size; }
+  .showAll { margin-block-start: 16px; font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .showAll:hover > svg { transform: none; }

@@ -41,6 +41,7 @@ export const GET = (req: Request) =>
     return json(
       {
         events: catalog.results,
+        serverNow: now,
         suggestions: rankSuggestions(
           catalog.results,
           history?.results ?? [],

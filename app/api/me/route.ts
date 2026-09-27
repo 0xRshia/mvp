@@ -1,8 +1,13 @@
+import { database } from "@/db";
 import {
+  ApiError,
   boundary,
+  body,
   currentUser,
   json,
   paymentReady,
+  requireUser,
+  sameOrigin,
   skipPayDevEnabled,
   smsReady,
 } from "@/lib/server";
@@ -18,3 +23,20 @@ export const GET = (req: Request) =>
       skipPayDevEnabled: skipPayDevEnabled(),
     }),
   );
+
+export const PATCH = (req: Request) =>
+  boundary(async () => {
+    sameOrigin(req);
+    const user = await requireUser(req);
+    const data = await body(req);
+    if (typeof data.name !== "string")
+      throw new ApiError(400, "نام و نام خانوادگی را وارد کنید.");
+    const name = data.name.trim();
+    if (name.length < 2 || name.length > 80 || /[\u0000-\u001f\u007f]/.test(name))
+      throw new ApiError(400, "نام و نام خانوادگی را بین ۲ تا ۸۰ نویسه وارد کنید.");
+    await database()
+      .prepare("UPDATE users SET name=? WHERE id=?")
+      .bind(name, user.id)
+      .run();
+    return json({ user: { ...user, name } });
+  });

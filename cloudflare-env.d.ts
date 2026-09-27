@@ -10,6 +10,7 @@ declare namespace Cloudflare {
     SKIP_PAY_DEV?: string;
     APP_ORIGIN?: string;
     HOST_PHONES?: string;
+    ADMIN_PHONES?: string;
     // TODO(PRODUCTION): REMOVE_TEMP_LOGIN
     TEMP_LOGIN_ENABLED?: string;
     SEED_SAMPLE_EVENTS?: string;

@@ -38,11 +38,14 @@ export const POST = (req: Request) =>
       (crypto.getRandomValues(new Uint32Array(1))[0] % 900000) + 100000,
     );
     const db = database();
+    const createdAt = Date.now();
+    const expiresAt = createdAt + 300000;
+    const resendAt = createdAt + 60000;
     await db
       .prepare(
         "INSERT INTO challenges(id,phone,hash,expires_at) VALUES(?,?,?,?)",
       )
-      .bind(id, p, await otpHash(id, p, code), Date.now() + 300000)
+      .bind(id, p, await otpHash(id, p, code), expiresAt)
       .run();
     try {
       const c = config();
@@ -72,5 +75,18 @@ export const POST = (req: Request) =>
         "ارسال پیامک انجام نشد. یک دقیقه دیگر دوباره تلاش کنید.",
       );
     }
-    return json({ challengeId: id, resendAfter: 60, expiresIn: 300 });
+    // Keep the previous challenge usable when delivery fails; replace it only
+    // after Kavenegar confirms delivery of the new code.
+    await db
+      .prepare("UPDATE challenges SET consumed=1 WHERE phone=? AND id<>? AND consumed=0")
+      .bind(p, id)
+      .run();
+    return json({
+      challengeId: id,
+      resendAfter: Math.max(0, Math.ceil((resendAt - Date.now()) / 1000)),
+      expiresIn: Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000)),
+      serverNow: Date.now(),
+      expiresAt,
+      resendAt,
+    });
   });

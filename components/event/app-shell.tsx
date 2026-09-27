@@ -21,6 +21,7 @@ import type { User } from "@/lib/types";
 import { ThemeMenu } from "@/components/event/theme-menu";
 import { AppLink, useAppNavigate } from "./app-navigation";
 import { useSelectionIndicator } from "@/hooks/use-selection-indicator";
+import { SiteFooter } from "@/components/content/site-footer";
 type Auth = {
   user: User | null;
   loading: boolean;
@@ -140,28 +141,23 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
       <div id="main-content" tabIndex={-1} data-route-content data-event-detail={eventDetail || undefined} className="route-content">{children}</div>
-      <footer className="container footer">
-        <AppLink className="brand" href="/">
-          هم‌قدم
-        </AppLink>
-        <span>قرارهای کوچک، خاطره‌های ماندگار.</span>
-        <AppLink href="/credits">دربارهٔ تصاویر و ایونت‌های نمونه</AppLink>
-      </footer>
+      <SiteFooter />
       <nav ref={mobileNav} className={`mobile-nav selection-track${eventDetail ? " event-detail-nav" : ""}`} aria-label="منوی اصلی">
         <span className="selection-indicator" aria-hidden="true" />
-        <AppLink className={discovering ? "active" : ""} href="/">
-          <Compass size={21} />
+        <AppLink className={discovering ? "active" : ""} href="/" aria-current={discovering ? "page" : undefined}>
+          <Compass size={21} aria-hidden="true" />
           کشف ایونت
         </AppLink>
         <AppLink
           className={path === "/reservations" ? "active" : ""}
           href="/reservations"
+          aria-current={path === "/reservations" ? "page" : undefined}
         >
-          <Ticket size={21} />
+          <Ticket size={21} aria-hidden="true" />
           بلیت‌های من
         </AppLink>
-        <AppLink className={path === "/account" ? "active" : ""} href="/account">
-          <UserRound size={21} />
+        <AppLink className={path === "/account" ? "active" : ""} href="/account" aria-current={path === "/account" ? "page" : undefined}>
+          <UserRound size={21} aria-hidden="true" />
           حساب کاربری
         </AppLink>
       </nav>

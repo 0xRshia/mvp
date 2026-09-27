@@ -1,5 +1,2 @@
-import { ReservationHistory } from "@/components/event/reservation-history";
-
-export default function Account() {
-  return <ReservationHistory account />;
-}
+import { AccountDashboard } from "@/components/event/account-dashboard";
+export default function Account() { return <AccountDashboard />; }
