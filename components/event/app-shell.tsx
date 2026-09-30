@@ -60,7 +60,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const discovering = path === "/" || path === "/events" || path === "/events/free";
   const navigate = useAppNavigate();
   const desktopNav = useSelectionIndicator<HTMLElement>("a.active");
-  const mobileNav = useSelectionIndicator<HTMLElement>("a.active");
   const [loggingOut, setLoggingOut] = useState(false);
   const scannerOnly = path === "/scanner";
   async function refresh() {
@@ -142,10 +141,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
       <div id="main-content" tabIndex={-1} data-route-content data-event-detail={eventDetail || undefined} className="route-content">{children}</div>
       <SiteFooter />
-      <nav ref={mobileNav} className={`mobile-nav selection-track${eventDetail ? " event-detail-nav" : ""}`} aria-label="منوی اصلی">
-        <span className="selection-indicator" aria-hidden="true" />
+      <nav className={`mobile-nav${eventDetail ? " event-detail-nav" : ""}`} aria-label="منوی اصلی">
         <AppLink className={discovering ? "active" : ""} href="/" aria-current={discovering ? "page" : undefined}>
-          <Compass size={21} aria-hidden="true" />
+          <Compass size={24} aria-hidden="true" />
           کشف ایونت
         </AppLink>
         <AppLink
@@ -153,11 +151,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           href="/reservations"
           aria-current={path === "/reservations" ? "page" : undefined}
         >
-          <Ticket size={21} aria-hidden="true" />
+          <Ticket size={24} aria-hidden="true" />
           بلیت‌های من
         </AppLink>
         <AppLink className={path === "/account" ? "active" : ""} href="/account" aria-current={path === "/account" ? "page" : undefined}>
-          <UserRound size={21} aria-hidden="true" />
+          <UserRound size={24} aria-hidden="true" />
           حساب کاربری
         </AppLink>
       </nav>

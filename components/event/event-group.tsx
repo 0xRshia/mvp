@@ -79,12 +79,16 @@ export function EventGroup({
               </div>
             </div>
           ))}
+          <div className={styles.slide}>
+            <div className={styles.entrance}>
+              <AppLink data-motion-item href={href} className={styles.showAll} aria-label={`مشاهدهٔ همه: ${heading}`}>
+                مشاهدهٔ همه
+                <ArrowLeft size={24} aria-hidden="true" />
+              </AppLink>
+            </div>
+          </div>
         </div>
       </div>
-      <AppLink data-motion-item href={href} className={styles.showAll} aria-label={`مشاهدهٔ همه: ${heading}`}>
-        مشاهدهٔ همه
-        <ArrowLeft size={18} aria-hidden="true" />
-      </AppLink>
     </section>
   );
 }

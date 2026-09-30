@@ -73,7 +73,7 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute top-2 end-2 flex size-(--control-height) items-center justify-center rounded-xl text-muted-foreground ring-offset-background transition-[background-color,color,transform] duration-200 hover:bg-accent hover:text-foreground active:scale-[0.98] motion-reduce:transform-none motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+            className="absolute top-2 end-2 flex size-(--control-height) items-center justify-center rounded-(--radius-control) text-muted-foreground ring-offset-background transition-[background-color,color,transform] duration-200 hover:bg-accent hover:text-foreground active:scale-[0.98] motion-reduce:transform-none motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
           >
             <XIcon />
             <span className="sr-only">بستن</span>

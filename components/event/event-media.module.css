@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 20px 22px 0;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-6) 0;
 }
 
 .cardHeader :global(.editor-pick) {
@@ -18,7 +18,7 @@
 .category {
   display: inline-block;
   border-radius: 7px;
-  padding: 4px 12px;
+  padding: var(--space-1) var(--space-3);
   background: var(--accent);
   color: var(--accent-foreground);
   font-size: 13px;
@@ -42,7 +42,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  min-inline-size: 0;
   margin-bottom: 12px;
 }
 
@@ -64,20 +66,26 @@
 
 .rotation,
 .arrow {
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  border: 1px solid var(--button-border);
+  border-radius: var(--radius-control);
   background: var(--secondary);
   color: var(--secondary-foreground);
 }
 
 .rotation {
-  gap: 7px;
-  padding: 0 12px;
+  gap: var(--control-gap);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  block-size: auto;
+  padding-inline: var(--control-padding-inline);
   font-size: 14px;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .arrow {
   inline-size: var(--control-height);
+  block-size: var(--control-height);
   flex-shrink: 0;
 }
 
@@ -102,7 +110,7 @@
 
 .slide {
   flex: 0 0 100%;
-  min-width: 0;
+  min-inline-size: 0;
   aspect-ratio: 16 / 10;
 }
 
@@ -117,7 +125,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-inline-size: 0;
   margin-top: 10px;
 }
 
@@ -126,10 +136,11 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  min-inline-size: 0;
 }
 
 .indicator {
-  width: 32px;
+  inline-size: var(--control-height);
   padding: 0;
   border: 0;
   background: transparent;
@@ -164,7 +175,4 @@
     aspect-ratio: 4 / 3;
   }
 
-  .indicator {
-    width: 28px;
-  }
 }

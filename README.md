@@ -110,6 +110,14 @@ These numbers log in immediately without SMS credentials or an OTP. Persian digi
 
 ## Validation
 
+### UI geometry and contrast
+
+`app/globals.css` owns the shared 4px spacing scale, responsive page gutters (20px mobile / 32px desktop), 12px control radius, and 48px control minimum height. CSS modules and Tailwind controls use the same tokens. Text actions can grow and wrap; icon controls stay square. Large event-card corners and pill actions retain their separate geometry, with card dimensions shared by loading skeletons.
+
+The decorative orange remains `--brand: #f49851`. Light-mode controls use `--primary: #b45309` with white text and `#9a4308` on hover; dark mode retains the original orange with dark labels. Use `--primary-text` for readable orange text, `--input` / `--button-border` for essential control boundaries, and `--border` for decorative separators. Mobile navigation can grow with enlarged labels; its content clearance and the purchase bar clearance account for text size and safe areas.
+
+Visual checks should cover both themes at 320, 390, 768, 1024, and 1440px, responsive boundaries, keyboard focus, long Persian labels, and 200% text enlargement. Preserve existing motion declarations when refining geometry. Reference [WCAG text contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html), [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html), and [target sizes](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html).
+
 ### Conic Spin background
 
 The decorative background follows the current theme and becomes static when reduced motion is enabled. The homepage displays it at its original token opacity inside a rounded primary border, without the former fading mask. Its parent must establish a positioned area with a height:
@@ -205,6 +213,15 @@ enable these flags. `APP_ORIGIN` defaults to `http://localhost:8082`; for a publ
 deployment, set it to the application's HTTPS origin. Behind a trusted reverse
 proxy, set `VINEXT_TRUSTED_HOSTS` to the public host and configure the proxy to
 overwrite forwarded headers, as in the existing Nginx deployment template.
+
+The `hmghadam.com` deployment uses the Compose project in `/root/mvp`, service
+`app`, port `8082`, and the `mvp_mvp-data` volume. Its `/root/mvp/.env` sets
+`APP_ORIGIN=https://hmghadam.com` and `VINEXT_TRUSTED_HOSTS=hmghadam.com`.
+`TEMP_LOGIN_ENABLED=true` enables the two documented temporary accounts there.
+The `dev.rshi.info` systemd deployment described below has its own configuration
+and database. After changing Compose environment values, recreate the app with
+`docker compose up -d --no-deps --no-build app`; a container restart alone does
+not load changed Compose environment values.
 
 The `mvp-data` named volume stores both `/data/mvp.sqlite` and `/data/uploads`.
 Compose fixes these paths independently of any VPS paths in `.env`. Data survives
